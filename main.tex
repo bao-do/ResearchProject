@@ -1,0 +1,125 @@
+\documentclass{article}
+\newcommand{\vmargin}{2cm}
+\newcommand{\hmargin}{2.5cm}
+\usepackage[a4paper,top=\vmargin,bottom=\vmargin,left=\hmargin,right=\hmargin]{geometry}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\setlength{\parindent}{0pt}
+\usepackage{bbm}
+
+\usepackage{amsthm}
+\theoremstyle{definition} % Style pour les définitions
+\newtheorem{definition}{Définition}[section]
+
+\theoremstyle{definition} % Style pour les propositions et lemmes
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{lemma}[definition]{Lemme}
+
+\theoremstyle{definition} % Style pour les remarques
+\newtheorem{theorem}[definition]{Théorème}
+
+\theoremstyle{definition} % Style pour les remarques
+\newtheorem{remark}[definition]{Remarque}
+
+
+\title{Projet de Recherche}
+\author{Quoc-Bao DO}
+\date{Fevrier 2024}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Modèle de diffusion}
+
+    En modélisation probabiliste, il est fréquent de devoir générer des échantillons à partir d'une distribution de données dont la forme précise est inconnue ou trop complexe pour permettre un échantillonnage direct. Les modèles de diffusion offrent une solution à ce problème en apprenant une équation différentielle inhomogène dans le temps, qui transforme progressivement des échantillons issus d'une distribution gaussienne simple en échantillons correspondant à la distribution cible, plus complexe.
+\begin{proposition}
+    \textbf{(Fokker – Planck equation)} Considérons une équation différentielle stochastique dépendante du temps (Ito), donnée comme suit :
+    \begin{equation}
+         d\phi_t = f_t(\phi_t)dt + g_tdW_t
+    \end{equation}
+    avec $\phi \in \mathbb{R}^N$, $f_t:\mathbb{R_+} \rightarrow R^N$ de classe $C^1$, $g_t : \mathbb{R} \rightarrow \mathbb{R}$ de classe $C^2$ , et $W_t$ est un processus Wiener standard de dimension N.\\
+    Alors le flux sur les distributions de probabilité $\pi_t$ de $\phi_t$ pour $t \geq 0$ est donné par :
+    \begin{equation}
+        \frac{\partial\pi_t(\phi)}{\partial t} = -\nabla \cdot (f_t(\phi) \pi_t(\phi)) + \frac{1}{2}\nabla^2(g_t^2\pi_t(\phi))
+    \end{equation}
+\end{proposition}
+
+\textbf{Démonstration:}\\
+
+Soit une fonction test $F: \mathbb{R}^N \rightarrow \mathbb{R}$, de classe $C^2$, alors d'après le lemme d’Itô :
+
+    \[dF(\phi_t) = \sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} d\phi_t^i + \frac{1}{2} \sum_{i=1}^N \sum_{j=1}^N \frac{\partial^2 F(\phi_t)}{\partial x_i^2}d\langle \phi^i,\phi^j\rangle_t\]
+D'après l'équation (1) et notons que $\langle W_t^i, W_t^j \rangle_t$ si $i = j$ et $0$ sinon, avec $W^i$ et $W^j$ sont les $i$-èmes et $j$-èmes coordonnées de $W_t$ respectivement, ainsi,
+\begin{align*}
+    dF(\phi_t) &= \sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} d\phi_t^i + \frac{1}{2} \sum_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2 dt \\
+    &= \sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} (f^i_t(\phi_t)dt + g_tdW^i_t) + \frac{1}{2} \sum_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2 dt \\
+    &= (\sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t) + \frac{1}{2} \sum_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2)dt + \sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i}  g_tdW^i_t
+\end{align*}
+
+Le terme $dW_t^i$ disparait en prenant l'esperance  (car $\mathbb{E}[dW_t^i] = 0$ ), donc :
+
+\[\mathbb{E}[dF(\phi_t)] = \mathbb{E}[(\sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t) + \frac{1}{2} \sum_{i=1}^N \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2)] dt\]
+
+Ainsi,
+
+\begin{align}
+    \frac{d\mathbb{E}[F(\phi_t)]}{dt} &= \mathbb{E}[\sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t) + \frac{1}{2} \sum_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2}g_t^2 \\
+    &=\mathbb{E}[\sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t)] + \mathbb{E}[\frac{1}{2} \sum_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2]
+\end{align}
+
+$F$ est continue, donc mesurable, supposons que $\frac{\partial\pi_t(\phi)}{\partial t}$ est intégrable, alors le terme à gauche s'écrit :
+
+\[\frac{d\mathbb{E}[F(\phi_t)]}{dt} = \frac{d (\int_{\mathbb{R^N}} F(\phi) \pi_t(\phi) d\phi)} {dt} = \int_{\mathbb{R^N}}F(\phi)\frac{\partial\pi_t(\phi)}{\partial t} d\phi\]
+
+Comme $\pi_t$ s'annule rapidement à l'infini, l’application du théorème de Green sur le premier terme à droite donne:
+\begin{align*}
+    \mathbb{E}[\sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t)] dt &= \int_{\mathbb{R^N}}\sum_{i=1}^N \frac{\partial F(\phi)}{\partial x_i} f^i_t(\phi) \pi_t(\phi)d\phi\\
+    &=\sum_{i=1}^N \int_{\mathbb{R^N}} \frac{\partial F(\phi)}{\partial x_i} f^i_t(\phi) \pi_t(\phi)d\phi \\
+    &= \sum_{i=1}^N(- \int_{\mathbb{R^N}} F(\phi)\frac{\partial (f^i_t(\phi) \pi_t(\phi))}{\partial x_i} d\phi)\\
+    &= - \int_{\mathbb{R}^N}F(\phi) (\nabla \cdot f_t(\phi)\pi_t(\phi))d\phi
+\end{align*}
+
+Pareil, en appliquant l'intégration par parties deux fois sur le deuxième terme à droite, on obtient :
+\begin{align*}
+    \mathbb{E}[\frac{1}{2} \sum_{i=1}^N\frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2] &= \sum_{i=1}^N \int_{\mathbb{R}^N } \frac{\partial^2 F(\phi)}{\partial x_i^2} g_t^2 \pi_t(\phi)d\phi\\
+    &=\sum_{i=1}^N \int_{\mathbb{R}^N } F(\phi) \frac{\partial^2}{\partial x_i^2} (g_t^2 \pi_t(\phi)) d\phi \\
+    &= \int_{\mathbb{R}^N } F(\phi) \nabla^2(g_t^2 \pi_t(\phi)) d\phi
+\end{align*}
+
+Injectons les résultats précédents dans l'équation (4) :
+\[\int_{\mathbb{R^N}}F(\phi)\frac{\partial\pi_t(\phi)}{\partial t} d\phi = - \int_{\mathbb{R}^N}F(\phi) (\nabla \cdot f_t(\phi)\pi_t(\phi))d\phi + \int_{\mathbb{R}^N } F(\phi) \nabla^2(g_t^2 \pi_t(\phi)) d\phi\]
+
+Cette relation est vraie pour toute fonction test F, d'où le résultat final : 
+\[\frac{\partial\pi_t(\phi)}{\partial t} = -\nabla \cdot (f_t(\phi)\pi_t(\phi)) + \nabla^2(g_t^2 \pi_t(\phi)) \] 
+
+Le processus avant est généralement construit de sorte que lorsque $t \rightarrow \infty$ (ou $t \rightarrow T$ pour un certain temps fini $T$), la distribution $\pi_t$ converge vers une distribution connue et bien définie $\pi_{\infty}$, souvent choisie comme une gaussienne à variance finie.
+
+Dans le contexte des modèles de diffusion, et plus précisément des modèles implicites de diffusion pour le débruitage (DDIMs), on cherche un champ de vecteurs déterministe et dépendant du temps $v_t(\phi)$ qui reproduit la même transformation des distributions de probabilité que l'équation stochastique précédente. Cette reformulation permet d'inverser le processus de diffusion de manière déterministe :
+\begin{itemize}
+    \item On commence par échantillonner $\phi_T \sim \pi_t$
+    \item Puis on fait évoluer l'échantillon en arrière dans temps, de $t=T$ à $t = 0$, en résolvant l'EDO suivante :
+    \begin{equation}
+        \frac{d\phi_t}{dt} = v_t(\phi_t)
+    \end{equation}
+\end{itemize}
+
+D'après l'équation de Fokker-Planck, l'évolution de la distribution $\phi_t$ est donnée par l'équation de transport suivante :
+\[\frac{d\pi_t(\phi)}{dt} =-\nabla \cdot [v_t(\phi)\pi_t(\phi)]\]
+
+Notre but est d'identifier la fonction $v_t$ déterministe et dépendante en temps de sorte que l'équation au dessus produise la même évolution que l'équation (2) (flow-matching en anglais). Pour ce faire, on récrit (2) comme suit :
+\[\frac{d\pi_t(\phi)}{dt} =\nabla \cdot([f_t(\phi)-\frac{1}{2}g_t^2\nabla log\pi_t(\phi)]\pi_t(\phi))\]
+
+Ainsi,
+\[v_t(\phi) =f_t(\phi)-\frac{1}{2}g_t^2\nabla log\pi_t(\phi) \]
+On note $s_t(\phi) = \nabla log\pi_t(\phi)$ et on appelle $s_t$ la fonction de score (score function en anglais).\\
+
+Le choix le plus courant de processus direct est un processus Ornstein-Uhlenbeck inhomogène de la forme suivante :
+\[d\phi_t = -\gamma_t\phi_tdt + \sqrt{2\gamma_t}dW_t\]
+Ainsi, le fluide de probabilité est donné par :
+\[v_t(\phi) = -\gamma_t(\phi+\nabla log \pi_t(\phi)) = -\gamma_t(\phi+s_t(\phi))\]
+
+\end{document}
