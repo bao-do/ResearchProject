@@ -198,12 +198,77 @@ Notre but est d'identifier la fonction $v_t$ déterministe et dépendante en tem
 
 Ainsi,
 \[v_t(\phi) =f_t(\phi)-\frac{1}{2}g_t^2\nabla log\pi_t(\phi) \]
-On note $s_t(\phi) = \nabla log\pi_t(\phi)$ et on appelle $s_t$ la fonction de score (score function en anglais).\\
+On note $s_t(\phi) = \nabla log\pi_t(\phi)$ et on appelle $s_t$ la fonction de score (score function en anglais). Déterminer cette fonction joue un rôle hyper important pour pouvoir retrouver l'image initial $\phi_0$.\\
 
 Le choix le plus courant de processus direct est un processus Ornstein-Uhlenbeck inhomogène de la forme suivante :
-\[d\phi_t = -\gamma_t\phi_tdt + \sqrt{2\gamma_t}dW_t\]
+\begin{equation}\label{eq:OU}
+    d\phi_t = -\gamma_t\phi_tdt + \sqrt{2\gamma_t}dW_t
+\end{equation}
 Ainsi, le fluide de probabilité est donné par :
-\[v_t(\phi) = -\gamma_t(\phi+\nabla log \pi_t(\phi)) = -\gamma_t(\phi+s_t(\phi))\]
+\begin{equation}\label{eq:backward}
+    v_t(\phi) = -\gamma_t(\phi+\nabla log \pi_t(\phi)) = -\gamma_t(\phi+s_t(\phi))
+\end{equation}
+
+Le choix de processus de forward comme l'équation \eqref{eq:OU} car pour tout $t \geq 0$, la solution $\phi_t$ est un vecteur gaussien que l'on peut facilement échantillonner. Plus précisément, la solution $\phi_t$ est donnée par :
+\begin{equation}\label{eq:solforphi}
+    \phi_t = \sqrt{\alpha_t}\phi_0 + \sqrt{1-\alpha_t}\eta_t
+\end{equation}
+Avec $\phi_0 \sim \pi_0$ qui est la distribution des images initials qu'on veut échantillonner, $\eta_t$ est un vecteur gaussien isotropique i.e $\eta_t \sim \mathcal{N}(0, I_N)$, et $\bar{\alpha_t}$ est défini par: \[\bar{\alpha_t} = \exp{\left(-2\int_0^t \gamma_s ds\right)}\]
+
+\begin{proof}
+    D'après l'équation \eqref{eq:OU}:
+    \[d\phi_t^i = -\gamma_t \phi_t^i dt + \sqrt{2\gamma_t}dW_t^i, \quad \forall i=1,2,\dots,N\] 
+    Posons $\mu_t = exp{\left(\int_0^t \gamma_s ds\right)}, \quad \forall t \geq 0$.
+    
+    Soit $Y_t$ un processus stochastique défini par $Y_t \coloneqq f(t,\phi_t^i)= \mu_t \phi_t^i$.
+    En utilisant la formule d'Ito, on obtient:
+    \[dY_t = \frac{\partial f(t,\phi_t^i)}{\partial t} dt + \frac{\partial f(t,\phi_t^i)}{\partial x} d\phi_t + \frac{1}{2}\frac{\partial^2f(t,\phi_t^i)}{\partial x^2}d\langle\phi,\phi\rangle_t\]
+
+    En particulier:
+    \begin{itemize}
+        \item $\frac{\partial f(t,\phi_t^i)}{\partial t} = \gamma_t \mu_t \phi_t^i$
+        \item $\frac{\partial f(t,\phi_t^i)}{\partial x} = \mu_t$
+        \item $\frac{\partial^2f(t,\phi_t^i)}{\partial x^2}=0$
+    \end{itemize}
+
+    Ainsi,
+    \begin{align*}
+        dY_t &= \gamma_t \mu_t \phi_t^i dt + \mu_t d\phi_t^i\\
+        &= \gamma_t \mu_t \phi_t^i dt + \mu_t (-\gamma_t \phi_t^i dt + \sqrt{2\gamma_t}dW_t^i)\\
+        &= \mu_t\sqrt{2\gamma_t}dW_t^i
+    \end{align*}
+    On passe à l'intégrale pour 2 côtés :
+    \[Y_t = Y_0 + \int_0^t \mu_s\sqrt{2\gamma_s}dW_s^i\]
+
+    \begin{align*}
+        \phi_t^i &= \frac{1}{\mu_t}\phi_0^i + \frac{1}{\mu_t} \int_0^t \mu_s\sqrt{2\gamma_s}dW_s^i \\
+        &= \sqrt{\bar{\alpha_t}}\phi_0^i + \frac{1}{\mu_t} \int_0^t \mu_s\sqrt{2\gamma_s}dW_s^i
+    \end{align*}
+
+    Notons $Z_t = \int_0^t\mu_s\sqrt{2\gamma_s}dW_s^i$ On remarque que $Z_t$ est une intégrale d'Itô par rapport à un mouvement brownien. On peut réécrire cette intégrale sous forme :
+    \[Z_t=\int_0^t\mu_s\sqrt{2\gamma_s}dW_s^i = \lim_{h\rightarrow 0} \sum_{j=1}^{n} \mu_{t_j}\sqrt{2\gamma_{t_j}}(W^i_{t_j}-W^i_{t_{j-1}})\]
+    Avec $t_0=0 < t_1<\dots<t_{n-1} < t_{n} = t$ une sous-division de l'intervalle $[0,t]$ et $h \coloneqq max_{j = 1,2,\dots,n} |t_j - t_{j-1}|$
+
+    Comme les incréments d'un mouvement brownien sont les variables gaussiennes centrées et indépendantes l'une de l'autre, $Z_t$ est une variable gaussienne centrée dont la variance vaut $\int_0^t(\mu_s\sqrt{2\gamma_s})^2 ds $. On va calculer cette variance :
+    \begin{align*}
+        \int_0^t(\mu_s\sqrt{2\gamma_s})^2ds &= \int_0^t \exp(2 \int_0^s \gamma_xdx) 2 \gamma_s ds \\ 
+        &=\int_0^t \exp(2 \int_0^s \gamma_xdx) d(2 \int_0^s \gamma_xdx)\\
+        &= \exp(2 \int_0^t \gamma_xdx) -1
+    \end{align*}
+    Alors, $Z_t$ représente une variable gaussienne telle que  $Z_t \sim \mathcal{N}\left(0, \exp(2 \int_0^t \gamma_xdx) -1\right) $. Par conséquent, 
+    \[\frac{1}{\mu_t}Z_t \sim \mathcal{N}\left(0, 1-\exp(-2 \int_0^t \gamma_xdx)\right)\]
+    D'où :
+    \[\frac{1}{\mu_t}Z_t \sim \mathcal{N}\left(0, 1-\bar{\alpha_t}\right)\]
+
+    On injecte ce résultat dans l'équation de $\phi_t^i$, on obtient :
+    \[\phi_t^i = \sqrt{\bar{\alpha_t}}\phi_0^i + \theta_t\]
+    avec $\theta_t \sim \sqrt{1-\bar{\alpha_t}}\mathcal{N}\left(0, 1\right)$
+
+    On a bien obtenu l'expression pour chaque composante de $\phi_t$. On remarque que la $i$-ème composante $\phi_t^i$ dépend de $\phi_0^i$ et la $i$-ème composante de $W_t$. Comme $W_t$ est un mouvement brownien standard, ses composantes sont indépendantes l'une de l'autre. Ainsi, sous l'hypothèse que les composantes de $\phi_0$ sont indépendantes l'une de l'autre, les composantes de $\phi_t$ sont indépendantes l'une de l'autre. Un vecteur dont les composantes sont les gaussiennes indépendantes est un vecteur gaussien avec la matrice de covariance diagonale. En particulier, comme les composantes de $\phi_t$ ont la même variance, $\phi_t$ s'écrit comme suit :
+    \[\phi_t = \sqrt{\bar{\alpha_t}}\phi_0 + \sqrt{1-\bar{\alpha_t}}\eta_t \quad \text{avec} \quad \eta_t \sim \mathcal{N}(0, I_N)\] 
+\end{proof}
+
+
 
 
 \bibliographystyle{plain}
