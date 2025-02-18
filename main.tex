@@ -134,11 +134,11 @@ Ou encore, en utilisant la linéarité de l'opérateur espérance, on peut sorti
 \[ d\E{F(\phi_t)} = \E{\sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t) + \frac{1}{2} \sum_{i=1}^N \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2}dt\]
 
 Ainsi,
-\begin{align*}
-    \frac{d\E{F(\phi_t)}}{dt} &= \E{\sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t) + \frac{1}{2} \sum_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2}g_t^2} \\
-    &=\E{\sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t)} + \E{\frac{1}{2} \sum_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2}\\
-    &=\E{ \nabla\ F(\phi_t) \cdot f_t(\phi_t)} + \frac{1}{2}\E{\nabla^2 F(\phi_t) g_t^2}
-\end{align*}
+\begin{align}
+    \frac{d\E{F(\phi_t)}}{dt} &= \E{\sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t) + \frac{1}{2} \sum_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2}g_t^2} \nonumber \\
+    &=\E{\sum_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t)} + \E{\frac{1}{2} \sum_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2} \nonumber\\
+    &=\E{ \nabla\ F(\phi_t) \cdot f_t(\phi_t)} + \frac{1}{2}\E{\nabla^2 F(\phi_t) g_t^2} \label{eq:EsperanceEgality}
+\end{align}
 
 $F$ est continue, donc mesurable, supposons que $\phi \rightarrow \frac{\partial\pi_t(\phi)}{\partial t}$ existe, $\phi \rightarrow F(\phi)\frac{\partial\pi_t(\phi)}{\partial t}$ est intégrable en $\R^N$ car F est à support compact. D'après la règle de Leibniz, le premier terme à droite s'écrit :
 
@@ -172,7 +172,7 @@ De la même manière, en appliquant l'intégration par parties deux fois sur le 
     &= \int_{\mathbb{R}^N } F(\phi) \nabla^2(g_t^2 \pi_t(\phi)) d\phi
 \end{align*}
 
-Injectons les résultats précédents dans l'équation (4) :
+Injectons les résultats précédents dans l'équation \eqref{eq:EsperanceEgality} :
 \[\int_{\mathbb{R^N}}F(\phi)\frac{\partial\pi_t(\phi)}{\partial t} d\phi = - \int_{\mathbb{R}^N}F(\phi) (\nabla \cdot f_t(\phi)\pi_t(\phi))d\phi + \frac{1}{2}\int_{\mathbb{R}^N } F(\phi) \nabla^2(g_t^2 \pi_t(\phi)) d\phi\]
 
 Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e ensemble des fonctions infiniment dérivables à support compact), la théorie de distribution nous dit : 
@@ -260,15 +260,15 @@ Le choix de processus de forward comme l'équation \eqref{eq:OU} car pour tout $
 
     Comme les incréments d'un mouvement brownien sont les variables gaussiennes centrées et indépendantes l'une de l'autre, $Z_t$ est une variable gaussienne centrée dont la variance vaut $\int_0^t(\mu_s\sqrt{2\gamma_s})^2 ds $. On va calculer cette variance :
     \begin{align*}
-        \int_0^t(\mu_s\sqrt{2\gamma_s})^2ds &= \int_0^t \exp(2 \int_0^s \gamma_xdx) 2 \gamma_s ds \\ 
-        &=\int_0^t \exp(2 \int_0^s \gamma_xdx) d(2 \int_0^s \gamma_xdx)\\
-        &= \exp(2 \int_0^t \gamma_xdx) -1
+        \int_0^t(\mu_s\sqrt{2\gamma_s})^2ds &= \int_0^t \exp\left(2 \int_0^s \gamma_xdx\right) 2 \gamma_s ds \\ 
+        &=\int_0^t \exp\left(2 \int_0^s \gamma_xdx\right) d\left(2 \int_0^s \gamma_xdx\right)\\
+        &= \exp\left(2 \int_0^t \gamma_xdx\right) -1
     \end{align*}
     
-    Alors, $Z_t$ représente une variable gaussienne telle que  $Z_t \sim \mathcal{N}\left(0, \exp(2 \int_0^t \gamma_xdx) -1\right) $.
+    Alors, $Z_t$ représente une variable gaussienne telle que  $Z_t \sim \mathcal{N}\left(0, \exp\left(2 \int_0^t \gamma_xdx\right) -1\right) $.
     
     Par conséquent, 
-    \[\frac{1}{\mu_t}Z_t \sim \mathcal{N}\left(0, 1-\exp(-2 \int_0^t \gamma_xdx)\right)\]
+    \[\frac{1}{\mu_t}Z_t \sim \mathcal{N}\left(0, 1-\exp\left(-2 \int_0^t \gamma_xdx\right)\right)\]
     
     D'où :
     \[\frac{1}{\mu_t}Z_t \sim \mathcal{N}\left(0, 1-\bar{\alpha_t}\right)\]
