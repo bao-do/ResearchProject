@@ -123,7 +123,7 @@ Ainsi,
 
 On note $s_t(\phi) \equiv \nabla \log\pi_t(\phi)$ et on appelle $s_t$ la fonction de score (score function en anglais). Déterminer cette fonction joue un rôle hyper important pour pouvoir retrouver l'image initiale$\phi_0$. 
 \subsection{Modèle de diffusion}
-En pratique, le choix le plus courant de processus direct utilisé pour un DDIM est un processus Ornstein-Uhlenbeck inhomogène de la forme suivante :
+En pratique, le choix le plus courant de processus direct utilisé pour un DDIM est un processus Ornstein-Uhlenbeck inhomogène. En choisissant une suite $(\gamma_t)$ positive, il prend la forme suivante :
 \begin{equation}\label{eq:OU}
     d\phi_t = -\gamma_t\phi_t \,dt + \sqrt{2\gamma_t}\,dW_t
 \end{equation}
@@ -175,16 +175,16 @@ L’objectif est d’exprimer la densité de \(\pi_t(\phi)\) en utilisant les tr
 \begin{proposition}\label{prop:distribution_a_etap_t}
     Soit le processus direct présenté par \cref{eq:solforphi}, sous hypothèse de l'existence de la distribution $\pi_t$ de $\phi_t$, alors $\pi_t$ est donnée par :
     \begin{equation}\label{eq:distribution_pi_t}
-        \pi_t(\phi) = \int_{\R^N} \pi_0(\theta)\, g(\phi - \sqrt{\bar \alpha_t}\,\theta) d\theta
+        \pi_t(\phi) = \int_{\R^N} \pi_0(\theta)\, g(\phi - \sqrt{\bar \alpha_t}\,\theta, 1- \alpha_t) d\theta
     \end{equation}
-    avec g la fonction de densité d'une loi normale $\mathcal{N}\left(0_{\R^N}, (1- \alpha _t \,)I_N\right)$
+    avec $g(\cdot, 1-\alpha_t)$ la fonction de densité d'une loi normale $\mathcal{N}\left(0_{\R^N}, (1- \alpha _t \,)I_N\right)$
 \end{proposition}
 
 \begin{proof}
     Consultez l'\cref{sec:proof_distribution_a_etap_t} pour une démonstration complète.
 \end{proof}
 
-L'expression analytique de $\pi_t$ montre que le processus direct applique un lissage progressif à la distribution initiale $\pi_0$, en convoluant avec une distribution normale. Sous l'hypothèse que $\bar \alpha_t \rightarrow \infty$ lorsque $t$ tend vers $\infty$ (ou vers un certain $T$ grand), plus $t$ est grand, plus $\phi_t$ est éloigné de son état initial et tend vers une distribution normale isotrope.
+L'expression analytique de $\pi_t$ montre que le processus direct applique un lissage progressif à la distribution initiale $\pi_0$, en le convolant avec une distribution normale. Sous l'hypothèse que $\bar \alpha_t \rightarrow \infty$ lorsque $t$ tend vers $1$ (ou vers un certain $T$ grand), plus $t$ est grand, plus $\phi_t$ est éloigné de son état initial et tend vers une distribution normale isotrope.
 \subsection{Calcul numérique de la fonction de score}
 On déduit la fonction de score à partir de $\pi_t$ :
 \begin{align*}
@@ -192,7 +192,7 @@ On déduit la fonction de score à partir de $\pi_t$ :
         &= \frac{1}{\pi_t(\phi)}\nabla_\phi\int_{\R^N} \pi_0(\theta) g(\phi - \sqrt{\bar \alpha_t} \,\theta) d\theta\\
 \end{align*}
 
-On note $u: \R^N \times \R^N \rightarrow \R$ la quantité à l'intérieur de l'intégrale ci-dessus, plus précisément :
+On note $u: \R^N \times \R^N \rightarrow \R$ la quantité à l'intérieur de l'intégrale ci-dessus définie par :
 \[u(\phi,\theta) =  \pi_0(\theta) g(\phi - \sqrt{\bar \alpha_t}\,\theta), \quad \forall (\phi,\theta) \in \R^N \times \R^N\]
 
 La fonction $u$ est continue sur $\R^N \times \R^N$ et intégrable par rapport à $\theta$. De plus, $\nabla_\phi u$ existe, est continue sur $\R^N \times \R^N$ et est intégrable par rapport à $\theta$. Alors, en utilisant la règle d'intégrale de Leibniz, on obtient :
@@ -270,15 +270,7 @@ On n'a pas d'accès à la distribution cible $\pi_0$ car on a un nombre fini d'�
 \begin{equation*}
     \hat{\pi}_0(\phi) = \frac{1}{|\mathcal{D}|} \sum_{\varphi \in \mathcal{D}} \delta(\phi - \varphi)
 \end{equation*}
-Avec $|\mathcal{D}|$ le nombre des éléments dans $\mathcal{D}$ et $\delta$ une fonction de dirac définie par :
-\[
-\delta(x) = 
-\begin{cases} 
-1 & \text{si } x = 0_{\mathbb{R}^N} \\
-0 & \text{sinon}
-\end{cases}
-\]
-
+Avec $|\mathcal{D}|$ le nombre des éléments dans $\mathcal{D}$ et $\delta$ une masse de Dirac.
 En utilisant \cref{eq:distribution_pi_t}, à l'étape temporelle $t$, on obtient la distribution des images bruitées :
 \begin{align*}
 \hat{\pi}_t(\phi) &= \int_{\mathbb{R}^N} \hat{\pi}_0(\theta) g(\phi - \sqrt{\bar \alpha_t}\theta) d\theta \quad \text{avec } g \text{ est la fonction de densité} \\
@@ -646,14 +638,14 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
     \end{align*}
 
     Posons $X = \sqrt{\bar \alpha_t}\phi_0$ et $Y = \sqrt{1-\bar \alpha_t} \eta$. Comme $\phi_0$ et $\eta$ sont indépendantes, $X$ et $Y$ le sont. En utilisant le résultat (i) de \cref{prop:quelques_resultats_sur_la_densite}, on obtient la fonction de densité de $X$ :
-    \[f_X(x) = \frac{1}{\sqrt{\bar{\alpha_t}}^n} \pi_0\left(\frac{x}{\sqrt{\bar{\alpha_t}}}\right) \quad\forall x \in \R^N\]
+    \[f_X(x) = \frac{1}{\sqrt{\bar{\alpha_t}}^N} \pi_0\left(\frac{x}{\sqrt{\bar{\alpha_t}}}\right) \quad\forall x \in \R^N\]
 
-    La fonction de densité de $Y$ est $g$ qui est celle d'une loi normale $\mathcal{N}\left(0_{\R^N}, (1-\bar \bar \alpha _t\,)I_N\right)$.
+    La fonction de densité de $Y$ est $g$ qui est celle d'une loi normale $\mathcal{N}\left(0_{\R^N}, (1-\bar \alpha _t\,)I_N\right)$.
 
     D'après le résultat (ii) de la  \cref{prop:quelques_resultats_sur_la_densite}, la fonction de densité $\pi_t$ de $\phi_t$ est donnée par :
     \begin{align*}
         \pi_t(\phi) &= (f_X*g)(\phi) \quad \forall\phi\in \R^N \\
-        &= \int_{\R_N} \frac{1}{\sqrt{\bar{\alpha_t}}^n} \pi_0\left(\frac{\theta}{\sqrt{\bar{\alpha_t}}}\right) g(\phi -\theta) d\theta\\
+        &= \int_{\R_N} \frac{1}{\sqrt{\bar{\alpha_t}}^N} \pi_0\left(\frac{\theta}{\sqrt{\bar{\alpha_t}}}\right) g(\phi -\theta) d\theta\\
     \end{align*}
 
     On remarque $\frac{1}{\sqrt{\bar{\alpha_t}}^n} d\theta = d\left(\frac{\theta}{\sqrt{\bar{\alpha_t}}}\right)$. En faisant une changement de variable $\omega = \frac{\omega}{\sqrt{\bar{\alpha_t}}}$, la distribution de $\phi_t$ s'écrit :
