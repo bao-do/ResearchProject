@@ -378,7 +378,7 @@ Ainsi,
     \lim\limits_{t\rightarrow 0} \phi_t = \varphi^* \in \mathcal{D}
 \end{equation*}
 
-En conclusion, a la date $t = 0$, l'echantillon tends vers une image dans l'ensemble d'apprentissage $\mathcal{D}$. Le fait que la fonction de score idéale ne soit pas un bon modèle pour les processus de diffusion réalistes nous montre qu'il faut comprendre pourquoi ces modèles ne résolvent pas parfaitement leurs tâches. Il faut donc examiner les biais et contraintes qui empêchent ces modèles d'apprendre la fonction de score idéale et voir comment ils se comportent malgré ces limitations.
+En conclusion, à la date $t = 0$, l'échantillon tends vers une image dans l'ensemble d'apprentissage $\mathcal{D}$. Le fait que la fonction de score idéale ne soit pas un bon modèle pour les processus de diffusion réalistes nous montre qu'il faut comprendre pourquoi ces modèles ne résolvent pas parfaitement leurs tâches. Il faut donc examiner les biais et contraintes qui empêchent ces modèles d'apprendre la fonction de score idéale et voir comment ils se comportent malgré ces limitations.
 
 \section{L'apprentissage avec réseau équivariant aux translations}
 \subsection{Groupe de transformation}
@@ -552,11 +552,11 @@ M_t[\phi](x) &= f(\phi_{\Omega_x}) = \nabla_{\phi(x)} \left\{ \sum\limits_{\varp
 &= -\frac{1}{1 - \bar \alpha_t} \sum\limits_{\varphi \in \mathcal{D}} \left(\phi(x) - \sqrt{\bar \alpha_t} \varphi(x)\right) \frac{\mathcal{N}(\phi_{\Omega_x} \mid \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)}{\sum\limits_{\varphi' \in \mathcal{D}} \mathcal{N}(\phi_{\Omega_x} \mid \sqrt{\bar \alpha_t} \varphi'_{\Omega_x}, (1 - \bar \alpha_t) I)}
 \end{align*} 
 
-La LS machine donne une sortie qui est quasiment identique à celle de l'apprentissage idéal de la fonction de score, sauf que l'ensemble de données D est remplacé par l'ensemble de local patches issus de D. Intuitivement, un échantillon $\phi$ généré par la LS machine respecte trois conditions locales :
+La LS machine donne une sortie qui est quasiment identique à celle de l'apprentissage idéal de la fonction de score, sauf que l'ensemble de données $\mathcal{D}$ est remplacé par l'ensemble de local patches issus de $\mathcal{D}$. Intuitivement, un échantillon $\phi$ généré par la LS machine respecte trois conditions locales :
 \begin{itemize}[topsep=-5pt]
-    \item Chaque pixel $x$ peut être attribué de manière unique à un patch d'apprentissage local $\varphi_x$ à une certaine localisation $x$.
+    \item Chaque pixel $x$ peut être attribué de manière unique à un patch d'apprentissage local $\varphi_x$ situé en $x$.
     \item La valeur du pixel $\phi(x)$ est exactement égale au pixel central $\varphi_x(0)$.
-    \item Le reste du patch local généré $\phi_{\Omega_x}$ ressemble, au sens $L_2$, davantage au patch d'entraînement local $f$ qu'à tout autre patch d'entraînement possible.
+    \item Le reste du patch local généré $\phi_{\Omega_x}$ ressemble, au sens $l_2$, davantage au patch d'entraînement local $f$ qu'à tout autre patch d'entraînement possible.
 \end{itemize}
 
 Ce résultat montre que la local score (LS) machine approxime la fonction score en se basant sur des patchs d’image locaux. Cela permet à différentes régions \( \phi_{\Omega_x} \) et \( \phi_{\Omega_{x'}} \) de s’aligner sur des patchs issus d’images d’entraînement distinctes, offrant ainsi une plus grande créativité combinatoire. Toutefois, une limitation persiste : chaque patch ne peut correspondre qu’à un patch d’entraînement situé au même emplacement spatial. L’ajout de l’équivariance lève cette contrainte, permettant aux patchs de se transférer entre différentes positions et d’accroître encore la créativité.
