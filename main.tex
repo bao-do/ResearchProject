@@ -516,22 +516,22 @@ En arrangeant :
 Le terme à gauche s'écrit :
 \begin{align*}
 \int_{\mathbb{R}^N} \pi_t(\phi) f_x(\phi_{\Omega_x}) \delta(\phi_{\Omega_x} - \Phi) d\phi &= f_x(\Phi) \int_{\mathbb{R}^N} \pi_t(\phi) \delta(\phi_{\Omega_x} - \Phi) d\phi \\
-&= f_x(\Phi) \mathbb{E}_{\phi \sim \pi_t} \left[ \mathbf{1}_{\phi_{\Omega_x} = \Phi} \right] \\
-&= f_x(\Phi) \mathbb{P}_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi)
+&= f_x(\Phi) p_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi)\\
+& \text{avec } p_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi) \text{ la densité marginale de }\phi_{t \Omega_x}
 \end{align*}
 
 On manipule le terme à droite :
 \begin{align*}
 \int_{\mathbb{R}^N} \pi_t(\phi) s_t[\phi](x) \delta(\phi_{\Omega_x} - \Phi) d\phi &= \int_{\mathbb{R}^N} \delta(\phi_{\Omega_x} - \Phi) \pi_t(\phi) \nabla_{\phi(x)} \log \pi_t(\phi) d\phi \\
 &= \int_{\mathbb{R}^N} \delta(\phi_{\Omega_x} - \Phi) \nabla_{\phi(x)} \pi_t(\phi) d\phi \\
-&= \nabla_{\Phi(x)} \mathbb{P}_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi)
+&= \nabla_{\Phi(0)} p_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi)
 \end{align*}
 
 Injectons dans l'équation :
-\[ f_x(\Phi)\, \mathbb{P}_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi) = \nabla_{\Phi(0)} \mathbb{P}_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi) \]
+\[ f_x(\Phi)\, p_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi) = \nabla_{\Phi(0)} p_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi) \]
 
 D'où
-\[ f_x(\Phi) = \nabla_{\Phi(0)} \log \mathbb{P}_{\phi_t \sim \pi_t} (\phi_{t\Omega_x} = \Phi) \]
+\[ f_x(\Phi) = \nabla_{\Phi(0)} \log p_{\phi_t \sim \pi_t} (\phi_{t\Omega_x} = \Phi) \]
 
 On a :
 \begin{align*}
@@ -542,7 +542,7 @@ On a :
 
 Ainsi,
 \begin{align*}
-    f_x(\Phi) &= \nabla_{\Phi(0)} \log \left\{\mathbb{P}_{\phi_t \sim \pi_t} (\phi_{t\Omega_x} = \Phi)\right\} \\
+    f_x(\Phi) &= \nabla_{\Phi(0)} \log \left\{p_{\phi_t \sim \pi_t} (\phi_{t\Omega_x} = \Phi)\right\} \\
     &=\nabla_{\Phi(0)} \log \left\{ \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \mathcal{N}(\Phi \mid \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar\alpha_t) I) \right\}
 \end{align*}
 
@@ -562,6 +562,7 @@ La LS machine donne une sortie qui est quasiment identique à celle de l'apprent
 Ce résultat montre que la local score (LS) machine approxime la fonction score en se basant sur des patchs d’image locaux. Cela permet à différentes régions \( \phi_{\Omega_x} \) et \( \phi_{\Omega_{x'}} \) de s’aligner sur des patchs issus d’images d’entraînement distinctes, offrant ainsi une plus grande créativité combinatoire. Toutefois, une limitation persiste : chaque patch ne peut correspondre qu’à un patch d’entraînement situé au même emplacement spatial. L’ajout de l’équivariance lève cette contrainte, permettant aux patchs de se transférer entre différentes positions et d’accroître encore la créativité.
 
 \section{L'apprentissage avec réseau local equivariant}
+\subsection{fonction de score optimale}
 Dans cette section, nous allons intégrer les propriétés de localité et d'équivariance dans notre machine qui estime la fonction de score. On l'appelle \textbf{équivariant local machine} (ELM), notée $M_t$.
 
 On peut modéliser notre ELM par :
@@ -574,7 +575,7 @@ La fonction $f$ est optimisée sous la fonction de coût suivante :
     \mathcal{L}(f) = \sum\limits_x \mathbb{E}_{\phi_t \sim \pi_t} \left( \| f(\phi_{t\Omega_x}) - s_t [\phi_t](x) \|^2 \right)
 \end{equation*}
 
-On ecrit la fonction de cout sous forme d'integrale,
+On écrit la fonction de coût sous forme d'integrale,
 \begin{equation*}
     = \int_{\R^N} \pi_t(\phi) \sum\limits_x \| f(\phi_{\Omega_x}) - s_t [\phi](x) \|^2 d\phi
 \end{equation*}
@@ -603,21 +604,22 @@ On choisit $h$ de sorte que $h(\phi_{\Omega_x}) = \delta(\phi_{\Omega_x} - \Phi)
 En arrangeant,
 \begin{align*}
     \int_{\R^N} \pi_t(\phi) \sum\limits_x s_t [\phi](x) \delta(\phi_{\Omega_x} - \Phi) d\phi &= \int_{\R^N} \pi_t(\phi) \sum\limits_x f(\phi_{\Omega_x}) \delta(\phi_{\Omega_x} - \Phi) d\phi \\
-    &= f(\Phi) \sum\limits_x \mathbb{P}_{\phi_t \sim \pi_t} (\phi_{t\Omega_x} = \Phi)
+    &= f(\Phi) \sum\limits_x p_{\phi_t \sim \pi_t} (\phi_{t\Omega_x} = \Phi)\\
+    & \text{avec }  p_{\phi_t \sim \pi_t} (\phi_{t\Omega_x} = \Phi) \text{ la densité marginale de }\phi_{t\Omega_x}
 \end{align*}
 
 Le terme à gauche s’écrit :
 \begin{align*}
     \int_{\mathbb{R}^N} \pi_t(\phi) \sum\limits_x s_t[\phi](x) \delta(\phi_{\Omega_x} - \Phi) d\phi &= \sum\limits_x \int_{\mathbb{R}^N} \delta(\phi_{\Omega_x} - \Phi) \pi_t(\phi) \nabla_{\phi_(x)} \log \pi_t(\phi) d\phi\\
     &= \sum\limits_x \int_{\mathbb{R}^N} \delta(\phi_{\Omega_x} - \Phi) \nabla_{\phi_(x)}\pi_t(\phi) d\phi\\
-    &= \sum\limits_x \nabla_{\Phi(0)} \mathbb{P}_{\phi_t \sim \pi_t} \left(\phi_{t\Omega_x} = \Phi \right)
+    &= \sum\limits_x \nabla_{\Phi(0)} p_{\phi_t \sim \pi_t} \left(\phi_{t\Omega_x} = \Phi \right)
 \end{align*}
 
 
 
 Ainsi,
 \begin{equation*}
-    f(\Phi) = \nabla_{\Phi(0)} \log \sum\limits_x \mathbb{P}_{\phi_t \sim \pi_t} \left(\phi_{t\Omega_x} = \Phi \right)
+    f(\Phi) = \nabla_{\Phi(0)} \log \sum\limits_x p_{\phi_t \sim \pi_t} \left(\phi_{t\Omega_x} = \Phi \right)
 \end{equation*}
 
 On rappelle la distribution \(\pi_t\) :
@@ -629,7 +631,7 @@ On rappelle la distribution \(\pi_t\) :
 
 On cherche :
 \begin{align*}
-    \mathbb{P}_{\phi_t \sim \pi_t} \left( \phi_{t\Omega_x} = \Phi \right) &=
+    p_{\phi_t \sim \pi_t} \left( \phi_{t\Omega_x} = \Phi \right) &=
 \int_{\mathbb{R}^N} \pi_t(\phi) \delta(\phi_{\Omega_x} - \Phi) d\phi \\
 & = \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \int_{\mathbb{R}^N} g_t (\phi - \sqrt{\bar \alpha_t} \varphi) \delta(\phi_{\Omega_x} - \Phi) d\phi\\
 &= \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \int_{\mathbb{R}^N} \mathcal{N} (\phi | \sqrt{\bar \alpha_t} \varphi, (1 - \bar \alpha_t) I)\, \delta(\phi_{\Omega_x} - \Phi) d\phi\\
@@ -638,7 +640,7 @@ On cherche :
 
 D’où :
 \begin{align*}
-    \sum\limits_x \mathbb{P}_{\phi_t \sim \pi_t} \left( \phi_{t\Omega_x} = \Phi \right) &= \frac{1}{|\mathcal{D}|} \sum\limits_x \sum\limits_{\varphi \in \mathcal{D}} \mathcal{N} (\phi | \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)\\
+    \sum\limits_x p_{\phi_t \sim \pi_t} \left( \phi_{t\Omega_x} = \Phi \right) &= \frac{1}{|\mathcal{D}|} \sum\limits_x \sum\limits_{\varphi \in \mathcal{D}} \mathcal{N} (\phi | \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)\\
     &=\frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in P_\Omega(\mathcal{D})} \mathcal{N} (\phi | \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)
 \end{align*}
 
@@ -649,6 +651,80 @@ f_t(\phi_{\Omega_x}) &= \nabla_{\phi(x)} \left\{ \sum\limits_{\varphi \in P_\Ome
 & \text{avec } W(\varphi | \phi_{\Omega_x}) = \frac{\mathcal{N} (\phi_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi, (1 - \bar \alpha_t) I)}
 {\sum\limits_{\varphi' \in P_\Omega(\mathcal{D})} \mathcal{N} (\phi_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi', (1 - \bar \alpha_t) I)}
 \end{align*}
+
+En pratique, on utilise souvent zero-paddings dans un réseau CNN. On adapte notre ELS machine de sorte qu'elle peut prendre en compte les pixels dont le $\Omega$-voisinage dépasse la frontière de l'image. Plus précisément, on remplace l'ensemble de tout patch $P_\Omega(\mathcal{D})$ par les dictionnaires de patchs $P_\Omega^x(\mathcal{D})$ dependant de $x$ :
+\begin{align*}
+    M_t(\phi)[x] &=  -\frac{1}{1 - \bar \alpha_t}\sum\limits_{\varphi \in P_\Omega^x(\mathcal{D})}  \left(\phi(x) - \sqrt{\bar \alpha_t} \varphi(0)\right)\, W(\varphi | \phi_{\Omega_x},x)\\
+    & \text{avec } W(\varphi | \phi_{\Omega_x},x) = \frac{\mathcal{N} (\phi_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi, (1 - \bar \alpha_t) I)}
+    {\sum\limits_{\varphi' \in P_\Omega^x(\mathcal{D})} \mathcal{N} (\phi_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi', (1 - \bar \alpha_t) I)}
+\end{align*}
+
+En présence de zero-paddings, différents dictionnaires de patchs de l'ensemble d'apprentissage sont utilisés pour le calcul de la machine ELS en fonction de l'information contextuelle fournie par la bordure visible à l'intérieur du patch. Pour un patch central sans information sur le bord, les patchs de l'ensemble d'apprentissage proviennent de l'ensemble de l'intérieur de l'image. Pour les patchs de bord, les patchs de l'ensemble d'apprentissage proviennent de tous les bords de l'image à la même distance de la bordure. Pour les patchs d'angle, seules les patchs provenant de cet endroit précis sont utilisées dans le calcul.
+
+\subsection{Convergence des échantillons à la date $t = 0$}
+\begin{definition}[Point localment cohérent]
+    Dans le contexte de ELS machine, un point \(\hat{\Phi}\) est dit localement cohérent si 
+    pour tout pixel \( x \), la valeur \(\hat{\Phi}(x)\) est égale au pixel central \( \varphi(0) \) avec :
+\[
+    \varphi = \arg \min_{\varphi \in P_{\Omega}^{x}} \|\Psi - \hat{\Phi}_{\Omega_t}^{x}\|^2.
+\]
+\end{definition}
+
+
+\begin{theorem}
+    On se donne un échantillon \(\phi_T\) issu de la distribution \(\pi_T\) et on évolue cet échantillon d'après le processus inverse :
+    \[
+    \partial_t \phi_t = - \gamma_t \left( \phi_t + M_t(\phi_t) \right) \quad \text{avec} \quad \gamma_t = -\frac{\partial_t \bar{\alpha}_t}{2 \bar \alpha_t}.
+    \]
+    Sous l’hypothèse que les limites \( \lim\limits_{t \to 0} \phi_t \) et \( \lim\limits_{t \to 0} \partial_t \phi_t \) existent, l’échantillon \( \phi_t \) converge vers un point localement cohérent.
+\end{theorem}
+
+
+\begin{proof}
+    L’hypothèse de l’existence de \( \lim\limits_{t \to 0} \partial_t \bar \alpha_t \) et de \( \lim\limits_{t \to 0} \phi_t \) entraîne que \( \gamma_t M_t(\phi_t) \) reste borné lorsque \( t \to 0 \).
+
+    On a :
+    \[
+    \lim\limits_{t \to 0} M_t [\phi_t] (x) = \lim\limits_{t \to 0} - \frac{\partial_t \bar \alpha_t}{2\bar  \alpha_t (1 - \bar \alpha_t)} \sum_{\varphi \in P_{\Omega}^{x}} \left(\phi_t(x) - \sqrt{\bar{\alpha}_t} \varphi(0)\right) W(\varphi | \phi_t, x).
+    \]
+    
+    Avec :
+    \[
+    W(\varphi | \phi_t, x) = \frac{\mathcal{N}(\phi_{t\Omega_x} | \sqrt{\bar{\alpha}_t} \varphi, (1 - \alpha_t)I)}
+    {\sum\limits_{\varphi \in P_{\Omega}^{x}} \mathcal{N}(\phi_{t\Omega_x} | \sqrt{\bar{\alpha}_t} \varphi', (1 - \alpha_t)I)}.
+    \]
+
+    Comme $
+    \lim\limits_{t \to 0} \frac{1}{1 - \bar \alpha_t} = +\infty 
+    \text{ et } 
+    \frac{\partial_t \bar \alpha_t}{2 \bar \alpha_t} = \gamma_t \text{ existe et continue en } t=0,$
+    la somme à droite doit tendre vers 0 lorsque \( t \to 0 \), c'est-à-dire :    
+    \[
+    \lim\limits_{t \to 0} \sum_{\varphi \in P_{\Omega}^{x}} \left(\phi_t(x) - \sqrt{\bar{\alpha}_t} \varphi(0)\right) W(\varphi | \phi_t, x) = 0.
+    \]
+    
+    On remarque que :    
+    \[
+    \lim\limits_{t \to 0} W(\varphi | \phi_t, x) =
+    \begin{cases} 
+    1, & \text{si } \varphi = \tilde{\varphi} \coloneqq \arg\min\limits_{\psi \in P_{\Omega}^{x}} \|\phi_{\Omega_{x}|_{t=0}} - \psi \|^2, \\
+    0, & \text{sinon}.
+    \end{cases}
+    \]
+    
+    Donc, la limite de la somme se réduit à :    
+    \[
+    (\phi_0(x) - \tilde{\varphi}(0)).
+    \]
+    
+    La somme s’annule à \( t \to 0 \) implique que :    
+    \[
+    \phi_0(x) = \tilde{\varphi}(0).
+    \]
+\end{proof}
+
+
+
 
 \appendix
 
