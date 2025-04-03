@@ -1,0 +1,175 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage{geometry}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{bbm}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{cleveref} % Pour pouvoir utiliser cref
+
+\theoremstyle{definition} % Style pour les définitions
+\newtheorem{definition}{Définition}[section]
+
+\theoremstyle{definition} % Style pour les propositions et lemmes
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{lemma}[definition]{Lemme}
+
+\theoremstyle{definition} % Style pour les remarques
+\newtheorem{theorem}[definition]{Théorème}
+
+\theoremstyle{definition} % Style pour les remarques
+\newtheorem{remark}[definition]{Remarque}
+
+\newcommand{\E}[1]{\mathbb{E}\left[#1\right]}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Xc}{\mathcal{X}}
+\newcommand{\Ac}{\mathcal{A}}
+\newcommand{\dist}{\mathrm{dist}}
+\newcommand{\eqdef}{\stackrel{\mathrm{def}}{=}}
+\newcommand{\argmin}{\mathop{\mathrm{argmin}}}
+\newcommand{\argmax}{\mathop{\mathrm{argmax}}}
+\newcommand{\xmap}{x_{\scalebox{0.5}{\textrm{MAP}}}}
+\newcommand{\xmmse}{x_{\scalebox{0.5}{\textrm{MMSE}}}}
+\newcommand{\xmarginal}{x_{\scalebox{0.5}{\textrm{MARG}}}}
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{TODO:} #1}}
+
+\title{MSE equivariant et local}
+\author{DO Quoc Bao}
+\date{April 2025}
+
+\begin{document}
+
+\maketitle
+
+Le débruitage des images est une tâche importante dans plusieurs domaines. Dans ce papier, on cherche le comportement d'un réseau de débruitage sous les contraintes de localité et d'équivariance par translation. 
+
+\section{Définition de problème}
+Considérons un signal \( X \in \mathbb{R}^N \) et une mesure bruitée \( Y \in \mathbb{R}^N \) :  
+\[
+Y = A X + B,
+\]  
+où \( A \in GL(N,\R) \) une matrice inversible de taille $N$ à valeur dans $\R$, et \( B \in \mathbb{R}^N \) représente un bruit gaussien, i.e \( B \sim \mathcal{N}(0, \sigma^{2} I_N) \), où \( \sigma > 0 \). Les lois marginales \( p_X \) (de \( X \)) et \( p_Y \) (de \( Y \)) sont inconnues.  
+
+L'objectif est de concevoir une fonction de reconstruction \( \phi : \mathbb{R}^N \to \mathbb{R}^N \) qui minimise l'erreur quadratique moyenne attendue :  
+\[
+\inf_{\phi\,\in\, \Phi} \, \mathbb{E} \left[ \| \phi(Y) - X \|^2 \right],
+\] 
+avec $\Phi$ l'ensemble des fonctions locales et équivariantes par les translations d'un groupe $\mathcal{T}$.
+
+
+\section{Réseaux locaux et équivariants par translation}
+On ne connait pas la distribution cible $p_X$, on l'estime par sa distribution discrète,
+\begin{equation*}
+    \hat p_X(x) = \frac{1}{I}\sum\limits_{i=1}^I \delta(x-x_i)
+\end{equation*}
+
+On définit la fonction de coût quadratique modifiée,
+\begin{equation}
+    \mathcal{L}(\phi) = \mathbb{E} \left[ \| \phi(A^{-1}Y) - X \|^2 \right], \quad \phi \in \Phi
+\end{equation}
+
+On cherche $\phi^*$ l'optimal fonctionnel qui minimise la fonction de coût ci-dessus, i.e.,
+\begin{equation*}
+    \phi* = \inf_{\phi\,\in\, \Phi} \mathcal{L}(\phi)
+\end{equation*}
+
+La fonction de coût s'écrit :
+\begin{align*}
+    \mathcal{L}(\phi) &= \mathbb{E} \left[ \| \phi(A^{-1}Y) - X \|^2 \right]\\
+    &= \mathbb{E} \left[ \| \phi(X+C) - X \|^2 \right]\\
+    & \text{avec } C \sim \mathcal{N}(0,\sigma^2 A^{-*} A^{-1})
+\end{align*}
+Notons $V = A^{-*} A^{-1}$ et $\mathcal{G}_{\sigma^2 V}$ la distribution de $C$.
+
+Comme $\mathcal{T}$ est un groupe de transformation unitaire, un élément $\tau \in \mathcal{T}$ vérifie :
+$\begin{cases}
+\|\tau x\| = \|x\|, \quad \forall x\in \R^N &\\
+&\\
+\int\limits_{G} d\tau = 1
+\end{cases}$
+
+Ainsi,
+\begin{align*}
+    \mathcal{L}(\phi) &= \mathbb{E} \left[ \| \phi(X+C) - X \|^2 \right]\\
+    &= \mathbb{E} \left[\int_{G} \| \phi(X+C) - X \|^2 d \tau\right]\\
+    &= \mathbb{E} \left[ \int_\mathcal{T}\| \tau\phi(X+C) - \tau X \|^2 d\tau\right]\\
+    &= \int_{\R^N} \int_{\R^N} \int_{G} \| \tau\phi(x+c) - \tau x \|^2 \hat p_X(x) G_{\sigma^2 V}(c) dx\, dc\, d\tau\\
+   &= \frac{1}{I}\sum\limits_{i=1}^I \int_{\R^N} \int_{G} \| \tau\phi(x_i+c) - \tau x_i \|^2  G_{\sigma^2 V}(c)\, dc\, d\tau\\
+   &= \frac{1}{I}\sum\limits_{i=1}^I \int_{\R^N} \int_{G} \| \tau\phi(u) - \tau x_i \|^2  G_{\sigma^2 V}(u-x_i)\, dc\, d\tau\\
+   &= \frac{1}{I}\sum\limits_{i=1}^I \int_{\R^N} \int_{G} \| \phi(\tau u) - \tau x_i \|^2  G_{\sigma^2 V}(u-x_i)\, dc\, d\tau\\
+   &= \frac{1}{I}\sum\limits_{i=1}^I \sum\limits_{k=1}^N \int_{\R^N} \int_{G} \big| \phi(\tau u)[k] - (\tau x_i)[k] \,\big|^2  G_{\sigma^2 V}(u-x_i)\, dc\, d\tau\\
+   &= \sum\limits_{k=1}^N \mathcal{L}_k(\phi) 
+\end{align*}
+
+On remarque qu'on peut minimiser chaque $\mathcal{L}_k$ individuellement. On cherche par l'optimal fonctionnel $\phi^*$ en s'annulant la variation fonctionnelle de $\mathcal{L}_k$ par rapport à toute perturbation $h \in T_\Phi$ qui est le plan tangent de $\Phi$, on remarque que $T_\Phi \equiv \Phi$ car $\Phi$ est un sous-espace vectoriel.
+
+Plus précisément, $\phi^*$ vérifie 
+\begin{equation*}
+    \delta\mathcal{L}_k(\phi^*,h) = 0 \quad\forall h \in \Phi 
+\end{equation*}
+
+Or, 
+\begin{equation*}
+    \delta\mathcal{L}_k(\phi^*,h) = \frac{2}{I} \sum_{i=1}^{I} \sum_{k=1}^{N} \int_{\R^N}  \left(\phi^*(\tau u)[k] - (\tau x_i)[k]\,\right)\, h(\tau u)[k] \,G_{\sigma_v^2} (u - x_i) \, du \, d\tau
+\end{equation*}
+
+Ainsi,
+\begin{equation*}
+    \sum_{i=1}^{I} \sum_{k=1}^{N} \int_{\R^N} (\phi^*(\tau u)[k] - (\tau x_i)[k]) \,h(\tau u)[k] \,G_{\sigma_v^2} (u - x_i) \, du \, d\tau =0
+\end{equation*}
+
+L'optimal fonctionnel $\phi^*$ admet la propriété de localité, on peut donc le modéliser comme,
+\begin{equation*}
+    \phi^*(u)[k] = v_k(u_{\Omega_k})
+\end{equation*}
+
+De plus, on prend la perturbation fonctionnelle $h$ de sorte que $h(u)[k] = \delta (u_{\Omega_k} - \theta)$ avec $\theta$ un patch arbitraire de même dimension que $u_{\Omega_k}$. Par construction, h admet la propriété de localité et on peut aussi montrer que h est équivariante par translation.
+\begin{proof}
+    Supposons que $\tau$ translate les éléments de $l$ positions à droite, i.e
+\[
+(Tu)_k = u_{(k+l)\equiv n}
+\]
+
+On applique $\tau$ à $\delta$ :
+\begin{align*}
+    (\tau h(u)) [k] &= h(u)[k+l] \\
+    &= \delta (u_{\Omega_{k+l}} - \theta)\\
+    &= \delta ((\tau u)_{\Omega_k} - \theta)\\
+    &= h (\tau u) [k]
+\end{align*}
+Alors $h$ est équivariant par translation.
+\end{proof}
+
+On obtient donc
+
+\begin{equation*}
+    \sum_{i=1}^{I}\int_\mathcal{T} \int_{\R^N} (v_k((\tau u)_{\Omega_k}) - (\tau x_i)[k])\, \delta ((\tau u)_{\Omega_k} - \theta) \, G_{\sigma^2 V} (u - x_i) \, du \, d\tau =0
+\end{equation*}
+
+En arrangeant,
+\begin{equation*}
+    v_k(\theta)\sum_{i=1}^{I} \int_\mathcal{T} \int_{\R^N}  \delta ((\tau u)_{\Omega_k} - \theta) \, G_{\sigma^2 V} (u - x_i) \, du \, d\tau =\sum_{i=1}^{I} \int_\mathcal{T} (\tau x_i)[k] \int_{\R^N} \, \delta ((\tau u)_{\Omega_k} - \theta) \, G_{\sigma^2 V} (u - x_i) \, du \, d\tau
+\end{equation*}
+
+Notons $q(\theta,\tau,x_i,k) = \int_{\R^N}  \delta ((\tau u)_{\Omega_k} - \theta) \, G_{\sigma^2 V} (u - x_i) \, du$, cette quantité mesure la probabilité de trouver le patch $\theta$ dans le voisinage $\Omega_k$ du pixel $k$, après avoir appliqué une translation $\tau$, pondérée par une distribution gaussienne autour de $x_i$. On en obtient le résultat final
+\begin{equation*}
+    \phi^*(y)[k] = v_k(y_{\Omega_k}) = \sum\limits_{i=1}^I \int_\mathcal{T} (\tau x_i)[k] \,\frac{q(y_{\Omega_k},\tau,x_i,k) }{\sum\limits_{i=1}^I q(y_{\Omega_k},\tau,x_i,k)}\, d\tau
+\end{equation*}
+
+L'optimal fonctionnel $\phi^*$ est équivariant par translation. En effet, prenons dans $\mathcal{T}$ une transformation $\tau'$ qui translate les éléments de l position à droite. On a 
+\begin{align*}
+    \phi^*(\tau ' y)[k] &= \sum\limits_{i=1}^I \int_\mathcal{T} (\tau x_i)[k] \,\frac{q((\tau 'y)_{\Omega_k},\tau,x_i,k) }{\sum\limits_{i=1}^I q((\tau 'y)_{\Omega_k},\tau,x_i,k)}\, d\tau \\
+    &=  \sum\limits_{i=1}^I \int_\mathcal{T} (\tau x_i)[k] \,\frac{q((\tau 'y)_{\Omega_k},\tau,x_i,k) }{\sum\limits_{i=1}^I q((\tau 'y)_{\Omega_k},\tau,x_i,k)}\, d\tau\\
+    &= \sum\limits_{i=1}^I \int_\mathcal{T} (\tau x_i)[k] \,\frac{q(y_{\Omega_{k+l}},\tau,x_i,k) }{\sum\limits_{i=1}^I q(y_{\Omega_{k+l}},\tau,x_i,k)}\, d\tau \\
+    &= \phi^*(y)[k+l]\\
+    &= (\tau' \phi^*(y))[k]
+\end{align*}
+
+\end{document}
