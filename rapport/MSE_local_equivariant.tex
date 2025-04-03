@@ -29,6 +29,7 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\C}{\mathbb{C}}
+\newcommand{\Tc}{\mathcal{T}}
 \newcommand{\Xc}{\mathcal{X}}
 \newcommand{\Ac}{\mathcal{A}}
 \newcommand{\dist}{\mathrm{dist}}
@@ -50,63 +51,92 @@
 
 Le débruitage des images est une tâche importante dans plusieurs domaines. Dans ce papier, on cherche le comportement d'un réseau de débruitage sous les contraintes de localité et d'équivariance par translation. 
 
-\section{Définition de problème}
+\section{Définition du problème}
 Considérons un signal \( X \in \mathbb{R}^N \) et une mesure bruitée \( Y \in \mathbb{R}^N \) :  
 \[
 Y = A X + B,
 \]  
-où \( A \in GL(N,\R) \) une matrice inversible de taille $N$ à valeur dans $\R$, et \( B \in \mathbb{R}^N \) représente un bruit gaussien, i.e \( B \sim \mathcal{N}(0, \sigma^{2} I_N) \), où \( \sigma > 0 \). Les lois marginales \( p_X \) (de \( X \)) et \( p_Y \) (de \( Y \)) sont inconnues.  
+où \( A \in \R^{M\times N} \) est une matrice à valeurs dans $\R$, et \( B \in \mathbb{R}^M \) représente un bruit blanc gaussien, i.e \( B \sim \mathcal{N}(0, \sigma^{2} I_M) \), où \( \sigma \geq 0 \).
 
-L'objectif est de concevoir une fonction de reconstruction \( \phi : \mathbb{R}^N \to \mathbb{R}^N \) qui minimise l'erreur quadratique moyenne attendue :  
+L'objectif est de concevoir une fonction de reconstruction qui à $Y$ associe un estimateur $\hat X$ de $X$. 
+Pour ce faire, on considère deux structures différentes. 
+
+\paragraph{Cas 1 : inversion complète}
+Dans ce cas, on considère une fonction \( \phi : \mathbb{R}^M \to \mathbb{R}^N \) qui minimise l'erreur quadratique moyenne attendue:  
 \[
 \inf_{\phi\,\in\, \Phi} \, \mathbb{E} \left[ \| \phi(Y) - X \|^2 \right],
 \] 
-avec $\Phi$ l'ensemble des fonctions locales et équivariantes par les translations d'un groupe $\mathcal{T}$.
+avec $\Phi$ un sous-espace vectoriel de fonctions. 
 
+\paragraph{Cas 2 : débruiteur spécifique}
+Une autre possibilité populaire est de considérer une structure particulière de la forme :
+\[
+\inf_{\psi\,\in\, \Psi} \, \mathbb{E} \left[ \| \psi(A^+Y) - X \|^2 \right],
+\] 
+avec $\Psi$ un sous-espace vectoriel de fonctions et où $A^+$ est la pseudo-inverse de $A$. 
+Une différence importante ici est que $\psi$ est entraîné sur $\mathrm{Im}(A^T)$ uniquement.
 
-\section{Réseaux locaux et équivariants par translation}
-On ne connait pas la distribution cible $p_X$, on l'estime par sa distribution discrète,
-\begin{equation*}
-    \hat p_X(x) = \frac{1}{I}\sum\limits_{i=1}^I \delta(x-x_i)
-\end{equation*}
+\paragraph{Classes de fonctions $\Phi$ et $\Psi$}
 
-On définit la fonction de coût quadratique modifiée,
+Nous nous intéresserons particulièrement la classe $\Phi$ des fonctions équivariantes par des éléments d'un groupe et qui agissent localement.
+L'équivariance peut être exprimée ainsi :
 \begin{equation}
-    \mathcal{L}(\phi) = \mathbb{E} \left[ \| \phi(A^{-1}Y) - X \|^2 \right], \quad \phi \in \Phi
+    \phi(T_\tau Y) = S_\tau \phi(Y)
+\end{equation}
+pour des couples de transformations $(T_\tau, S_\tau)_{\tau}$.
+
+Dans le second cas, l'équivariance s'exprime sous la forme :
+\begin{equation}
+    \psi(T_\tau X) = T_\tau \psi(X) \quad  \forall X\in \R^N
 \end{equation}
 
-On cherche $\phi^*$ l'optimal fonctionnel qui minimise la fonction de coût ci-dessus, i.e.,
+\todo{Compléter en définissant la notion de localité}
+
+\todo{Compléter avec cette notion d'intertwinner. }
+
+\todo{Bien séparer l'analyse avec $\phi(A^+)$ et $\phi$}
+
+
+\section{Conditions d'optimalité dans le cas 2}
+
+On définit le risque moyen par :
+\begin{equation}
+    J(\psi) = \mathbb{E} \left[ \| \psi(A^{+}Y) - X \|^2 \right].
+\end{equation}
+
+Le risque empirique est obtenu lorsque $p_X= \frac{1}{I}\sum_{i=1}^I \delta_{x_i}$. Dans ce cas : 
+\begin{equation}
+    J(\psi) = \frac{1}{I}\sum_{i=1}^I  \mathbb{E} \| \phi(A^{+}Ax_i + A^+B) - x_i  \|^2.
+\end{equation}
+
+On cherche $\psi^\star$ le minimiseur du risque moyen ou du risque empirique sur l'ensemble $\Psi$.
 \begin{equation*}
-    \phi* = \inf_{\phi\,\in\, \Phi} \mathcal{L}(\phi)
+    \psi^\star = \argmin_{\psi\,\in\, \Psi} J(\psi).
 \end{equation*}
 
-La fonction de coût s'écrit :
-\begin{align*}
-    \mathcal{L}(\phi) &= \mathbb{E} \left[ \| \phi(A^{-1}Y) - X \|^2 \right]\\
-    &= \mathbb{E} \left[ \| \phi(X+C) - X \|^2 \right]\\
-    & \text{avec } C \sim \mathcal{N}(0,\sigma^2 A^{-*} A^{-1})
-\end{align*}
-Notons $V = A^{-*} A^{-1}$ et $\mathcal{G}_{\sigma^2 V}$ la distribution de $C$.
-
-Comme $\mathcal{T}$ est un groupe de transformation unitaire, un élément $\tau \in \mathcal{T}$ vérifie :
-$\begin{cases}
-\|\tau x\| = \|x\|, \quad \forall x\in \R^N &\\
-&\\
-\int\limits_{G} d\tau = 1
-\end{cases}$
+Comme $\Psi$ est un sous-espace vectoriel, les conditions d'optimalité du premier ordre s'écrivent :
+\begin{equation}
+    DJ(\psi^\star)(h) = 0 \quad \forall h \in \Psi,
+\end{equation}
+où $DJ$ est la dérivée au sens de Gâteaux de $J$.
 
 Ainsi,
 \begin{align*}
-    \mathcal{L}(\phi) &= \mathbb{E} \left[ \| \phi(X+C) - X \|^2 \right]\\
-    &= \mathbb{E} \left[\int_{G} \| \phi(X+C) - X \|^2 d \tau\right]\\
-    &= \mathbb{E} \left[ \int_\mathcal{T}\| \tau\phi(X+C) - \tau X \|^2 d\tau\right]\\
-    &= \int_{\R^N} \int_{\R^N} \int_{G} \| \tau\phi(x+c) - \tau x \|^2 \hat p_X(x) G_{\sigma^2 V}(c) dx\, dc\, d\tau\\
+    J(\psi) &= \mathbb{E} \left[ \| \psi(X+C) - X \|^2 \right]\\
+    & = \sum_{n=1}^N 
    &= \frac{1}{I}\sum\limits_{i=1}^I \int_{\R^N} \int_{G} \| \tau\phi(x_i+c) - \tau x_i \|^2  G_{\sigma^2 V}(c)\, dc\, d\tau\\
    &= \frac{1}{I}\sum\limits_{i=1}^I \int_{\R^N} \int_{G} \| \tau\phi(u) - \tau x_i \|^2  G_{\sigma^2 V}(u-x_i)\, dc\, d\tau\\
    &= \frac{1}{I}\sum\limits_{i=1}^I \int_{\R^N} \int_{G} \| \phi(\tau u) - \tau x_i \|^2  G_{\sigma^2 V}(u-x_i)\, dc\, d\tau\\
    &= \frac{1}{I}\sum\limits_{i=1}^I \sum\limits_{k=1}^N \int_{\R^N} \int_{G} \big| \phi(\tau u)[k] - (\tau x_i)[k] \,\big|^2  G_{\sigma^2 V}(u-x_i)\, dc\, d\tau\\
    &= \sum\limits_{k=1}^N \mathcal{L}_k(\phi) 
 \end{align*}
+
+
+On suppose que la  distribution cible $p_X$ est discrète :
+\begin{equation*}
+    \hat p_X(x) = \frac{1}{I}\sum\limits_{i=1}^I \delta(x-x_i)
+\end{equation*}
+
 
 On remarque qu'on peut minimiser chaque $\mathcal{L}_k$ individuellement. On cherche par l'optimal fonctionnel $\phi^*$ en s'annulant la variation fonctionnelle de $\mathcal{L}_k$ par rapport à toute perturbation $h \in T_\Phi$ qui est le plan tangent de $\Phi$, on remarque que $T_\Phi \equiv \Phi$ car $\Phi$ est un sous-espace vectoriel.
 
