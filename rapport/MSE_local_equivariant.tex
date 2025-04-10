@@ -114,92 +114,218 @@ On cherche $\psi^\star$ le minimiseur du risque moyen ou du risque empirique sur
     \psi^\star = \argmin_{\psi\,\in\, \Psi} J(\psi).
 \end{equation*}
 
+\subsection{Minimisation sous contrainte de localité}
+
+Le sous-espace vectoriel $\Psi$ est l'ensemble de fonctions agissant localement c.-à-d. :
+\begin{equation*}
+    \Psi = \left\{\psi : \mathbb{R}^N \to \mathbb{R}^d \text{ telles que } \exists (v_k : \mathbb{R}^d \to \mathbb{R})_{k \in [1, N]}, \forall z \in \mathbb{R}^N, \psi(z)[k] = v_k(z_{\Omega_k})\right\}
+\end{equation*}
+
+
 Comme $\Psi$ est un sous-espace vectoriel, les conditions d'optimalité du premier ordre s'écrivent :
 \begin{equation}
     DJ(\psi^\star)(h) = 0 \quad \forall h \in \Psi,
 \end{equation}
 où $DJ$ est la dérivée au sens de Gâteaux de $J$.
 
+
 Ainsi,
+\begin{equation*}
+    \frac{2}{T} \sum_{i=1}^I \int_{\mathbb{R}^M} \langle \psi^*(A^+A x_i + A^+b) - x_i, h(A^+A x_i + A^+b) \rangle G_{\sigma^2}(b) \, db = 0.
+\end{equation*}
+
+
+On fixe $k \in [1, N]$, prenons $h(z) = (h_1(z), h_2(z), \dots, h_N(z))$ définie par
+\begin{equation}
+    h_j(z) =
+\begin{cases}
+0 & \text{si } j \neq k \\
+\delta(z_{\Omega_k} - \theta) & \text{si } j = k
+\end{cases}
+\end{equation}
+
+
+Par construction, $h$ admet la propriété de localité, $h$ est donc dans $\Psi$.
+
+On en obtient :
+\begin{equation*}
+\sum_{i=1}^I \int_{\mathbb{R}^M} (\psi^*(A^+A x_i + A^+b)[k] - x_i[k]) \,\delta(A^+A x_i + A^+b)_{\Omega_k} - \theta) G_{\sigma^2}(b) \, db = 0.    
+\end{equation*}
+
+
+Comme $\psi^* \in \Psi$, on peut modéliser $\psi^*(A^+A x_i + A^+b)[k] = \psi_k^*\left((A^+A x_i + A^+b)_{\Omega_k}\right)$.
+
+D'où :
+\begin{equation*}
+\sum_{i=1}^I \int_{\mathbb{R}^M} \left(\psi^*_k(A^+A x_i + A^+b)_{\Omega_k}\right) \delta\left((A^+A x_i + A^+b)_{\Omega_k} - \theta\right) G_{\sigma^2}(b) \, db = 0.    
+\end{equation*}
+
+
+En rangeant :
+\begin{equation*}
+\psi^*_k(\theta)\sum_{i=1}^I \int_{\mathbb{R}^M} \,\delta\left((A^+A x_i + A^+b)_{\Omega_k} - \theta\right) G_{\sigma^2}(b) \, db = \sum_{i=1}^I x_i[k] \int_{\mathbb{R}^M} \delta\left((A^+A x_i + A^+b)_{\Omega_k} - \theta\right) G_{\sigma^2}(b) \, db    
+\end{equation*}
+
+
+D'où :
+\begin{equation*}
+\psi^*_k(\theta) = \frac{\sum_{i=1}^I x_i[k] \int_{\mathbb{R}^M} \delta\left((A^+A x_i + A^+b)_{\Omega_k} - \theta\right) G_{\sigma^2}(b) \, db}{\sum_{j=1}^I \int_{\mathbb{R}^M} \delta\left((A^+A x_j + A^+b)_{\Omega_k} - \theta\right) G_{\sigma^2}(b) \, db}.    
+\end{equation*}
+
+
+Considérons $q(x_i, \theta, k) = \int_{\mathbb{R}^M} \delta\left((A^+A x_i + A^+b)_{\Omega_k} - \theta\right) G_{\sigma^2}(b) \, db$.
+
+On cherche $b \in \mathbb{R}^M$ telle que $(A^+A x_i + A^+b)_{\Omega_k} = \theta$, i.e
+\begin{equation*}
+(A^+)_{\Omega_k} A x_i + A^+ b_{\Omega_k} = \theta    
+\end{equation*}
+
+
+On pose $C$ la matrice dont son pseudo-inverse est $C^+ \coloneqq (A^+)_{\Omega_k}$.
+
+D'ou,
+\begin{equation*}
+    b \in C (\theta - C^+ A x_i) + \ker(C^T)
+\end{equation*}
+
+% Le problème se pose sur l'unicité de l'ensemble admissible de $b$, car $C$ n'est pas inversible.
+
+Ainsi :
 \begin{align*}
-    J(\psi) &= \mathbb{E} \left[ \| \psi(X+C) - X \|^2 \right]\\
-    & = \sum_{n=1}^N 
-   &= \frac{1}{I}\sum\limits_{i=1}^I \int_{\R^N} \int_{G} \| \tau\phi(x_i+c) - \tau x_i \|^2  G_{\sigma^2 V}(c)\, dc\, d\tau\\
-   &= \frac{1}{I}\sum\limits_{i=1}^I \int_{\R^N} \int_{G} \| \tau\phi(u) - \tau x_i \|^2  G_{\sigma^2 V}(u-x_i)\, dc\, d\tau\\
-   &= \frac{1}{I}\sum\limits_{i=1}^I \int_{\R^N} \int_{G} \| \phi(\tau u) - \tau x_i \|^2  G_{\sigma^2 V}(u-x_i)\, dc\, d\tau\\
-   &= \frac{1}{I}\sum\limits_{i=1}^I \sum\limits_{k=1}^N \int_{\R^N} \int_{G} \big| \phi(\tau u)[k] - (\tau x_i)[k] \,\big|^2  G_{\sigma^2 V}(u-x_i)\, dc\, d\tau\\
-   &= \sum\limits_{k=1}^N \mathcal{L}_k(\phi) 
+    q(x_i, \theta, k) &= \int_{\ker(C^T) + C(\theta - C^+ A x_i)} G_{\sigma^2}(b) \, db \\
+    &= \int_{\ker(C^T)} G_{\sigma^2}(b + C(\theta - C^+ A x_i)) \, db.
 \end{align*}
 
 
-On suppose que la  distribution cible $p_X$ est discrète :
-\begin{equation*}
-    \hat p_X(x) = \frac{1}{I}\sum\limits_{i=1}^I \delta(x-x_i)
-\end{equation*}
+Posons $ \mu_i^\theta \coloneqq c(\theta - C^+ A x_i)$.
 
-
-On remarque qu'on peut minimiser chaque $\mathcal{L}_k$ individuellement. On cherche par l'optimal fonctionnel $\phi^*$ en s'annulant la variation fonctionnelle de $\mathcal{L}_k$ par rapport à toute perturbation $h \in T_\Phi$ qui est le plan tangent de $\Phi$, on remarque que $T_\Phi \equiv \Phi$ car $\Phi$ est un sous-espace vectoriel.
-
-Plus précisément, $\phi^*$ vérifie 
-\begin{equation*}
-    \delta\mathcal{L}_k(\phi^*,h) = 0 \quad\forall h \in \Phi 
-\end{equation*}
-
-Or, 
-\begin{equation*}
-    \delta\mathcal{L}_k(\phi^*,h) = \frac{2}{I} \sum_{i=1}^{I} \sum_{k=1}^{N} \int_{\R^N}  \left(\phi^*(\tau u)[k] - (\tau x_i)[k]\,\right)\, h(\tau u)[k] \,G_{\sigma_v^2} (u - x_i) \, du \, d\tau
-\end{equation*}
-
-Ainsi,
-\begin{equation*}
-    \sum_{i=1}^{I} \sum_{k=1}^{N} \int_{\R^N} (\phi^*(\tau u)[k] - (\tau x_i)[k]) \,h(\tau u)[k] \,G_{\sigma_v^2} (u - x_i) \, du \, d\tau =0
-\end{equation*}
-
-L'optimal fonctionnel $\phi^*$ admet la propriété de localité, on peut donc le modéliser comme,
-\begin{equation*}
-    \phi^*(u)[k] = v_k(u_{\Omega_k})
-\end{equation*}
-
-De plus, on prend la perturbation fonctionnelle $h$ de sorte que $h(u)[k] = \delta (u_{\Omega_k} - \theta)$ avec $\theta$ un patch arbitraire de même dimension que $u_{\Omega_k}$. Par construction, h admet la propriété de localité et on peut aussi montrer que h est équivariante par translation.
-\begin{proof}
-    Supposons que $\tau$ translate les éléments de $l$ positions à droite, i.e
+Alors :
 \[
-(Tu)_k = u_{(k+l)\equiv n}
+q(x_i, \theta, k) = \int_{\ker(C^T)} G_{\sigma^2}(b + u_i^\theta) \, db.
 \]
 
-On applique $\tau$ à $\delta$ :
+\begin{proposition}\label{prop:integral_gaussien_sousespace}
+Soit \( X \sim \mathcal{N}(\mu, \Sigma) \) un vecteur gaussien de dimension \( n \), et soit \( S \subseteq \mathbb{R}^n \) un sous-espace vectoriel de dimension \( k \leq n \). Alors :
+\[
+\int_S \mathcal{N}(x; \mu, \Sigma) \, \mathrm{d}x = (2\pi)^{-\frac{n - k}{2}} |\Sigma|^{-1/2} |A|^{-1/2} \exp\left(\frac{1}{2} b^TA^{-1}b - \frac{1}{2}\mu^T \Sigma^{-1}\mu\right) ,
+\]
+où :
+\begin{itemize}
+    \item \( B \in \mathbb{R}^{n \times k} \) est une base orthonormale de \( S \),
+    \item \( A = B^\top \Sigma^{-1} B \)
+    \item  $b = B^T \Sigma^-1 \mu$
+\end{itemize}
+\end{proposition}
+
+\begin{proof}
+
+Soit \( B \) une base orthonormale de \( S \). Pour tout \( x \in S \), il existe un élément$z \in \R^k$ \( x = Bz \).
+
+La densité devient :
+\begin{equation*}
+\mathcal{N}(Bz; \mu, \Sigma) = (2\pi)^{-n/2} |\Sigma|^{-1/2} \exp\left(-\frac{1}{2} (Bz - \mu)^\top \Sigma^{-1} (Bz - \mu)\right).    
+\end{equation*}
+
+
+Notons \( A = B^\top \Sigma^{-1} B \) et \( b = B^\top \Sigma^{-1} \mu \). L'exposant se réécrit :
+\begin{equation*}
+-\frac{1}{2} (z - A^{-1}b)^\top A (z - A^{-1}b) + \frac{1}{2} b^\top A^{-1} b - \frac{1}{2} \mu^\top \Sigma^{-1} \mu.    
+\end{equation*}
+
+
+L'intégrale sur \( z \) de la fonction de densite s'ecrit:
 \begin{align*}
-    (\tau h(u)) [k] &= h(u)[k+l] \\
-    &= \delta (u_{\Omega_{k+l}} - \theta)\\
-    &= \delta ((\tau u)_{\Omega_k} - \theta)\\
-    &= h (\tau u) [k]
+ L &=\int_{\R^k} (2\pi)^{-n/2} |\Sigma|^{-1/2} \exp\left(-\frac{1}{2} (z - A^{-1}b)^\top A (z - A^{-1}b) + \frac{1}{2} b^\top A^{-1} b - \frac{1}{2} \mu^\top \Sigma^{-1} \mu\right) |B^T B| \,dz\\
+ &= (2\pi)^{-n/2} |\Sigma|^{-1/2} \exp\left(\frac{1}{2} b^\top A^{-1} b - \frac{1}{2} \mu^\top \Sigma^{-1} \mu\right) \int_{\R^k}  \exp\left(-\frac{1}{2} (z - A^{-1}b)^\top A (z - A^{-1}b) \right) dz \\
+ &= (2\pi)^{-n/2} |\Sigma|^{-1/2} \exp\left(\frac{1}{2} b^\top A^{-1} b - \frac{1}{2} \mu^\top \Sigma^{-1} \mu\right) \left( (2\pi)^{k/2} |A|^{-1/2}\right)\\
+ &= (2\pi)^{-\frac{n - k}{2}} |\Sigma|^{-1/2} |A|^{-1/2} \exp\left(\frac{1}{2} b^TA^{-1}b - \frac{1}{2}\mu^T \Sigma^{-1}\mu\right)
 \end{align*}
-Alors $h$ est équivariant par translation.
+
 \end{proof}
 
-On obtient donc
+Supposons que $\ker(C^T)$ est engendré par une base orthogonale $S \in \mathbb{R}^{M \times r}$.
 
+% Alors, pour tout $b \in \ker(C^T)$, il existe $z \in \mathbb{R}^r$ tel que $b = Sz$.
+
+Ainsi, par \cref{prop:integral_gaussien_sousespace}, on obtient
 \begin{equation*}
-    \sum_{i=1}^{I}\int_\mathcal{T} \int_{\R^N} (v_k((\tau u)_{\Omega_k}) - (\tau x_i)[k])\, \delta ((\tau u)_{\Omega_k} - \theta) \, G_{\sigma^2 V} (u - x_i) \, du \, d\tau =0
+    q(x_i, \theta, k) = \frac{1}{(2\pi)^\frac{(M-r)}{2} \sigma^M} \exp\left(\frac{1}{2\sigma^2} (\mu_i^\theta)^T (SS^T - I) \mu_i^\theta\right).
 \end{equation*}
 
-En arrangeant,
+\subsection{Minimisation sous la contrainte de localité et d'équivariance par translation}
+Le sous-espace vectoriel $\Psi$ est l'ensemble de fonctions agissant localement, c.-à-d. :
 \begin{equation*}
-    v_k(\theta)\sum_{i=1}^{I} \int_\mathcal{T} \int_{\R^N}  \delta ((\tau u)_{\Omega_k} - \theta) \, G_{\sigma^2 V} (u - x_i) \, du \, d\tau =\sum_{i=1}^{I} \int_\mathcal{T} (\tau x_i)[k] \int_{\R^N} \, \delta ((\tau u)_{\Omega_k} - \theta) \, G_{\sigma^2 V} (u - x_i) \, du \, d\tau
+    \Psi = \left\{\psi : \mathbb{R}^N \to \mathbb{R}^d \text{ telles que } \exists\, v : \mathbb{R}^d \to \mathbb{R}, \forall z \in \mathbb{R}^N, \psi(z)[k] = v(z_{\Omega_k})\right\}
+\end{equation*}
+Lorsqu'on ajoute la contrainte d'équivariance par translation, on remarque la seule différence de $\Psi$ est que chaque composante de $\psi$ utilise une même fonction.
+
+Dans le cas où la seule contrainte de localité est imposée, on a,
+\begin{equation*}
+    \psi(z)[k] = v_k(z_{\Omega_k})
 \end{equation*}
 
-Notons $q(\theta,\tau,x_i,k) = \int_{\R^N}  \delta ((\tau u)_{\Omega_k} - \theta) \, G_{\sigma^2 V} (u - x_i) \, du$, cette quantité mesure la probabilité de trouver le patch $\theta$ dans le voisinage $\Omega_k$ du pixel $k$, après avoir appliqué une translation $\tau$, pondérée par une distribution gaussienne autour de $x_i$. On en obtient le résultat final
+Notons $\mathcal{I} \coloneqq {1, \dots , N}$, la suite de fonctions $(v_k)_{k\in \mathcal{I}}$ doit satisfaire quelques conditions supplémentaires lorsqu'on ajoute la contrainte d'équivariance. Soit $\tau$ une translation quelconque, une fonction $\psi$ équivariante vérifie
 \begin{equation*}
-    \phi^*(y)[k] = v_k(y_{\Omega_k}) = \sum\limits_{i=1}^I \int_\mathcal{T} (\tau x_i)[k] \,\frac{q(y_{\Omega_k},\tau,x_i,k) }{\sum\limits_{i=1}^I q(y_{\Omega_k},\tau,x_i,k)}\, d\tau
+    \psi(\tau z) = \tau\,\psi(z)
 \end{equation*}
 
-L'optimal fonctionnel $\phi^*$ est équivariant par translation. En effet, prenons dans $\mathcal{T}$ une transformation $\tau'$ qui translate les éléments de l position à droite. On a 
+On en déduit
 \begin{align*}
-    \phi^*(\tau ' y)[k] &= \sum\limits_{i=1}^I \int_\mathcal{T} (\tau x_i)[k] \,\frac{q((\tau 'y)_{\Omega_k},\tau,x_i,k) }{\sum\limits_{i=1}^I q((\tau 'y)_{\Omega_k},\tau,x_i,k)}\, d\tau \\
-    &=  \sum\limits_{i=1}^I \int_\mathcal{T} (\tau x_i)[k] \,\frac{q((\tau 'y)_{\Omega_k},\tau,x_i,k) }{\sum\limits_{i=1}^I q((\tau 'y)_{\Omega_k},\tau,x_i,k)}\, d\tau\\
-    &= \sum\limits_{i=1}^I \int_\mathcal{T} (\tau x_i)[k] \,\frac{q(y_{\Omega_{k+l}},\tau,x_i,k) }{\sum\limits_{i=1}^I q(y_{\Omega_{k+l}},\tau,x_i,k)}\, d\tau \\
-    &= \phi^*(y)[k+l]\\
-    &= (\tau' \phi^*(y))[k]
+    \psi(\tau z)[k] &= (\tau \, \psi(z))[k], \quad \forall k\in\mathcal{I}\\
+    v_k ((\tau z)_{\Omega_k}) &= v_{(\tau \mathcal{I})[k]}\left(z_{\Omega_{(\tau \mathcal{I})[k]}}\right), \quad \forall k\in\mathcal{I}\\
+    v_k ( z_{\Omega_(\tau \mathcal{I})[k]}) &= v_{(\tau \mathcal{I})[k]}\left(z_{\Omega_{(\tau \mathcal{I})[k]}}\right), \quad \forall k\in\mathcal{I}
 \end{align*}
 
+Cette condition s'impose pour toute translation $\tau$ et pour tout $z \in \R^N$, ce qui implique qu'il existe une fonction commune $v$ telle que $v_k \equiv f, \,\forall k\in \mathcal{I}$.
+
+Ensuite, comme $\Psi$ est un sous-espace vectoriel, les conditions d'optimalité du premier ordre s'écrivent :
+\begin{equation}
+    DJ(\psi^\star)(h) = 0 \quad \forall h \in \Psi,
+\end{equation}
+où $DJ$ est la dérivée au sens de Gâteaux de $J$.
+
+
+Ainsi,
+\begin{equation*}
+    \frac{2}{T} \sum_{i=1}^I \int_{\mathbb{R}^M} \langle \psi^*(A^+A x_i + A^+b) - x_i, h(A^+A x_i + A^+b) \rangle G_{\sigma^2}(b) \, db = 0.
+\end{equation*}
+
+
+Prenons la fonction $h$ de sorte que
+\begin{equation}
+    h(z)[k] = \delta(z_{\Omega_k}-\theta)
+\end{equation}
+
+
+Par construction, $h$ est dans $\Psi.$
+
+On en obtient :
+\begin{equation*}
+\sum_{i=1}^I \sum_{k=1}^N \int_{\mathbb{R}^M} (\psi^*(A^+A x_i + A^+b)[k] - x_i[k]) \,\delta(A^+A x_i + A^+b)_{\Omega_k} - \theta) G_{\sigma^2}(b) \, db = 0.    
+\end{equation*}
+
+
+Comme $\psi^* \in \Psi$, on peut modéliser $\psi^*(A^+A x_i + A^+b)[k] = f\left((A^+A x_i + A^+b)_{\Omega_k}\right)$.
+
+D'où :
+\begin{equation*}
+\sum_{i=1}^I \sum_{k=1}^N \int_{\mathbb{R}^M} \left(f(A^+A x_i + A^+b)_{\Omega_k}\right) \delta\left((A^+A x_i + A^+b)_{\Omega_k} - \theta\right) G_{\sigma^2}(b) \, db = 0.    
+\end{equation*}
+
+
+En rangeant :
+\begin{equation*}
+f(\theta)\sum_{i=1}^I \sum_{k=1}^N \int_{\mathbb{R}^M} \,\delta\left((A^+A x_i + A^+b)_{\Omega_k} - \theta\right) G_{\sigma^2}(b) \, db = \sum_{i=1}^I \sum_{k=1}^N x_i[k] \int_{\mathbb{R}^M} \delta\left((A^+A x_i + A^+b)_{\Omega_k} - \theta\right) G_{\sigma^2}(b) \, db    
+\end{equation*}
+
+
+D'où :
+\begin{equation*}
+f(\theta) = \frac{\sum_{i=1}^I \sum_{k=1}^N x_i[k] \int_{\mathbb{R}^M} \delta\left((A^+A x_i + A^+b)_{\Omega_k} - \theta\right) G_{\sigma^2}(b) \, db}{\sum_{j=1}^I \sum_{k=1}^N \int_{\mathbb{R}^M} \delta\left((A^+A x_j + A^+b)_{\Omega_k} - \theta\right) G_{\sigma^2}(b) \, db}.    
+\end{equation*}
+
+On obtient le résultat final,
+\begin{equation*}
+\psi^\star(y)[l]=f(y_{\Omega_l}) = \sum_{i=1}^I \sum_{k=1}^N x_i[k]\frac{ q(x_i,y_{\Omega_l},k)}{\sum_{j=1}^I \sum_{k=1}^N q(x_j,y_{\Omega_l},k)}.    
+\end{equation*}
 \end{document}
