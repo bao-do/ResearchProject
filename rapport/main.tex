@@ -58,45 +58,81 @@
 \author{Quoc-Bao DO}
 \date{Fevrier 2024}
 
-\setlength{\parskip}{1em} % Pour choisir l'espace entre paragraphes
+% \setlength{\parskip}{1em} % Pour choisir l'espace entre paragraphes
 
 \begin{document}
 
 \maketitle
 
 
-% \tableofcontents
+\tableofcontents
 
+\newpage
 \section*{Abstract}
-Diffusion model is a type of generative model used in machine learning, particularly for task like text generation, image and video generation,… Mason Kamb et Surya Ganguli + 2024 provides the first analytic, interpretable and predictive theory of creativity in convolutional diffusion models. Nevertheless, the lack of detailed justification can make it difficult for readers to fully grasp the theoretical foundations of the work. To address this gap, our research provides rigorous and complete mathematical proofs for the key results in the mentioned paper. We also introduce the analytic expression for denoisers constrainted under locality or/and equivariance. We rigorously verified assumptions, introduced optimality conditions from which analytic expressions for score function approximators are derived in Mason Kamb et Surya Ganguli + 2024. We constructed/reconstructed the proofs for the paper’s key results by standard and advanced mathematical techniques including functional analysis, mesure theory and probability theory. As a result, we establish a more robust mathematical formulation of the theory introduced by Mason Kamb et Surya Ganguli + 2024. This framework can be used to assess the performance of convolutional neural networks and predict their outputs under local and/or equivariant constraints.
+Convolutional Neural Networks (CNNs) have achieved remarkable success in image processing tasks such as face generation, inpainting and super-resolution. Despite their empirical effectiveness, one major limitation remains: the lack of a clear analytical understanding of how these models work. This project aims to explain the internal mechanisms of CNNs by seeking to describe analytically the solutions of these models. We focus on two key areas: diffusion-based generative models and inverse problems in image processing. Our approach is inspired by the work of Ganguli et al. (2024), which provides some of the first analytical interpretations of convolutional neural networks by exploiting the locality and equivariance properties of these models. By using standard and advanced mathematical techniques, including functional analysis, measure theory, and probability, we obtain the analytical solution for the MMSE (minimum mean squared error) denoiser and the analytical solution for the MMSE inverse problem. Our work can be used to assess the performance of convolutional neural networks and predict their outputs.
 
-Keyword: Convolutional diffusion model, creativity of AI, locality, equivariance, MMSE denoiser.
-
+Keyword: Convolutional network model, locality, equivariance, MMSE denoiser, inverse problem.
 \section{Introduction}
-Diffusion model is a powerful kind of generative AI, capable of generating data such as texts, images, videos,... Diffusion models are a type of generative AI that work by gradually transforming random noise into structured data, such as an image, video, or audio. The idea is inspired by the physical process of diffusion—like how ink spreads in water—except in reverse. The model starts with pure noise and learns to "denoise" it step by step, eventually producing a coherent and realistic output. Compared to earlier models like GANs, diffusion models offer more stability and control during generation.  For image tasks, diffusion models’ strength lie on the visually rich, detailed and creative images. 
 
-Mason Kamb et Surya Ganguli + 2024 showed that locality and equivariance induce a form of combinatorial creativity in convolutional diffusion models by preventing the model to learning the optimal score function. Basing on these two biaises, the paper provided the first analytic, interpretable and predictive theory of creativity in convolutional diffusion models. 
+In recent years, Convolutional Neural Networks (CNNs) have assumed a pivotal role in the domain of image processing. These methods find application in a variety of tasks, including face generation, image inpainting, and super-resolution, where they frequently yield results that surpass the efficacy of conventional techniques. Despite the efficacy of CNNs in practice, the underlying mechanisms and principles that govern their function remain to not be fully explained. This absence of understanding poses a significant challenge, particularly in the context of seeking reliable and explainable models.
 
-However, the lack of detailed mathematical can challenge the readers to fully understand the paper ‘s theorical fundations. To bridge this gap, our work rigorously reconstructs and formalizes the key theoretical results of Kamb and Ganguli's paper. Our work reconstructs and formalizes the theoretical framework proposed by Kamb and Ganguli. We verify assumptions, introduce optimality conditions, and develop detailed mathematical proofs using tools from functional analysis, measure theory, and probability theory. Additionally, we derive analytic forms of MMSE denoisers constrained by locality and/or equivariance. These contributions not only clarify the original theory but also provide a more solid foundation for future applications and evaluations of convolutional diffusion models.
+Ganguli et al. (2024) offers one of the first mathematical explanations of CNNs. The paper demonstrated that specific properties inherent to CNNs, such as locality and equivariance are suffiscent to predict the behavior of these models.
+\begin{figure}[h] % 'h' means 'here'
+    \centering
+    \includegraphics[width=0.5\textwidth]{../images/introduction_Ganguli.png} % Change width and filename
+    \caption{Predicted images by analytic theory (left columns) and the output of convolutional diffusion model (right coloumns)}
+    \label{fig:introduction_im}
+\end{figure}
 
-The remainder of this paper is structured as follows. Section 2 presents the foundational principles of score-based diffusion models. Section 3 analyzes different score estimation frameworks, including ideal, local, equivariant, and combined local-equivariant machines. Section 4 introduces MMSE denoisers under various constraints. Section 5 concludes with a discussion of implications and future research directions.
-\section{The principle of diffusion models}
+In this project, the objective is to enhance comprehension of CNNs through the utilisation of mathematical tools to elucidate their analytical solutions. The present study focuses on two key areas: diffusion-based generative models utilised for the purpose of image generation, inverse problems concerned with the recovery of original images from noisy data.
 
-\subsection{Stochastic differential equations (SDE) and probability flows}
+The remainder of this paper is structured as follows. Section 2 introduces the core concepts underlying convolutional neural networks (CNNs), score-based diffusion models, and inverse problems, along with the empirical risk minimization framework. Section 3 analyzes analytical solutions for MMSE denoising  without any constraints and with different constraints: ideal, equivariance, localily, and locality and equivariance. Section 4 presents preliminary research findings on MMSE inverse problems under  equivariance and/or locality constraints. Finally, Section 5 concludes with a discussion of implications and future research directions.
+
+\section{Premilinairy}
+\subsection{Convolutional neural network (CNN)}
+Convolutional Neural Networks (CNNs) are a class of neural architectures grounded in the principles of locality, translation equivariance, and hierarchical composition. CNNs are particularly well-suited for analyzing spatially structured data, such as images, physical fields, or spatiotemporal patterns, due to their ability to exploit the intrinsic structure and symmetries of such data.
+
+The composition of multiple convolutional layers forms a hierarchical representation: early layers extract primitive features (e.g., edges, gradients), which are then recombined by deeper layers into more complex and semantically meaningful structures. This hierarchical organization reflects how many natural and physical systems are structured and enables efficient learning across different spatial scales.
+\subsubsection{Network Structure and Hierarchical Representation}
+\begin{figure}[h] % 'h' means 'here'
+    \centering
+    \includegraphics[width=0.5\textwidth]{../images/CNN_illustration.png} % Change width and filename
+    \caption{Convolutional neural network illustration}
+    \label{fig:CNN_illustration}
+\end{figure}
+CNNs process input data as multidimensional grids and extract features through the application of convolutional filters, also referred to as kernels. These filters are small, learnable matrices that slide across the input domain to compute local dot products. Each application of a kernel results in a response that highlights the presence of a particular pattern or structure within a localized region. The composition of multiple convolutional layers forms a hierarchical representation: early layers extract primitive features (e.g., edges, gradients), which are then recombined by deeper layers into more complex and semantically meaningful structures. This hierarchical organization reflects how many natural and physical systems are structured and enables efficient learning across different spatial scales.
+
+\subsubsection{Translation Equivariance}
+The convolution operation inherently satisfies translation equivariance. This means that when an input is shifted, the output feature map shifts by the same amount, preserving spatial relationships. 
+Indeed, given an input $x$, a filter $k$, we denote $y$ the convolution of $x$ and $k$
+\begin{equation*}
+    y[m,n] = (x*k)[m,n] = \sum_{i,j} x[m-i,n-j]*k[i,j]
+\end{equation*}
+Let denote $z$ the shifted version of $x$ obtained by shifting $\delta_h$ to the left and $\delta_v$ to the bottom, i.e $z[i,j] = x[i+\delta_h,j+\delta_v]$ the convolution of $z$ and $k$ follows:
+\begin{align*}
+    (z*k)[m,n] &= \sum_{i,j} z[m-i,n-j]*k[i,j]\\
+    &= \sum_{i,j} x[m-i+\delta_h,n-j+\delta_v]*k[i,j]\\
+    &= (x*k)[m+\delta_h,n+\delta_v]
+\end{align*} 
+\subsubsection{Locality}
+CNNs incorporate the principle of locality by using filters (kernels) of finite spatial extent. This means each computation depends only on a bounded region of the input, reflecting the assumption that meaningful patterns and interactions are primarily local.
+\subsection{Diffusion Model}
+
+\subsubsection{Stochastic differential equations (SDE) and probability flows}
 
 An important part of probalistic modeling is to generate samples from a data distribution whose precise shape is unknown or too complex to allow direct sampling. Diffusion models offer a solution to this problem by learning a time-inhomogeneous differential equation, which gradually transforms samples from a simple Gaussian distribution into samples corresponding to the more complex target distribution.
 
 Consider a time-dependent stochastic differential equation (Itô), given as follows:
     \begin{equation}\label{eq:SDE}
-         d\phi_t = f_t(\phi_t)dt + g_tdW_t
+         dx_t = f_t(x_t)dt + g_tdW_t
     \end{equation}
     with 
     \begin{itemize}
-        \item $\phi \in \mathbb{R}^N$
+        \item $x \in \mathbb{R}^N$
         
-        \item $f_t : \mathbb{R}^N \rightarrow \mathbb{R}^N$ is in $C^1$ and is linearly increasing, i.e., $\exists\, C > 0$ such that $\|f_t(\phi)\| \leq C(1 + \|\phi\|)$, where $\|\cdot\|$ denotes the $L^2$ norm, i.e., $\forall n \in \mathbb{N}^*, \forall x \in \mathbb{R}^n,\ \|x\| = \sqrt{\sum\limits_{i=1}^n x_i^2}$.
+        \item $f_t : \mathbb{R}^N \rightarrow \mathbb{R}^N$ is in $C^1$ and is linearly increasing, i.e., $\exists\, C > 0$ such that $\|f_t(x)\| \leq C(1 + \|x\|)$, where $\|\cdot\|$ denotes the $L^2$ norm, i.e., $\forall n \in \mathbb{N}^*, \forall x \in \mathbb{R}^n,\ \|x\| = \sqrt{\sum\limits_{i=1}^n x_i^2}$.
         
-        \item $g_t : \mathbb{R} \rightarrow \mathbb{R}$ is in $C^2$
+        \item $\mathcal{G}_t : \mathbb{R} \rightarrow \mathbb{R}$ is in $C^2$
         
         \item $W_t$ is a standard Wiener process in $\mathbb{R}^N$, with
         \begin{equation*}
@@ -114,83 +150,64 @@ Consider a time-dependent stochastic differential equation (Itô), given as foll
     \end{remark}
 
 \begin{proposition}[Forward Process (Fokker – Planck)\label{prop:fokker}] 
-    Under the above assumptions, the flow over the $\pi_t$ probability distributions of $\phi_t$ for $t \geq 0$ is given by :    \begin{equation}\label{eq:Fokker-Planck}
+    Under the above assumptions, the flow over the $\pi_t$ probability distributions of $x_t$ for $t \geq 0$ is given by :    \begin{equation}\label{eq:Fokker-Planck}
         \frac{\partial\pi_t}{\partial t} = -\nabla \cdot (f_t \pi_t) + \frac{1}{2}\nabla^2(g_t^2\pi_t)
     \end{equation}
 \end{proposition}
 \begin{proof}
     The proof is given in \cref{sec:proof_focker}.
 \end{proof}
-
-
-The condition that $f_t$ is at most linearly increasing guarantees the existence of an EDS solution.
-In general, the direct process is usually constructed so that as $t \rightarrow \infty$ (or $t \rightarrow T$ for some finite time $T$), the distribution $\pi_t$ converges to a known and well-defined distribution $\pi_{\infty}$, often chosen as the normal distribution.
-
-
-In the context of diffusion models, and more specifically implicit diffusion models for denoising (DDIMs), the objective is to identify a deterministic, time-dependent vector field $v_t(p_t)$ that exhibits the same transformation of probability distributions as the preceding stochastic equation. This reformulation enables the diffusion process to be inverted deterministically:
+% The condition that $f_t$ is at most linearly increasing guarantees the existence of an EDS solution.
+% In general, the direct process is usually constructed so that as $t \rightarrow \infty$ (or $t \rightarrow T$ for some finite time $T$), the distribution $\pi_t$ converges to a known and well-defined distribution $\pi_{\infty}$, often chosen as the normal distribution.
+In the context of diffusion models, and more specifically implicit diffusion models for denoising (DDIMs), the objective is to identify a deterministic, time-dependent vector field $v_t$ that exhibits the same flow of probability distributions as the preceding stochastic equation. This reformulation enables the diffusion process to be inverted deterministically:
 \begin{itemize}
-    \item We begin by sampling $\phi_T \sim \pi_t$
+    \item We begin by sampling $x_T \sim \pi_t$
     \item Then we evolve the sample backwards in time, from $t=T$ to $t = 0$, by solving the following ODE:
     \begin{equation}
-        \frac{d\phi_t}{dt} = v_t(\phi_t)
+        \frac{dx_t}{dt} = v_t(x_t)
     \end{equation}
 \end{itemize}
-
-According to the Fokker-Planck equation, the evolution of the $\phi_t$ distribution is given by the following transport equation:
+According to the Fokker-Planck equation, the evolution of the $x_t$ 's distribution is given by the following transport equation:
 \begin{proposition}[Backward Process\label{prop:fokker}] 
 The backward process is giving by the following equation
-\[\frac{d\pi_t(\phi)}{dt} =-\nabla \cdot [v_t(\phi)\pi_t(\phi)]\]
+\[\frac{d\pi_t(x)}{dt} =-\nabla \cdot [v_t(x)\pi_t(x)]\]
 \end{proposition}
 \begin{proof}
     The above result is a direct application of \cref{eq:Fokker-Planck}.
 \end{proof}
-
-Our goal is to identify the deterministic, time-dependent $v_t$ function so that the above equation produces the same evolution as \eqref{prop:fokker} (flow matching). To do this, we rewrite \eqref{prop:fokker} as follows:
-\[\frac{d\pi_t(\phi)}{dt} =\nabla \cdot([f_t(\phi)-\frac{1}{2}g_t^2\nabla \log\pi_t(\phi)]\pi_t(\phi))\]
-
+Our goal is to identify the deterministic, time-dependent $v_t$ function so that the above equation produces the same evolution as \eqref{prop:fokker} (flow-matching). To do this, we rewrite \eqref{prop:fokker} as follows:
+\[\frac{d\pi_t(x)}{dt} =\nabla \cdot([f_t(x)-\frac{1}{2}g_t^2\nabla \log\pi_t(x)]\pi_t(x))\]
 Thus,
-\[v_t(\phi) =f_t(\phi)-\frac{1}{2}g_t^2\nabla \log\pi_t(\phi) \]
-
-
-Note $s_t(\phi) \equiv \nabla \log\pi_t(\phi)$ and call $s_t$ the score function. Determining this function plays an important role in recovering the initial image $\phi_0$.
-\subsection{Diffusion Model}
-
+\[v_t(x) =f_t(x)-\frac{1}{2}g_t^2\nabla \log\pi_t(x) \]
+We denote $s_t(x) \equiv \nabla \log\pi_t(x)$, $s_t$ is called a score function. Determining this function plays an important role in recovering the initial image $x_0$.
+\subsection{Flow calculation}\label{sec:calcul_numerique}
 In practice, the most common choice of direct process for a DDIM is an inhomogeneous Ornstein-Uhlenbeck process. If a positive $(\gamma_t)$ sequence is chosen, it takes the following form:
 \begin{equation}\label{eq:OU}
-    d\phi_t = -\gamma_t\phi_t \,dt + \sqrt{2\gamma_t}\,dW_t
+    dx_t = -\gamma_tx_t \,dt + \sqrt{2\gamma_t}\,dW_t
 \end{equation}
-
-
-By identifying in this case $f_t(\phi) = -\gamma_t\phi_t$ et $ g_t = \sqrt{2\gamma_t}$, we deduce the expression for $v_t$ :
+By identifying in this case $f_t(x) = -\gamma_tx_t$ et $ \mathcal{G}_t = \sqrt{2\gamma_t}$, we deduce the expression for $v_t$ :
 \begin{equation}\label{eq:backward}
-    \frac{d\phi_t}{dt} = v_t(\phi_t) = -\gamma_t(\phi_t+\nabla \log \pi_t(\phi_t)) = -\gamma_t(\phi_t+s_t(\phi))
+    \frac{dx_t}{dt} = v_t(x_t) = -\gamma_t(x_t+\nabla \log \pi_t(x_t)) = -\gamma_t(x_t+s_t(x))
 \end{equation}
-
-
-In this particular instance, it can be demonstrated that $f_t (\phi_t) = -\gamma_t \phi_t,  and g_t = \sqrt{2\gamma_t}$. Through these relationships, the expression for $v_t$ can be deduced:
-The expression $v_t (\phi_t)$ above defines a deterministic vector field, thereby enabling the diffusion process to be reversed by progressively eliminating the noise added during the direct phase. This field integrates the current position, denoted by the symbol $\phi_t$, and the score field, denoted by the symbol $s_t$, with the score field weighted by a factor $\gamma_t$. The integration of these two fields indicates the direction of maximum probability. In this manner, the quantity $v_t(\phi_t)$ functions as a guide for the evolution of $\phi_t$ in a continuous and reversible manner, thereby ensuring that the initially noisy sample $\phi_T$ is gradually transformed into the original domain data. This ordinary differential equation (ODE) reformulation is imperative for DDIM models, as it facilitates accelerated and optimized generation by circumventing the stochastic simulation of the inverse process.
-
-The direct process given by the equation \eqref{eq:OU} is selected due to the fact that, for any $t \geq 0$, the solution $\phi_t$ is distributed according to a known distribution, as indicated by the following proposition.
+% In this particular instance, it can be demonstrated that $f_t (x_t) = -\gamma_t x_t,  \text{ and } \mathcal{G}_t = \sqrt{2\gamma_t}$. Through these relationships, the expression for $v_t$ can be deduced:
+% The expression $v_t (x_t)$ above defines a deterministic vector field, thereby enabling the diffusion process to be reversed by progressively eliminating the noise added during the direct phase. This field integrates the current position, denoted by the symbol $x_t$, and the score field, denoted by the symbol $s_t$, with the score field weighted by a factor $\gamma_t$. The integration of these two fields indicates the direction of maximum probability. In this manner, the quantity $v_t(x_t)$ functions as a guide for the evolution of $x_t$ in a continuous and reversible manner, thereby ensuring that the initially noisy sample $x_T$ is gradually transformed into the original domain data. This ordinary differential equation (ODE) reformulation is imperative for DDIM models, as it facilitates accelerated and optimized generation by circumventing the stochastic simulation of the inverse process.
+The direct process given by the equation \eqref{eq:OU} is selected due to the fact that, for any $t \geq 0$, the solution $x_t$ is distributed according to a known distribution, as indicated by the following proposition.
 \begin{proposition}\label{prop:solution_processus_direct}
-    The solution $\phi_t$ of \eqref{eq:OU} is given by :
+    The solution $x_t$ of \eqref{eq:OU} is given by :
     \begin{equation}\label{eq:solforphi}
-        \phi_t = \sqrt{\bar{\alpha_t}}\phi_0 + \sqrt{1-\bar{\alpha_t}}\eta
+        x_t = \sqrt{\bar{\alpha_t}}x_0 + \sqrt{1-\bar{\alpha_t}}\eta
     \end{equation}
-    Where $\phi_0 \sim \pi_0$ is the distribution of the initial images to be sampled, $\eta$ is an isotropic Gaussian vector, i.e. $\eta \sim \mathcal{N}(0, I_N)$, and $\bar{\alpha_t}$ is defined by 
+    Where $x_0 \sim \pi_0$ is the distribution of the initial images to be sampled, $\eta$ is an isotropic Gaussian vector, i.e. $\eta \sim \mathcal{N}(0, I_N)$, and $\bar{\alpha_t}$ is defined by 
     \[\bar{\alpha_t} = \exp{\left(-2\int_0^t \gamma_s ds\right)}.\]    
 \end{proposition}
 \begin{proof}
     The proof is detailed in \cref{sec:proof_solution_processus_direct}
 \end{proof}
+In particular, we implicitly choose $\gamma_t$ so that $\bar \alpha_t \rightarrow 0$ when t tends towards $\infty$, the distribution tends to reduced-centered normal distribution and no longer depends on the initial  distribution $\pi_0$ of $x_0$. The time-dependent parameter $\bar \alpha_t$ is called the “noise schedule”, as it controls the speed of convergence $\pi_t$. In practice, $\bar \alpha_t \rightarrow 0$ when t tends towards a certain finite time T. In this way, we can sample $x_T$ a centered reduced normal distribution, then recover $x_0$ thanks to the inverse process we'll see next.
 
+% The fundamental premise of the diffusion model hinges on the reversal of the direct process, thereby facilitating the sampling of the target distribution, denoted by $p_0$, through the inverse process. The latter requires knowledge of the score function $s_t = -d/dlog(p_t)$. The initial step in this process is the calculation of the probability distribution of the random variable $x_t$, denoted by $\pi_t$.
 
-In particular, we implicitly choose $\gamma_t$ so that $\bar \alpha_t \rightarrow 0$ when t tends towards $\infty$, the distribution tends to reduced-centered normal distribution and no longer depends on the initial  distribution $\pi_0$ of $\phi_0$. The time-dependent parameter $\bar \alpha_t$ is called the “noise schedule”, as it controls the speed of convergence $\pi_t$. In practice, $\bar \alpha_t \rightarrow 0$ when t tends towards a certain finite time T. In this way, we can sample $\phi_T$ a centered reduced normal distribution, then recover $\phi_0$ thanks to the inverse process we'll see next.
-\section{Flot Calculation} \label{sec:calcul_numerique}
-\subsection{Calculation of the $\pi_t$ distribution}
-
-The fundamental premise of the diffusion model hinges on the reversal of the direct process, thereby facilitating the sampling of the target distribution, denoted by $p_0$, through the inverse process. The latter requires knowledge of the score function $s_t = -d/dlog(p_t)$. The initial step in this process is the calculation of the probability distribution of the random variable $\phi_t$, denoted by $\pi_t$.
-
-The following two results are essentially useful for calculating the analytical expression of $\pi_t$.
+% The following two results are essentially useful for calculating the analytical expression of $\pi_t$.
 \begin{proposition}\label{prop:quelques_resultats_sur_la_densite}
     Let X and Y be two independent random variables in $\R^n$, $f_X$ and $f_Y$ are the density functions of $X$ and $Y$ respectively. We obtain the following properties:
     \vspace{-10pt}
@@ -205,63 +222,47 @@ The proof of these results is detailed in appendix \cref{sec:proof_quelques_resu
 \end{proof}
 
 
-The objective is to express the density of the target state, denoted by the symbol $\pi_t$, in terms of the transformations undergone by the probe state, denoted by the symbol $\phi_t$, during the direct process. Two classical results on the densities of random variables are employed: firstly, the linear transformation of a random variable, which enables the deduction of the effect of a scaling factor on the density; and secondly, the convolution of densities, which facilitates the calculation of the density of the sum of two independent random variables. By employing the aforementioned properties, it is possible to express the probability of the occurrence of the phenomenon under consideration, denoted here by $\pi_t$, as an integral of the initial density $\pi_0$, convolved with a normal distribution of covariance \((1 - \bar{\alpha}_t) I_N\). This reflects the progressive diffusion of the initial distribution under the effect of Gaussian noise. To be more precise, the distribution of the random variable $t$ is given by the following proposition.
+% The objective is to express the density of the target state, denoted by the symbol $\pi_t$, in terms of the transformations undergone by the probe state, denoted by the symbol $x_t$, during the direct process. Two above results on the densities of random variables are employed: firstly, the linear transformation of a random variable, which enables the deduction of the effect of a scaling factor on the density; and secondly, the convolution of densities, which facilitates the calculation of the density of the sum of two independent random variables. By employing the aforementioned properties, it is possible to express the probability of the occurrence of the phenomenon under consideration, denoted here by $\pi_t$, as an integral of the initial density $\pi_0$, convolved with a normal distribution of covariance \((1 - \bar{\alpha}_t) I_N\). This reflects the progressive diffusion of the initial distribution under the effect of Gaussian noise. To be more precise, the distribution of the random variable $t$ is given by the following proposition.
 \begin{proposition}\label{prop:distribution_a_etap_t}
-    Let the direct process presented by \cref{eq:solforphi}, under the assumption of the existence of the $\pi_t$ distribution of $\phi_t$, The distribution $\pi_t$ is given by :    \begin{equation}\label{eq:distribution_pi_t}
-        \pi_t(\phi) = \int_{\R^N} \pi_0(\theta)\, g_t(\phi - \sqrt{\bar \alpha_t}\,\theta) d\theta
+    Let the direct process presented by \cref{eq:solforphi}, under the assumption of the existence of the $\pi_t$ distribution of $x_t$, The distribution $\pi_t$ is given by :    \begin{equation}\label{eq:distribution_pi_t}
+        \pi_t(x) = \int_{\R^N} \pi_0(z)\, \mathcal{G}_t(x - \sqrt{\bar \alpha_t}\,z) dz
     \end{equation}
-    with $g_t$ the density fonction of a normal distribution$\mathcal{N}\left(0_{\R^N}, (1- \alpha _t \,)I_N\right)$
+    with $\mathcal{G}_t$ the density fonction of a normal distribution$\mathcal{N}\left(0_{\R^N}, (1- \alpha _t \,)I_N\right)$
 \end{proposition}
 
 \begin{proof}
     See \cref{sec:proof_distribution_a_etap_t} for a full demonstration.
 \end{proof}
-
-
-The analytical expression of $\pi_t$ shows that the direct process applies a progressive smoothing to the initial distribution $\pi_0$, convolving it with a normal distribution. Under the assumption that $\bar \alpha_t \rightarrow \infty$ when $t$ tends towards $1$ (or towards some large $T$), the larger $t$ is, the further $\phi_t$ is from its initial state and tends towards an isotropic normal distribution.
-\subsection{Numerical calculation of score function}
+% The analytical expression of $\pi_t$ shows that the direct process applies a progressive smoothing to the initial distribution $\pi_0$, convolving it with a normal distribution. Under the assumption that $\bar \alpha_t \rightarrow \infty$ when $t$ tends towards $1$ (or towards some large $T$), the larger $t$ is, the further $x_t$ is from its initial state and tends towards an isotropic normal distribution.
 We derive the score function from $\pi_t$ :
 \begin{align*}
-        s_t(\phi) &= \nabla_\phi \log \pi_t(\phi) = \frac{1}{\pi_t(\phi)}\nabla_\phi\pi_t(\phi) \\
-        &= \frac{1}{\pi_t(\phi)}\nabla_\phi\int_{\R^N} \pi_0(\theta) g(\phi - \sqrt{\bar \alpha_t} \,\theta) d\theta\\
+        s_t(x) &= \nabla \log \pi_t(x) = \frac{1}{\pi_t(x)}\nabla\pi_t(x) \\
+        &= \frac{1}{\pi_t(x)}\nabla\int_{\R^N} \pi_0(z) g(x - \sqrt{\bar \alpha_t} \,z) dz\\
 \end{align*}
-
 Let's denote $u: \R^N \times \R^N \rightarrow \R$ the quantity inside the above integral defined by :
-\[u(\phi,\theta) =  \pi_0(\theta) g_t(\phi - \sqrt{\bar \alpha_t}\,\theta), \quad \forall (\phi,\theta) \in \R^N \times \R^N\]
-
-
-The function $u$ is continuous on $\R^N \times \R^N$ and integrable with respect to $\theta$. Furthermore, $\nabla_\phi u$ exists, is continuous on $\R^N \times \R^N$ and is integrable with respect to $\theta$. Then, using Leibniz's integral rule, we obtain :
+\[u(x,z) =  \pi_0(z) \mathcal{G}_t(x - \sqrt{\bar \alpha_t}\,z), \quad \forall (x,z) \in \R^N \times \R^N\]
+The function $u$ is continuous on $\R^N \times \R^N$ and integrable with respect to $z$. Furthermore, $\nabla_x u$ exists, is continuous on $\R^N \times \R^N$ and is integrable with respect to $z$. Then, using Leibniz's integral rule, we obtain :
 \begin{equation}\label{eq:score_formule_premilinaire}
-    s_t(\phi) = \frac{1}{\pi_t(\phi)} \int_{\R^N} \pi_0(\theta) \nabla_\phi g_t(\phi - \sqrt{\bar \alpha_t} \,\theta) d\theta 
+    s_t(x) = \frac{1}{\pi_t(x)} \int_{\R^N} \pi_0(z) \nabla_x \mathcal{G}_t(x - \sqrt{\bar \alpha_t} \,z) dz 
 \end{equation}
-
-
-Since $g_t$ is the normal law density function $\mathcal{N}\left(0_{\R^N}, (1-\sqrt{\bar \alpha _t},)I_N\right)$, by definition, the function $g_t$ is written :
+Since $\mathcal{G}_t$ is the normal law density function $\mathcal{N}\left(0_{\R^N}, (1-\sqrt{\bar \alpha _t},)I_N\right)$, by definition, the function $\mathcal{G}_t$ is written :
 \begin{equation*}
-    g_t(\phi) = \frac{1}{\sqrt{2\pi}(1-\bar \alpha_t)^{\frac{N}{2}}} \, \exp\left(-\frac{1}{2(1-\bar \alpha _t)}\,\phi^T\phi\right) \quad \forall \phi \in \R^N
+    \mathcal{G}_t(x) = \frac{1}{\sqrt{2\pi}(1-\bar \alpha_t)^{\frac{N}{2}}} \, \exp\left(-\frac{1}{2(1-\bar \alpha _t)}\,x^Tx\right) \quad \forall x \in \R^N
 \end{equation*}
-
 Thus
 \begin{equation*}
-    \nabla_\phi \,g_t(\phi) = -\frac{1}{1-\bar \alpha_t}g(\phi)\phi
+    \nabla_x \,\mathcal{G}_t(x) = -\frac{1}{1-\bar \alpha_t}g(x)x
 \end{equation*}
-
 Thus
 \begin{equation*}
-    \nabla_\phi \,g_t(\phi - \sqrt{\bar \alpha_t} \,\theta) = -\frac{1}{1-\bar \alpha_t}\,g_t(\phi - \sqrt{\bar \alpha_t} \,\theta)(\phi - \sqrt{\bar \alpha_t} \,\theta)
+    \nabla_x \,\mathcal{G}_t(x - \sqrt{\bar \alpha_t} \,z) = -\frac{1}{1-\bar \alpha_t}\,\mathcal{G}_t(x - \sqrt{\bar \alpha_t} \,z)(x - \sqrt{\bar \alpha_t} \,z)
 \end{equation*}
-
-
 Plugging this result into \eqref{eq:score_formule_premilinaire} :
 \begin{equation}\label{eq:score_formule_analytique}
-    s_t(\phi) = -\frac{1}{1- \bar \alpha_t} \int_{\R^N} \frac{\pi_0(\theta)\, g_t(\phi - \sqrt{\bar \alpha_t} \,\theta)(\phi - \sqrt{\bar \alpha_t} \,\theta)}{\pi_t(\phi)} d\theta
+    s_t(x) = -\frac{1}{1- \bar \alpha_t} \int_{\R^N} \frac{\pi_0(z)\, \mathcal{G}_t(x - \sqrt{\bar \alpha_t} \,z)(x - \sqrt{\bar \alpha_t} \,z)}{\pi_t(x)} dz
 \end{equation}
-
-The equation \eqref{eq:score_formule_analytique} expresses the score function \(s_t\), which represents the logarithmic gradient of the density \(\pi_t\). This function indicates the direction in which \(\pi_t\) must be adjusted to recover a probable initial state. The integral shows that \(s_t(\phi)\) is obtained by averaging over all possible initial values \(\theta\), weighted by their original probability \(\pi_0(\theta)\) and the noise added during diffusion. The term \((\phi - \sqrt{\bar{\alpha}_t}\, \theta)\) reflects the correction needed to reverse the diffusion, and normalization by \(\pi_t(\phi)\) ensures that this correction is local. Finally, the factor \(-\frac{1}{1- \bar \alpha_t}\) adjusts the intensity of this correction according to the noise level. This result is fundamental to scattering models, as it enables us to estimate the optimal direction in which to remove the added noise, thus generating realistic samples from initial noise.
-
-
-The intervention of the target distribution $\pi_0$ makes the score function $s_t$ implicit. However, there's an extremely useful fact about this score function that we can take advantage of to learn it from the data thanks to the following proposition.
-
+% The equation \eqref{eq:score_formule_analytique} expresses the score function \(s_t\), which represents the logarithmic gradient of the density \(\pi_t\). This function indicates the direction in which \(\pi_t\) must be adjusted to recover a probable initial state. The integral shows that \(s_t(x)\) is obtained by averaging over all possible initial values \(z\), weighted by their original probability \(\pi_0(z)\) and the noise added during diffusion. The term \((x - \sqrt{\bar{\alpha}_t}\, z)\) reflects the correction needed to reverse the diffusion, and normalization by \(\pi_t(x)\) ensures that this correction is local. Finally, the factor \(-\frac{1}{1- \bar \alpha_t}\) adjusts the intensity of this correction according to the noise level. This result is fundamental to scattering models, as it enables us to estimate the optimal direction in which to remove the added noise, thus generating realistic samples from initial noise.
+The intervention of the target distribution $\pi_0$ makes the score function $s_t$ implicit. However, there's an extremely useful fact about this score function that we can take advantage of to learn it from the data by using the Tweedie's formula.
 \begin{theorem}[Tweedie's formula]\label{theo:formule_de_Tweedie}
     Let $X \in \mathbb{R}^n$ be a random variable of density $f_X$ and $B \sim \mathcal{N}(0, \sigma^2 I_n)$ a Gaussian noise independent of $X$. We define :
     \[ Y = X + B \]
@@ -272,152 +273,129 @@ The intervention of the target distribution $\pi_0$ makes the score function $s_
 \begin{proof}
     The proof given in \cref{sec:proof_formule_de_Tweedie}
 \end{proof}
-
 Let recall the direct process
-\[ \phi_t = \sqrt{\bar \alpha_t} \phi_0 + \sqrt{1 - \bar \alpha_t} \eta \]
-
+\[ x_t = \sqrt{\bar \alpha_t} x_0 + \sqrt{1 - \bar \alpha_t} \eta \]
 Using the  Tweedie formula, we derive the score function :
 \begin{align*}
-s_t(\phi) &= \nabla \log \pi_t(\phi) \\
-&= \frac{-\phi + \mathbb{E}_{\phi_0 \sim \pi_0, \phi_t \sim \pi_t} \left[\sqrt{\bar \alpha_t}\, \phi_0 \mid \phi_t = \phi \right]}{1 - \bar \alpha_t} \\
-&= \frac{1}{1 - \bar \alpha_t} \left( -\phi + \sqrt{\bar \alpha_t} \,\mathbb{E}_{\phi_0 \sim \pi_0, \phi_t \sim \pi_t} \left[ \phi_0 \mid \phi_t = \phi \right] \right)
+s_t(x) &= \nabla \log \pi_t(x) \\
+&= \frac{-x + \mathbb{E} \left[\sqrt{\bar \alpha_t}\, x_0 \mid x_t = x \right]}{1 - \bar \alpha_t} \\
+&= \frac{1}{1 - \bar \alpha_t} \left( -x + \sqrt{\bar \alpha_t} \,\mathbb{E} \left[ x_0 \mid x_t = x \right] \right)
 \end{align*}
-
-
-
-This result is extremely useful, as it allows us to numerically approximate the score function $s_t$, which is proportional to $\mathbb{E}[\phi_0 | \phi_t]$. Indeed, by definition of conditional expectation, $\mathbb{E}[\phi_0 | \phi_t]$ is the orthogonal projection of $\phi_0$ onto the functional space of $\phi_t$. This relationship can be represented mathematically as :
+This result is extremely useful, as it allows us to numerically approximate the score function $s_t$, which is proportional to $\mathbb{E}[x_0 | x_t]$. Indeed, by definition of conditional expectation, $\mathbb{E}[x_0 | x_t]$ is the orthogonal projection of $x_0$ onto the functional space of $x_t$. This relationship can be represented mathematically as :
 \[
-\mathbb{E}_{\phi_0 \sim \pi_0, \phi_t \sim \pi_t}[\phi_0 | \phi_t] = \argmin_{f \in \mathbb{L}^2(\mathbb{R}^N)} \mathbb{E}_{\phi_0 \sim \pi_0, \phi_t \sim \pi_t}\left[ \| \phi_0 - f(\phi_t) \|^2 \right], \quad t \in [0,T]
+\mathbb{E}[x_0 | x_t] = \argmin_{f \in \mathbb{L}^2(\mathbb{R}^N)} \mathbb{E}\left[ \| x_0 - f(x_t) \|^2 \right], \quad t \in [0,T]
 \]
-
-% Ainsi, la fonction de score $s_t = \frac{-1}{(\alpha_t)^{N/2} \sqrt{1-\bar{\alpha}_t}} \mathbb{E}\left[ \eta - f(\phi_t) \right]$ est définie comme :
-
+% Ainsi, la fonction de score $s_t = \frac{-1}{(\alpha_t)^{N/2} \sqrt{1-\bar{\alpha}_t}} \mathbb{E}\left[ \eta - f(x_t) \right]$ est définie comme :
 % \[
-% s_t = \argmin_{f \in \mathbb{L}^2(\mathbb{R}^N)} \mathbb{E}\left[ \left\| \frac{1}{(\bar \alpha_t)^{N/2} \sqrt{1-\bar{\alpha}_t}} \eta + f(\phi_t) \right\|_2^2 \right], \quad t \in [0,T]
+% s_t = \argmin_{f \in \mathbb{L}^2(\mathbb{R}^N)} \mathbb{E}\left[ \left\| \frac{1}{(\bar \alpha_t)^{N/2} \sqrt{1-\bar{\alpha}_t}} \eta + f(x_t) \right\|_2^2 \right], \quad t \in [0,T]
+% \]
+% We want to approximate $s_t$ for all $t \in [0,T]$, not just on a given $t$. This idea motivates us to build a neural network that models a function $f_z(x,t)$ by minimizing the following cost function:
+% \[
+% \mathcal{L}(z) = \mathbb{E}_{t \sim U([0,T]), x_t \sim \pi_t, x_0 \sim \pi_0} \left[ \| f_z(x_t,t) - x_ 0\|^2 \right]
+% \]
+% The optimal function $f_z$ can be approximated numerically by solving the associated regression problem. Once $f_z$ has been acquired, the score function $s_t$ can be obtained directly by :
+% \[
+% s_t(x)= \frac{1}{1 - \bar \alpha_t} \left( -x + \sqrt{\bar \alpha_t} \, f_z(x,t) \right)
 % \]
 
-We want to approximate $s_t$ for all $t \in [0,T]$, not just on a given $t$. This idea motivates us to build a neural network that models a function $f_\theta(x,t)$ by minimizing the following cost function:
-\[
-\mathcal{L}(\theta) = \mathbb{E}_{t \sim U([0,T]), \phi_t \sim \pi_t, \phi_0 \sim \pi_0} \left[ \| f_\theta(\phi_t,t) - \phi_ 0\|^2 \right]
-\]
+\subsection{Inverse Problem}
+Inverse problems aim to recover a target variable $x \in \R^N$ from a noisy mesure $y \in \R^M$, typically modeled as
+\begin{equation*}
+    y = Ax +b, \text{ with } A:\R^N \rightarrow \R^N
+\end{equation*}
+A modern approach is to learn a function $f : y \rightarrow \hat{x}$ using a convolutional neural network trained on a supervised dataset ${(x_i,y_i)}_{i=1}^\mathcal{D}$. The network is trained by minimizing the empirical risk associated with a loss function
+\begin{equation*}
+    \min_{f} \E{f(y)-x}
+\end{equation*}
+    
 
+\subsection{Conclusion}
+In the context of both difusion models and inverse problems, uderstanding how a neural network works requires us to analyze empirical risk minnimizers. Surprisingly, we will see that that locality and equivariance constraints aone are sufficient to predict the network's behavior.
 
-The optimal function $f_\theta$ can be approximated numerically by solving the associated regression problem. Once $f_\theta$ has been acquired, the score function $s_t$ can be obtained directly by :
-\[
-s_t(\phi)= \frac{1}{1 - \bar \alpha_t} \left( -\phi + \sqrt{\bar \alpha_t} \, f_\theta(\phi,t) \right)
-\]
-
-
-\section{Ideal score machine}
-
+\section{Analytical solution for the MMSE denoising}
+In this section, our work is to understand and reconstruct the proofs to better grasp the cencepts \todo{of what}.
+\subsection{Ideal Score (IS) machine}
 We will show in this section that a diffusion model that learns the ideal score function on a finite set of data can only memorize and cannot create new samples far from the training data.
 
 We do not have access to the target distribution $\pi_0$ because we have a finite number of samples, so we estimate it by the empirical discrete distribution on the training data set $\mathcal{D}$ :
 \begin{equation*}
-    \pi_0(\phi) = \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \delta(\phi - \varphi)
+    \pi_0(x) = \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \delta(x - \varphi)
 \end{equation*}
 With $|\mathcal{D}|$ the number of elements in $\mathcal{D}$ and $\delta$ a Dirac mass.En utilisant \cref{eq:distribution_pi_t}, à l'étape temporelle $t$, on obtient la distribution des images bruitées :
 \begin{align*}
-\pi_t(\phi) &= \int_{\mathbb{R}^N} \hat{\pi}_0(\theta) g_t(\phi - \sqrt{\bar \alpha_t}\theta) d\theta \quad \text{with } g_t \text{ is the density function of normal distribution } \mathcal{N}(0, (1-\bar \alpha_t)I_N) \\
-&= \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \int_{\mathbb{R}^N} \delta(\theta - \varphi) g_t(\phi - \sqrt{\bar \alpha_t}\theta) d\theta \\
-&= \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} g_t(\phi - \sqrt{\bar \alpha_t}\varphi)
+\pi_t(x) &= \int_{\mathbb{R}^N} \pi_0(z) \mathcal{G}_t(x - \sqrt{\bar \alpha_t}z) dz \quad \text{with } \mathcal{G}_t \text{ is the density function of normal distribution } \mathcal{N}(0, (1-\bar \alpha_t)I_N) \\
+&= \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \int_{\mathbb{R}^N} \delta(z - x_0) \mathcal{G}_t(x - \sqrt{\bar \alpha_t}z) dz \\
+&= \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \mathcal{G}_t(x - \sqrt{\bar \alpha_t}x_0)
 \end{align*}
 
 The estimated score function $s_t = \nabla \log \pi_t$, which gives us 
 :\begin{align*}
-s_t(\phi) &= \nabla \log \pi_t(\phi) = -\sum\limits_{\varphi \in \mathcal{D}} (\phi - \sqrt{\bar \alpha_t}\varphi) \frac{g_t(\phi - \sqrt{\bar \alpha_t}\varphi)}{\hat{\pi}_t(\phi)} \\
-&= -\frac{1}{1-\bar \alpha_t} \sum\limits_{\varphi \in \mathcal{D}} (\phi - \sqrt{\bar \alpha_t}\varphi) W_t(\varphi | \phi) \\
-& \text{with }W_t(\varphi | \phi) = \frac{g_t(\phi - \sqrt{ \bar \alpha_t}\varphi)}{\sum\limits_{\varphi' \in \mathcal{D}} g_t(\phi - \sqrt{\bar \alpha_t}\varphi')}
+s_t(x) &= \nabla \log \pi_t(x) = -\sum\limits_{x_0  \in \mathcal{D}} (x - \sqrt{\bar \alpha_t}x_0) \frac{\mathcal{G}_t(x - \sqrt{\bar \alpha_t}x_0)}{\pi_t(x)} \\
+&= -\frac{1}{1-\bar \alpha_t} \sum\limits_{x_0  \in \mathcal{D}} (x - \sqrt{\bar \alpha_t}x_0) W_t(x_0 | x) \\
+& \text{with }W_t(x_0| x) = \frac{\mathcal{G}_t(x - \sqrt{ \bar \alpha_t}x_0)}{\sum\limits_{x_0  \in \mathcal{D}} \mathcal{G}_t(x - \sqrt{\bar \alpha_t}x_0')}
 \end{align*}
-
-
-In general, this process involves averaging the added noise. This is done by taking the noise vectors $\eta \propto (\phi - \sqrt{\bar \alpha_t}\varphi)$ between the observed example $\phi$ and each training element $\varphi$, with weights based on the probability $W(\varphi|\phi)$ that the noisy image $\phi_t$ at time step $t$ would come from a point $\varphi$ of the training set $\mathcal{D}$ . This probability is calculated using Bayes' theorem: it is the probability that a training example $\varphi$ will give the observed example $\phi$, as a function of the amount of noise required to transform $\varphi$ into $\phi$, compared with all other possible examples $\varphi'$. The weights $W(\varphi|\phi)$ are calculated using a simple softmax function applied to a quadratic loss function $-\frac{1}{2(1-\bar \alpha_t)}\||\phi - \sqrt{\bar \alpha_t}\varphi|^2$ for each $\varphi$ point in the training set.
-
-Our aim is to show that learning the ideal score function on the finite data set can only memorize, we first recall the inverse process:
+% In general, this process involves averaging the added noise. This is done by taking the noise vectors $\eta \propto (x - \sqrt{\bar \alpha_t}x_0)$ between the observed example $x$ and each training element $\varphi$, with weights based on the probability $W(\varphi|x)$ that the noisy image $x_t$ at time step $t$ would come from a point $\varphi$ of the training set $\mathcal{D}$ . This probability is calculated using Bayes' theorem: it is the probability that a training example $\varphi$ will give the observed example $x$, as a function of the amount of noise required to transform $\varphi$ into $x$, compared with all other possible examples $\varphi'$. The weights $W(\varphi|x)$ are calculated using a simple softmax function applied to a quadratic loss function $-\frac{1}{2(1-\bar \alpha_t)}\||x - \sqrt{\bar \alpha_t}x_0|^2$ for each $\varphi$ point in the training set.
+Our aim is to show that learning the ideal score function on the finite data set can only memorize, meaning that $x_t$ converge to an element $x_0 \in \mathcal{D}$ as $t \rightarrow 0$. We first recall the inverse process:
 \begin{equation*}
-    \frac{d\phi}{dt} =  -\gamma_t(\phi+s_t(\phi)), \quad \text{avec } \gamma_t = -\frac{\partial \bar \alpha_t}{2\bar \alpha_t} 
+    \frac{dx}{dt} =  -\gamma_t(x+s_t(x)), \quad \text{avec } \gamma_t = -\frac{\partial \bar \alpha_t}{2\bar \alpha_t} 
 \end{equation*}
-
-% Lors du processus inverse, le score idéal agit comme un guide dynamique : il calcule, pour chaque sample \(\phi_t\), des forces proportionnelles à la proximité de \(\phi_t\) avec chaque donnée atténuée $\sqrt{\bar \alpha_t} \varphi$, pondérées par des probabilités \emph{a posteriori} (\(W_t(\varphi|\phi)\)). Ce score crée un effet d’amplification : si le sample est proche d’une donnée réduite, le modèle devient plus "sûr" que c’est la bonne direction, et le tire encore plus vers elle. Cette certitude augmente progressivement, forçant le sample à converger vers exactement la même donnée d’entraînement.
-
+% Lors du processus inverse, le score idéal agit comme un guide dynamique : il calcule, pour chaque sample \(x_t\), des forces proportionnelles à la proximité de \(x_t\) avec chaque donnée atténuée $\sqrt{\bar \alpha_t} \varphi$, pondérées par des probabilités \emph{a posteriori} (\(W_t(\varphi|x)\)). Ce score crée un effet d’amplification : si le sample est proche d’une donnée réduite, le modèle devient plus "sûr" que c’est la bonne direction, et le tire encore plus vers elle. Cette certitude augmente progressivement, forçant le sample à converger vers exactement la même donnée d’entraînement.
 % Il est important de noter que la fonction de score idéale ne correspond pas vraiment aux modèles de diffusion réels. Elle a tendance à mémoriser les données d'entraînement, surtout lorsqu'on travaille avec des données à haute dimension, car les points d'entraînement sont très éloignés les uns des autres. Cela nécessite beaucoup plus de données pour bien couvrir l'espace sous-jacent afin que la fonction de score empirique puisse bien approximer la vraie fonction de score idéale pour toutes les entrées et à tous les moments.
-
 % Le fait que la fonction de score idéale ne soit pas un bon modèle pour les processus de diffusion réalistes nous montre qu'il faut comprendre pourquoi ces modèles ne résolvent pas parfaitement leurs tâches. Il faut donc examiner les biais et contraintes qui empêchent ces modèles d'apprendre la fonction de score idéale et voir comment ils se comportent malgré ces limitations.
-
-
-
-Assume that the limits \( \lim_{t \to 0} \phi_t \) and \( \lim_{t \to 0} \partial_t \phi_t \) exist, which implies that
+Assume that the limits \( \lim_{t \to 0} x_t \) and \( \lim_{t \to 0} \partial_t x_t \) exist, which implies that
 \[
-\lim_{t \to 0} \gamma_t s_t(\phi_t)
+\lim_{t \to 0} \gamma_t s_t(x_t) \text{ also exist.}
 \]
-also exists.
-
-
 One has
 \begin{equation*}
-    \lim\limits_{t \to 0} \gamma_t s_t (\phi_t) = \lim\limits_{t \to 0} \frac{\partial \bar{\alpha}_t}{2\bar{\alpha}_t} \frac{1}{1 - \bar{\alpha}_t} \sum\limits_{\varphi \in D} \left( \phi_t - \sqrt{\bar{\alpha}_t} \varphi \right) W(\varphi | \phi_t)
+    \lim\limits_{t \to 0} \gamma_t s_t (x_t) = \lim\limits_{t \to 0} \frac{\partial \bar{\alpha}_t}{2\bar{\alpha}_t} \frac{1}{1 - \bar{\alpha}_t} \sum\limits_{\varphi \in D} \left( x_t - \sqrt{\bar{\alpha}_t} \varphi \right) W(\varphi | x_t)
 \end{equation*}
-
-
-As  $\lim\limits_{t \to 0} \bar{\alpha}_t = 1$, the prefactor diverges.
-
-This means:
+As  $\lim\limits_{t \to 0} \bar{\alpha}_t = 1$, the prefactor diverges. This means:
 \begin{equation*}
-    \lim\limits_{t \to 0} \sum\limits_{\varphi \in D} (\phi_t - \sqrt{\bar{\alpha}_t} \varphi) W(\varphi | \phi_t) = 0
+    \lim\limits_{t \to 0} \sum\limits_{\varphi \in D} (x_t - \sqrt{\bar{\alpha}_t} \varphi) W(\varphi | x_t) = 0
 \end{equation*}
-
-
-we note that $\mathcal{N}(\phi_t | \sqrt{\bar{\alpha}_t} \varphi, (1 - \bar{\alpha}_t) I_N)$ tends towards a dirac function when $t \to 0$ because $\bar{\alpha}_t \xrightarrow[]{t \to 0} 1$ .
-Thus
+we note that $\mathcal{N}(x_t | \sqrt{\bar{\alpha}_t} \varphi, (1 - \bar{\alpha}_t) I_N)$ tends towards a dirac function when $t \to 0$ because $\bar{\alpha}_t \xrightarrow[]{t \to 0} 1$ . Thus
 \begin{equation*}
-    \lim\limits_{t \to 0} W(\varphi | \phi_t) =
+    \lim\limits_{t \to 0} W(\varphi | x_t) =
 \begin{cases} 
-1 & \text{if } \varphi = \varphi^* \coloneq \arg\min_{\varphi \in D} ||\phi_t - \varphi||^2 \\
+1 & \text{if } \varphi = \varphi^* \coloneq \arg\min_{\varphi \in D} ||x_t - \varphi||^2 \\
 0 & \text{else}
 \end{cases}
 \end{equation*}
-
 Indeed
 \begin{equation*}
-    W(\varphi | \phi_t) =
-\frac{\exp\left( -\frac{||\phi_t - \sqrt{\bar{\alpha}_t} \varphi||^2}{(1 - \bar{\alpha}_t)^N} \right)}
-{\sum\limits_{\varphi' \in D} \exp\left( -\frac{||\phi_t - \sqrt{\bar{\alpha}_t} \varphi'||^2}{(1 - \bar{\alpha}_t)^N} \right)}
-=\frac{1}{\sum\limits_{\varphi' \in D} \exp\left( \frac{||\phi_t - \sqrt{\bar{\alpha}_t} \varphi'||^2 - ||\phi_t - \sqrt{\bar{\alpha}_t} \varphi||^2}{(1 - \bar{\alpha}_t)^N} \right)}
+    W(\varphi | x_t) =
+\frac{\exp\left( -\frac{||x_t - \sqrt{\bar{\alpha}_t} \varphi||^2}{(1 - \bar{\alpha}_t)^N} \right)}
+{\sum\limits_{\varphi' \in D} \exp\left( -\frac{||x_t - \sqrt{\bar{\alpha}_t} \varphi'||^2}{(1 - \bar{\alpha}_t)^N} \right)}
+=\frac{1}{\sum\limits_{\varphi' \in D} \exp\left( \frac{||x_t - \sqrt{\bar{\alpha}_t} \varphi'||^2 - ||x_t - \sqrt{\bar{\alpha}_t} \varphi||^2}{(1 - \bar{\alpha}_t)^N} \right)}
 \end{equation*}
-
-Let $A(\phi_t, \varphi, \varphi' ) = \exp\left( \frac{||\phi_t - \sqrt{\bar{\alpha}_t} \varphi'||^2 - ||\phi_t - \sqrt{\bar{\alpha}_t} \varphi||^2}{(1 - \bar{\alpha}_t)^N} \right)$, we note that
+Let $A(x_t, \varphi, \varphi' ) = \exp\left( \frac{||x_t - \sqrt{\bar{\alpha}_t} \varphi'||^2 - ||x_t - \sqrt{\bar{\alpha}_t} \varphi||^2}{(1 - \bar{\alpha}_t)^N} \right)$, we note that
 \begin{equation*}
-    \lim\limits_{t \to 0} A(\phi_t, \varphi, \varphi^*) =
+    \lim\limits_{t \to 0} A(x_t, \varphi, \varphi^*) =
 \begin{cases} 
 +\infty & \text{if } \varphi \neq \varphi^* \\
 1 & \text{if } \varphi = \varphi^*
 \end{cases}
 \end{equation*}
-
 In addition
 \begin{equation*}
-    \lim\limits_{t \to 0} A(\phi_t, \varphi^*, \varphi') = 0 \quad \forall \varphi' \in D \setminus \{\varphi^*\}
+    \lim\limits_{t \to 0} A(x_t, \varphi^*, \varphi') = 0 \quad \forall \varphi' \in D \setminus \{\varphi^*\}
 \end{equation*}
-
 Thus
 \[
-\lim\limits_{t \to 0} W(\varphi | \phi_t) =
+\lim\limits_{t \to 0} W(\varphi | x_t) =
 \begin{cases} 
 1 & \text{if } \varphi = \varphi^* \\
 0 & \text{else}
 \end{cases}
 \]
-
 We obtain
 \[
-0 = \lim\limits_{t \to 0} \sum\limits_{\varphi \in D} (\phi_t - \sqrt{\bar{\alpha}_t} \varphi) W(\varphi | \phi_t) = \lim\limits_{t \to 0} (\phi_t - \varphi^*)
+0 = \lim\limits_{t \to 0} \sum\limits_{\varphi \in D} (x_t - \sqrt{\bar{\alpha}_t} \varphi) W(\varphi | x_t) = \lim\limits_{t \to 0} (x_t - \varphi^*)
 \]
-
-
 \begin{equation*}
-    \lim\limits_{t\rightarrow 0} \phi_t = \varphi^* \in \mathcal{D}
+    \lim\limits_{t\rightarrow 0} x_t = \varphi^* \in \mathcal{D}
 \end{equation*}
-
 
 In conclusion, at date $t = 0$, the sample tends towards an image in the training set $\mathcal{D}$. The fact that the ideal score function is not a good model for realistic diffusion processes shows us that we need to understand why these models don't solve their tasks perfectly. We therefore need to examine the biases and constraints that prevent these models from learning the ideal score function, and see how they perform despite these limitations.
 \section{Score function estimator under constraints}
@@ -425,22 +403,22 @@ In conclusion, at date $t = 0$, the sample tends towards an image in the trainin
 \subsubsection{Problem}
 We would like to solve
 \begin{equation*}
-    \min_{f\in\mathcal{M}} \E{\| f(t,\phi)-s_t(\phi)}
+    \min_{f\in\mathcal{M}} \E{\| f(t,x)-s_t(x)}
 \end{equation*}
 for some vector space $\mathcal{M}$
 \subsubsection{Optimal condition}
-$f^* \int \mathcal{M}$ is a minimiser of $J$ if $J(f^*+\epsilon h) \geq J(f^*)$ for all $\epsilon \in \R$ and all $h\in \mathcal{M}$. We have
+$f^* \in \mathcal{M}$ is a minimiser of $J$ if $J(f^*+\epsilon h) \geq J(f^*)$ for all $\epsilon \in \R$ and all $h\in \mathcal{M}$. We have
 \begin{align*}
-    J(f^*+\epsilon h) &= \E{\|(f^*+\epsilon h)(t,\phi)-s_t(\phi)\|^2}\\
-    & = J(f^*)+\epsilon^2\E{\|h(t,\phi)\|^2}+2\epsilon\E{\langle h(t,\phi),f*(t,\phi) - s_t(\phi) \rangle}
+    J(f^*+\epsilon h) &= \E{\|(f^*+\epsilon h)(t,x)-s_t(x)\|^2}\\
+    & = J(f^*)+\epsilon^2\E{\|h(t,x)\|^2}+2\epsilon\E{\langle h(t,x),f*(t,x) - s_t(x) \rangle}
 \end{align*}
 therefore, the optimal condition
 \begin{equation}\label{eq:optimal_condition_score_function}
-    \E{\langle h(t,\phi),f*(t,\phi) - s_t(\phi) \rangle} = 0 \text{ for all } \phi \in \mathcal{M}
+    \E{\langle h(t,x),f*(t,x) - s_t(x) \rangle} = 0 \text{ for all } x \in \mathcal{M}
 \end{equation}
 
-\subsection{Equivairant machine}
-\subsection{Group of transformation}
+\subsection{Equivairant (ES) machine}
+\subsubsection{Group of transformation}
 \begin{definition}[Group of transformation]
     A \textbf{group of transformations} is a set \( G \) of applications of a set \( X \) into itself, with a composition operation of transformations that satisfies the following axioms:
     \begin{itemize}[topsep=-5pt]
@@ -455,11 +433,11 @@ therefore, the optimal condition
 
 For example, the symmetry group in $\R^2$ is the set of transformations that preserve the Euclidean distance. More precisely, it includes rotation and reflection:
 \begin{itemize}
-    \item A rotation of angle $\theta$ about the origin is given by the rotation matrix :\[
-R_\theta =
+    \item A rotation of angle $z$ about the origin is given by the rotation matrix :\[
+R_z =
 \begin{bmatrix}
-\cos \theta & -\sin \theta \\
-\sin \theta & \cos \theta
+\cos z & -\sin z \\
+\sin z & \cos z
 \end{bmatrix}.
 \]
 
@@ -490,7 +468,7 @@ Transformations in a unitary group preserve geometric properties such as distanc
         \item \textbf{Préservation de norme} : $\|Ux\| = \|x\| \quad \forall x\in X$.
         \item \textbf{Transformation de gradient} : pour toute fonction $f \in C^1(X,\R)$, le gradient se transforme comme :
         \begin{equation*}
-            \nabla_\phi f(U^{-1}x) = U\, \nabla f(U^{-1}x) \quad \forall x\in X.
+            \nabla_x f(U^{-1}x) = U\, \nabla f(U^{-1}x) \quad \forall x\in X.
         \end{equation*}
     \end{enumerate}
 \end{proposition}
@@ -498,96 +476,78 @@ Transformations in a unitary group preserve geometric properties such as distanc
 \begin{proof}
     The proof is in '\cref{sec:proof_groupe_unitaire}
 \end{proof}
-\subsection{Equivariant score machine (ES)}
+\subsubsection{Analytical expression for Equivariance score (ES) machine}
 % L'équivariance dans les modèles de diffusion garantit que le processus génératif respecte les symétries naturelles des données, ce qui est essentiel pour de nombreuses applications. En intégrant ces symétries dans l'architecture du modèle, on préserve la cohérence structurelle des échantillons générés, tout en réduisant la redondance dans l'apprentissage et en améliorant la généralisation. Cela permet également une optimisation plus stable et évite l’introduction de dépendances arbitraires qui pourraient nuire à la performance du modèle. On va étudier dans cette section comment un modèle de diffusion apprend la fonction de score sous la contrainte d'équivariance.
 The admissible set of function $\mathcal{M}$ is defined by
 \begin{equation*}
-    \mathcal{M} = {f:[0,T]\times \R^N} \rightarrow \R^N such that f(t,T_g \phi) = T_g f(t,\phi) \forall g\in G,\forall x\in \R^N
+    \mathcal{M} = {f:[0,T]\times \R^N} \rightarrow \R^N \text{ such that } f(t,T_g x) = T_g f(t,x), \quad \forall g\in G,\forall x\in \R^N
 \end{equation*}
-
 Plugging this estimator into the optimal condition \eqref{eq:optimal_condition_score_function}
 \begin{equation*}
-\E{\langle h(t,\phi),f^*(t,\phi) -s_t(\phi)\rangle} = 0
+\E{\langle h(t,x),f^*(t,x) -s_t(x)\rangle} = 0
 \end{equation*}
-
 One has
 \begin{align*}
-    & \E{\langle h(t,\phi),f^*(t,\phi) -s_t(\phi)\rangle} \\
-    &= \frac{1}{|\mathcal{D}|}\sum_{\varphi \in \mathcal{D}} \int_{\R^N} \langle h(t,\phi),f^*(t,\phi)-s_t(\phi) \rangle g_t(\phi -\sqrt{\bar \alpha_t}\varphi)d\phi\\
-    &= \frac{1}{|\mathcal{D}|}\sum_{\varphi \in \mathcal{D}} \int_{\R^N} \int_\mathcal{G }\langle h(t,\phi),f^*(t,\phi) g_t(\phi -\sqrt{\bar \alpha_t}\varphi)-s_t(\phi) g_t(\phi -\sqrt{\bar \alpha_t}\varphi) \rangle d\phi\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,\phi),\sum_{\varphi \in \mathcal{D}}f^*(t,\phi) g_t(\phi -\sqrt{\bar \alpha_t}\varphi)-\sum_{\varphi \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (\phi -\sqrt{\bar \alpha_t})g_t(\phi -\sqrt{\bar \alpha_t}\varphi) \rangle d\phi\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,\phi),\sum_{\varphi \in \mathcal{D}}f^*(t,\phi) g_t(T_g(\phi -\sqrt{\bar \alpha_t}\varphi))-\sum_{\varphi \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (\phi -\sqrt{\bar \alpha_t})g_t(T_g(\phi -\sqrt{\bar \alpha_t}\varphi)) \rangle d\phi dT_g\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,\phi),\sum_{\varphi \in \mathcal{D}}f^*(t,\phi) \mathcal{N}(T_g\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N)-\sum_{\varphi \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (\phi -\sqrt{\bar \alpha_t})\mathcal{N}(T_g\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N) \rangle d\phi dT_g\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle T_g^{-1}h(t,T_g\phi),\sum_{\varphi \in \mathcal{D}}T_g^{-1}f^*(t,T_g\phi) \mathcal{N}(T_g\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N)-\sum_{\varphi \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} T_g^{-1}(T_g\phi -T_g \sqrt{\bar \alpha_t})\mathcal{N}(T_g\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N) \rangle d\phi dT_g\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle T_g^{-1}h(t,T_g\phi),\sum_{\varphi \in \mathcal{D}}T_g^{-1}f^*(t,T_g\phi) \mathcal{N}(T_g\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N)-\sum_{\varphi \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} T_g^{-1}(T_g\phi -T_g \sqrt{\bar \alpha_t})\mathcal{N}(T_g\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N) \rangle d\phi dT_g\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,T_g\phi),\sum_{\varphi \in \mathcal{D}}f^*(t,T_g\phi) \mathcal{N}(T_g\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N)-\sum_{\varphi \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (T_g\phi -T_g \sqrt{\bar \alpha_t})\mathcal{N}(T_g\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N) \rangle d\phi dT_g\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,\phi),\sum_{\varphi \in \mathcal{D}}f^*(t,\phi) \mathcal{N}(\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N)-\sum_{\varphi \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (\phi -T_g \sqrt{\bar \alpha_t})\mathcal{N}(\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N) \rangle d\phi dT_g\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \langle h(t,\phi),\int_G \sum_{\varphi \in \mathcal{D}}f^*(t,\phi) \mathcal{N}(\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N)-\sum_{\varphi \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} \int_G(\phi -T_g \sqrt{\bar \alpha_t})\mathcal{N}(\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N) \rangle d\phi dT_g\\
+    & \E{\langle h(t,x),f^*(t,x) -s_t(x)\rangle} \\
+    &= \frac{1}{|\mathcal{D}|}\sum_{x_0  \in \mathcal{D}} \int_{\R^N} \langle h(t,x),f^*(t,x)-s_t(x) \rangle \mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0)dx\\
+    &= \frac{1}{|\mathcal{D}|}\sum_{x_0  \in \mathcal{D}} \int_{\R^N} \int_\mathcal{G }\langle h(t,x),f^*(t,x) \mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0)-s_t(x) \mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0) \rangle dx\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,x),\sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (x -\sqrt{\bar \alpha_t})\mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0) \rangle dx\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,x),\sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{G}_t(T_g(x -\sqrt{\bar \alpha_t}x_0))-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (x -\sqrt{\bar \alpha_t})\mathcal{G}_t(T_g(x -\sqrt{\bar \alpha_t}x_0)) \rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,x),\sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (x -\sqrt{\bar \alpha_t})\mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle T_g^{-1}h(t,T_gx),\sum_{x_0  \in \mathcal{D}}T_g^{-1}f^*(t,T_gx) \mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} T_g^{-1}(T_gx -T_g \sqrt{\bar \alpha_t})\mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle T_g^{-1}h(t,T_gx),\sum_{x_0  \in \mathcal{D}}T_g^{-1}f^*(t,T_gx) \mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} T_g^{-1}(T_gx -T_g \sqrt{\bar \alpha_t})\mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,T_gx),\sum_{x_0  \in \mathcal{D}}f^*(t,T_gx) \mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (T_gx -T_g \sqrt{\bar \alpha_t})\mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,x),\sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (x -T_g \sqrt{\bar \alpha_t})\mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \langle h(t,x),\int_G \sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} \int_G(x -T_g \sqrt{\bar \alpha_t})\mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \rangle dx dT_g\\
 \end{align*}
-
 The optimality condition implies that the above quantity is zero $\forall h \in \mathcal{M}$, thus
 \begin{equation*}
-    \sum_{\varphi \in \mathcal{D}}\int_G f^*(t,\phi) \mathcal{N}(\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N)-\sum_{\varphi \in \mathcal{D}} \int_G \frac{-1}{1-\bar \alpha_t} (\phi -T_g \sqrt{\bar \alpha_t})\mathcal{N}(\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N)  =0
+    \sum_{x_0  \in \mathcal{D}}\int_G f^*(t,x) \mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \int_G \frac{-1}{1-\bar \alpha_t} (x -T_g \sqrt{\bar \alpha_t})\mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)  =0
 \end{equation*}
-
 Thus
 \begin{equation*}
-    f^*(t,\phi) =\frac{-1}{1-\bar \alpha_t}\frac{\sum_{\varphi \in \mathcal{D}}\int_G  (\phi -T_g \sqrt{\bar \alpha_t})\mathcal{N}(\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N) dT_g}{\sum_{\varphi \in \mathcal{D}}\int_G \mathcal{N}(\phi,T_g \sqrt{\bar \alpha_t}\varphi,(1-\bar\alpha_t)I_N) d T_g}
+    f^*(t,x) =\frac{-1}{1-\bar \alpha_t}\frac{\sum_{x_0  \in \mathcal{D}}\int_G  (x -T_g \sqrt{\bar \alpha_t})\mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) dT_g}{\sum_{x_0  \in \mathcal{D}}\int_G \mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) d T_g}
 \end{equation*}
-
-The conditions on the transformation $T_g$ are important: We need to do a change of variable $T_g \phi \rightarrow \phi$ and pass the adjoint $T_g^{-1}$ to the other side of the inner product. The following properties were used:
+The conditions on the transformation $T_g$ are important: We need to do a change of variable $T_g x \rightarrow x$ and pass the adjoint $T_g^{-1}$ to the other side of the inner product. The following properties were used:
 \begin{itemize}
     \item $|\det(T_g T_g^\top)| = 1$
     \item $(T_g^{-1})^\top=T_g $
 \end{itemize}
-
 In the image case, $G$ corresponds to every possible spatial translation, which is indeed a group of unitary transformations. We also note that $G(\mathcal{D})$ is finite, since $\mathcal{D}$ contains a finite number of images and each image has a finite number of pixels. Consequently, integrals over $G$ in the above expression convert to sums over $G(\varphi)$ 
 \begin{align*}
-        f^*(t,\phi) &= -\frac{1}{1-\bar \alpha_t} \sum\limits_{\varphi \in \mathcal{D}} \sum\limits_{\varphi' \in G(\varphi)} (\phi - \sqrt{\bar \alpha_t} \varphi') \frac{\mathcal{N}(\phi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I_N) }{\sum\limits_{\varphi \in \mathcal{D}} \sum\limits_{\varphi'\in G(\varphi)} \mathcal{N}(\phi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I_N)}\\
-        &= -\frac{1}{1-\bar \alpha_t}  \sum\limits_{\varphi' \in G(\mathcal{D})} (\phi - \sqrt{\bar \alpha_t} \varphi') \frac{\mathcal{N}(\phi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I_N) }{ \sum\limits_{\varphi'\in G(\mathcal{D})} \mathcal{N}(\phi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I_N)}
+        f^*(t,x) &= -\frac{1}{1-\bar \alpha_t} \sum\limits_{x_0  \in \mathcal{D}} \sum\limits_{\varphi' \in G(\varphi)} (x - \sqrt{\bar \alpha_t} \varphi') \frac{\mathcal{N}(x | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I_N) }{\sum\limits_{x_0  \in \mathcal{D}} \sum\limits_{\varphi'\in G(\varphi)} \mathcal{N}(x | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I_N)}\\
+        &= -\frac{1}{1-\bar \alpha_t}  \sum\limits_{\varphi' \in G(\mathcal{D})} (x - \sqrt{\bar \alpha_t} \varphi') \frac{\mathcal{N}(x | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I_N) }{ \sum\limits_{\varphi'\in G(\mathcal{D})} \mathcal{N}(x | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I_N)}
 \end{align*}
-
 % \begin{definition}
-% Soit \( G \) un groupe particulier de transformations agissant sur les données \( \phi \). On dit qu'un modèle \( M_t \) est \( G \)-équivariant si, pour tout \( U \in G \), notre modèle satisfait
+% Soit \( G \) un groupe particulier de transformations agissant sur les données \( x \). On dit qu'un modèle \( M_t \) est \( G \)-équivariant si, pour tout \( U \in G \), notre modèle satisfait
 % \vspace{-5pt}
 % \begin{equation*}
-%     M_t[U\phi] = UM_t[\phi].
+%     M_t[Ux] = UM_t[x].
 % \end{equation*}
 % \end{definition}
-
-% Cela signifie que l'application de la transformation $U$ à l'entrée$\phi$, suivie du passage à travers le modèle$M_t$, produit le même résultat que l'application du modèle $M_t$ à $\phi$, suivie de la transformation $U$ sur la sortie. En particulier, on cherche l'expression analytique de $M_t$ sous un groupe de transformation unitaire, le résultat est donné par le théorème suivant.
-
-
+% Cela signifie que l'application de la transformation $U$ à l'entrée$x$, suivie du passage à travers le modèle$M_t$, produit le même résultat que l'application du modèle $M_t$ à $x$, suivie de la transformation $U$ sur la sortie. En particulier, on cherche l'expression analytique de $M_t$ sous un groupe de transformation unitaire, le résultat est donné par le théorème suivant.
 % \begin{theorem}\label{theo:equivariant_modele}
 % Soit $G$ un groupe de transformation unitaire, l'approximation \( G \)-équivariante optimale de la fonction de score empirique sous l'objectif de score matching est donnée par la fonction de score empirique pour l'ensemble de données \( G(\mathcal{D}) \) consistant en l'orbite de l'ensemble de données \( \mathcal{D} \) sous le groupe \( G \), i.e 
 % \begin{equation}\label{eq:model_sous_equivariant_contraint}
-%     M_t(\psi) = -\frac{1}{1-\bar \alpha_t} \frac{\sum\limits_{\varphi \in \mathcal{D}} \int_{G(\varphi)} (\psi - \sqrt{\bar \alpha_t} \varphi') \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) d\varphi'}{\sum\limits_{\varphi \in \mathcal{D}} \int_{G(\varphi)} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) d\varphi'} \quad ,\forall\psi \in \R^N
+%     M_t(\psi) = -\frac{1}{1-\bar \alpha_t} \frac{\sum\limits_{x_0  \in \mathcal{D}} \int_{G(\varphi)} (\psi - \sqrt{\bar \alpha_t} \varphi') \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) d\varphi'}{\sum\limits_{x_0  \in \mathcal{D}} \int_{G(\varphi)} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) d\varphi'} \quad ,\forall\psi \in \R^N
 % \end{equation}
 % \end{theorem}
-
 % \begin{proof}
 %     Le proof est détaillé dans l'\cref{sec:proof_equivariant_modele}
 % \end{proof}
-
 % Dans le cas d'image, $G$ correspond à toute translation spatiale possible, qui est bien un groupe de transformations unitaires. On constate également que $G(\mathcal{D})$ est fini, car $\mathcal{D}$ contient un nombre fini d'images et chaque image possède un nombre fini de pixels. Par conséquent, les intégrales sur $G(\varphi)$ dans l'expression de $M_t$ se convertissent en sommes sur $G(\varphi)$ :
-
 % \begin{align*}
-%         M_t(\psi) &= -\frac{1}{1-\bar \alpha_t} \sum\limits_{\varphi \in \mathcal{D}} \sum\limits_{\varphi' \in G(\varphi)} (\psi - \sqrt{\bar \alpha_t} \varphi') \frac{\mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) }{\sum\limits_{\varphi \in \mathcal{D}} \sum\limits_{\varphi'\in G(\varphi)} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I)}\\
+%         M_t(\psi) &= -\frac{1}{1-\bar \alpha_t} \sum\limits_{x_0  \in \mathcal{D}} \sum\limits_{\varphi' \in G(\varphi)} (\psi - \sqrt{\bar \alpha_t} \varphi') \frac{\mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) }{\sum\limits_{x_0  \in \mathcal{D}} \sum\limits_{\varphi'\in G(\varphi)} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I)}\\
 %         &= -\frac{1}{1-\bar \alpha_t}  \sum\limits_{\varphi' \in G(\mathcal{D})} (\psi - \sqrt{\bar \alpha_t} \varphi') \frac{\mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) }{ \sum\limits_{\varphi'\in G(\mathcal{D})} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I)}
 % \end{align*}
-
 % La sortie de la machine ES est quasiment identique à celle de l'apprentissage idéal de la fonction de score, sauf qu'ici l'ensemble de données $\mathcal{D}$ est augmenté par les translations spatiales de $G$. Ce résultat montre que la machine ES appliquée aux images n'atteint qu'une créativité limitée : elle ne peut générer que des translations des images dans l'ensemble d'entraînement.
-
-
 \subsection{Local score machine}
-
 In this section, we will study the behavior of the score function estimator under the locality constraint.
-
 The admissible set of functions is the set of functions that act locally, i.e 
 \begin{equation*}
-    \mathcal{M} = {f:[0,T]\times\R^N \rightarrow \R^N such that \forall n, \exists v_{f,n} : \R^P \rightarrow \R, f_n(t,\phi)=v{f,n}(t,\Sigma_n \phi, \forall x\in \R^N)}
+    \mathcal{M} = {f:[0,T]\times\R^N \rightarrow \R^N \text{ such that } \forall n, \exists v_{f,n} : \R^P \rightarrow \R, f_n(t,x)=v_{f,n}(t,\Sigma_n x, \forall x\in \R^N)}
 \end{equation*}
-Where $\Sigma_n \in \R{P\times N}$ is a selection matrix, which take $P$ pixels centered at $n$ (with e.g., circular boundary condition). The function $f = (f_1,f_2,\dots,f_N)$ have the output $f_n(\phi)$ depend only on $\Sigma_n \phi$, a small patch centered at n with the aciton $v_{f,n}$.
+Where $\Sigma_n \in \R{P\times N}$ is a selection matrix, which take $P$ pixels centered at $n$ (with e.g., circular boundary condition). The function $f = (f_1,f_2,\dots,f_N)$ have the output $f_n(x)$ depend only on $\Sigma_n x$, a small patch centered at n with the aciton $v_{f,n}$.
 
 At some point, we need to do a change of variables so it's helpful to look at the section matrices 
 $\Sigma_n : \mathbb{R}^N \rightarrow \mathbb{R}^P$. 
@@ -606,44 +566,44 @@ It's obvious that $\Sigma$ is full row rank and
 \[
 \Sigma \Sigma^T = I_P \qquad \text{since} \qquad (\Sigma \Sigma^T)_{i,j} = \langle e_{\sigma_i}, e_{\sigma_j} \rangle = \delta_{i,j}.
 \]
-
 It's important to note that the above properties hold true for any patch center $n$. 
 Moreover, the (Moore–Penrose) pseudo-inverse of $\Sigma$ is simply $\Sigma^T$.
 
 One has
 \begin{align*}
-    & \E{\langle h(t,\phi),f^*(t,\phi) -s_t(\phi)\rangle} \\
-    &= \int_{\R^N} \langle h(t,\phi),f^*(t,\phi)-s_t(\phi) \rangle \pi_t(\phi) d\phi\\
-    &= \int_{\R^N} \sum_{n=1}^{N}\langle v_{h,n}(t,\phi),v_{f^*,n}(t,\phi)-s_t(\phi) \rangle \pi_t(\phi) d\phi\\
+    \E{\langle h(t,x),f^*(t,x) -s_t(x)\rangle} &= \int_{\R^N} \langle h(t,x),f^*(t,x)-s_t(x) \rangle \pi_t(x) dx\\
+    &= \int_{\R^N} \sum_{n=1}^{N}\langle v_{h,n}(t,\Sigma_nx),v_{f^*,n}(t,\Sigma_nx)-s_t(x) \rangle \pi_t(x) dx\\
 \end{align*}
 We fix $n \in {1,2,\dots,N}$. We choose $(v_{h,n})_n$ defined by
 \begin{equation*}
-    v_{h,j}(t,z) = 
+    v_{h,j}(t,\Sigma_n x) = 
     \begin{cases}
         0 & \text{if } j = n \\
-        \delta(z - \Phi) & \text{if } j \neq n
+        \delta(\Sigma_nx - b) & \text{if } j \neq n
     \end{cases}
-    ,\quad \Phi \in \R^P
+    ,\quad x \in \R^P
 \end{equation*}
-
 Thus
 \begin{equation*}
-    \int_{\R^N} \sum_{n=1}^{N}\langle v_{h,n}(t,\phi),v_{f^*,n}(t,\phi)-s_t(\phi) \rangle \pi_t(\phi) d\phi =  \int_{\R^N} \sum_{n=1}^{N} \delta(\Sigma_n\phi -\Phi)\,(v_{f^*,n}(t,\phi)-s_t(\phi))  \pi_t(\phi) d\phi
+    \int_{\R^N} \sum_{n=1}^{N}\langle v_{h,n}(t,\Sigma_nx),v_{f^*,n}(t,\Sigma_nx)-s_t(x)[n] \rangle \pi_t(x) dx =  \int_{\R^N} \delta(\Sigma_nx -b)\,(v_{f^*,n}(t,\Sigma_nx)-s_t(x)[n])  \pi_t(x) dx
 \end{equation*}
-
 According to the optimality condition, the alove quantity is zero, thus
 \begin{align*}
-    v_{f*,n}(\Phi)\int_{\R^N} \delta(\Sigma_n\phi -\Phi) \pi_t(\phi) d\phi &= \int_{\R^N} \delta(\Sigma_n\phi -\Phi) s_t(\phi)[n]\pi_t(\phi) d\phi \\
-    &= \nabla_{\Phi[0]} \int_{\R^N} \delta(\Sigma_n\phi -\Phi) \pi_t(\phi) d\phi\\
+    v_{f^*,n}(t,b)\int_{\R^N} \delta(\Sigma_nx -b) \pi_t(x) dx &= \int_{\R^N} \delta(\Sigma_nx -b) s_t(x)[n]\pi_t(x) dx \\
+    &= \int_{\R^N} \delta(\Sigma_nx -b) \nabla_{x[n]}\pi_t(x) dx\\
+    &= \nabla_{b[0]} \int_{\R^N} \delta(\Sigma_nx -b) \pi_t(x) dx\\
 \end{align*}
-
 We consider
 \begin{align*}
-    \int_{\R^N} \delta(\Sigma_n\phi -\Phi) \pi_t(\phi) d\phi &= \frac{1}{|\mathcal{D}|} \sum_{\varphi \in \mathcal{D}} \int_{\R^N} \delta(\Sigma_n\phi -\Phi) \Normal{\phi; \sqrt{\bar \alpha_t} \varphi, (1-\bar\alpha_t) \Id_N} d\phi\\
-    & \eqdef \frac{1}{|\mathcal{D}|} \sum_{\varphi \in \mathcal{D}} q(\Phi, n, \sqrt{\bar\alpha_t}\varphi)
+    \int_{\R^N} \delta(\Sigma_nx -b) \pi_t(x) dx &= \frac{1}{|\mathcal{D}|} \sum_{x_0  \in \mathcal{D}} \int_{\R^N} \delta(\Sigma_nx -b) \Normal{x; \sqrt{\bar \alpha_t} x_0, (1-\bar\alpha_t) \Id_N} dx\\
+    & \eqdef \frac{1}{|\mathcal{D}|} \sum_{x_0  \in \mathcal{D}} q(b, n, \sqrt{\bar\alpha_t}x_0)
 \end{align*}
-We need to compute the weights $q(\Phi, n, \sqrt{\bar\alpha_t}\varphi)$ for any $\Phi \in \R^P, \varphi \in \R^N$ and $n \in [1, \dots, N]$: 
-
+We need to compute the weights $q(b, n, \sqrt{\bar\alpha_t}x_0)$ for any $x \in \R^P$, $b\in \R^P$, $n \in [1, \dots, N]$, one has
+\begin{align*}
+    q(b, n, \sqrt{\bar\alpha_t}x_0)&=\int_{\R^N} \delta(\Sigma_nx -b) \Normal{x; \sqrt{\bar \alpha_t} x_0, (1-\bar\alpha_t) \Id_N} dx\\
+    &= \int_{\R^P} \delta(z -b) \Normal{z; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R} dz\\
+    &= \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}
+\end{align*}
 \begin{proposition}[Normal integration on subspace]\label{propr:normal_on_subspace}
     Let $\mathcal{V} = v_0 + \mathcal{V'} \subset \R^N$ be a $(N - K)$ dimensional affine subspace of $\R^N$. Suppose that  $V$ is an orthonormal basis of $\mathcal{V'}$. For any $\mu \in \R^N$, we have:
     \begin{equation*}
@@ -654,252 +614,298 @@ We need to compute the weights $q(\Phi, n, \sqrt{\bar\alpha_t}\varphi)$ for any 
     The proof is in \cref{sec:proof_normal_on_subspace}
 \end{proof}
 
-\begin{align*}
-    q(\Phi, n, \sqrt{\bar\alpha_t}\varphi) &= \int_{\R^N} \delta(\Sigma_n\phi -\Phi) \Normal{\phi; \sqrt{\bar \alpha_t} \varphi, (1-\bar\alpha_t) \Id_N} d\phi\\
-    &= \int_{v_n^{-1}(\Phi)} \Normal{w; \sqrt{\bar \alpha_t }\varphi, (1-\bar\alpha_t) \Id_N} d \H^{N - P}(w) 
-\end{align*}
-Firstly, we look at the level-set $v_n^{-1}(\Phi)$ for any $z \in \R^P$:
-\begin{equation*}
-    v_n^{-1}(\Phi) = \{ \phi \in \R^N: \Sigma_n \phi = \Phi \} = \Sigma_n^+ \Phi + \ker{\Sigma_n}  = \Sigma_n^T \Phi + \ker{\Sigma_n}  
-\end{equation*}
-Since $\Sigma_n$ is full row rank, $v_n^{-1}(\phi)$ is an affine subspace of $\R^N$ of dimension $\dim(\ker{\Sigma_n}) = N - P$.  
+% \begin{align*}
+%     q(b, n, \sqrt{\bar\alpha_t}x_0) &= \int_{\R^N} \delta(\Sigma_nx -b) \Normal{x; \sqrt{\bar \alpha_t} x_0, (1-\bar\alpha_t) \Id_N} dx\\
+%     &= \int_{v_n^{-1}(b)} \Normal{w; \sqrt{\bar \alpha_t }x_0, (1-\bar\alpha_t) \Id_N} d \H^{N - P}(w) 
+% \end{align*}
+% Firstly, we look at the level-set $v_n^{-1}(x)$ for any $z \in \R^P$:
+% \begin{equation*}
+%     v_n^{-1}(x) = \{ x \in \R^N: \Sigma_n x = b \} = \Sigma_n^+ b + \ker{\Sigma_n}  = \Sigma_n^T b + \ker{\Sigma_n}  
+% \end{equation*}
+% Since $\Sigma_n$ is full row rank, $v_n^{-1}(b)$ is an affine subspace of $\R^N$ of dimension $\dim(\ker{\Sigma_n}) = N - P$.  
 
-Let $V_n$ is an orthonormal basis of $ker(\Sigma_n)$. Applying \cref{propr:normal_on_subspace}, we have:
-\begin{equation*}
-    q(\Phi, n, \sqrt{\bar\alpha_t}\varphi) = \frac{1}{(2\pi (1-\bar\alpha_t)^2)^{P/2}} \exp \left( -\frac{\norm{(\Id - V_n V_n^T)(\sqrt{\bar\alpha_t}\varphi - \Sigma_n^T \Phi)}^2}{2(1-\bar\alpha_t)} \right)
-\end{equation*}
-Since $ V_nV_n^T$ is the projection onto $\ker{\Sigma_n}^\perp = \Im{\Sigma_n^T}$ and $\Sigma_n^T \Phi \in \Im{\Sigma_n^T}$, we can further simplify as:
-\begin{equation*}
-    q(\Phi, n, \sqrt{\bar\alpha_t}\varphi) = \frac{1}{(2\pi (1-\bar\alpha_t))^{P/2}} \exp \left( -\frac{\norm{(\Id - V_n V_n^T)\sqrt{\bar\alpha_t}\varphi - \Sigma_n^T \Phi}^2}{2(1-\bar\alpha_t)} \right)
-\end{equation*}
+% Let $V_n$ is an orthonormal basis of $ker(\Sigma_n)$. Applying \cref{propr:normal_on_subspace}, we have:
+% \begin{equation*}
+%     q(b, n, \sqrt{\bar\alpha_t}x_0) = \frac{1}{(2\pi (1-\bar\alpha_t)^2)^{P/2}} \exp \left( -\frac{\norm{(\Id - V_n V_n^T)(\sqrt{\bar\alpha_t}x_0 - \Sigma_n^T b)}^2}{2(1-\bar\alpha_t)} \right)
+% \end{equation*}
+% Since $ V_nV_n^T$ is the projection onto $\ker{\Sigma_n}^\perp = \Im{\Sigma_n^T}$ and $\Sigma_n^T b \in \Im{\Sigma_n^T}$, we can further simplify as:
+% \begin{equation*}
+%     q(b, n, \sqrt{\bar\alpha_t}x_0) = \frac{1}{(2\pi (1-\bar\alpha_t))^{P/2}} \exp \left( -\frac{\norm{(\Id - V_n V_n^T)\sqrt{\bar\alpha_t}x_0 - \Sigma_n^T b}^2}{2(1-\bar\alpha_t)} \right)
+% \end{equation*}
 Thus,
-\begin{equation*}
-    \nabla_{\Phi[0]}q(\Phi, n, \sqrt{\bar\alpha_t}\varphi) = \frac{-1}{1-\bar\alpha_t} (\Phi[0] -  \sqrt{\bar{\alpha_t}}(\Sigma_n(I-V_n V_n^T)\varphi)[n]) q(\Phi, n, \sqrt{\bar\alpha_t}\varphi)
-\end{equation*}
-
+\begin{align*}
+    \nabla_{b[0]}q(b, n, \sqrt{\bar\alpha_t}x_0) &= \frac{-1}{1-\bar\alpha_t} \left(b[0] -  \sqrt{\bar{\alpha_t}}x_0[n]\right) q(b, n, \sqrt{\bar\alpha_t}x_0)\\
+    &= \frac{-1}{1-\bar\alpha_t} \left(b[0] -  \sqrt{\bar{\alpha_t}}x_0[n]\right) \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}
+\end{align*}
 We obtain finally the analytical expression for the LS machine
 \begin{equation}
-    v_{f^*,n}(t,\Phi) = -\frac{1}{1-\bar\alpha_t} \frac{\sum_{\varphi\in\mathcal{D}}(\Phi[0] -  \sqrt{\bar{\alpha_t}}(\Sigma_n(I-V_n V_n^T)\varphi)[n]) q(\Phi, n, \sqrt{\bar\alpha_t}\varphi)}{\sum_{\varphi'\in\mathcal{D}} q(\Phi, n, \sqrt{\bar\alpha_t}\varphi')}
+    v_{f^*,n}(t,b) = -\frac{1}{1-\bar\alpha_t} \frac{\sum_{x_0\in\mathcal{D}}\left(b[0] -  \sqrt{\bar{\alpha_t}}x_0[n]\right) \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}}{\sum_{x_0 \in \mathcal{D}} \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}}
 \end{equation}
+% The final step is to verify if the above expression of LS machine satisfies the optimality condition \eqref{eq:optimal_condition_score_function}
+% \begin{align*}
+%     &\E{\langle h(t,x),f^*(t,x) -s_t(x)\rangle}\\
+%     &= \int_{\R^N} \langle h(t,x),f^*(t,x)-s_t(x) \rangle \pi_t(x) dx\\
+%     &= \sum_{n=1}^{N} \int_{\R^N} \langle v_{h,n}(t,\Sigma_nx),v_{f^*,n}(t,\Sigma_nx)-s_t(x) \rangle \pi_t(x) dx\\
+%     &= \sum_{n=1}^{N} \int_{\R^N} v_{h,n}(t,\Sigma_nx)\left(\sum_{x_0 \in \mathcal{D}}  v_{f^*,n}(t,\Sigma_nx)\mathcal{G}_t(x-\sqrt{\bar\alpha_t}x_0)-\frac{-1}{1-\bar\alpha_t}\sum_{x_0\in\mathcal{D}}(x-\sqrt{\bar{\alpha_t}}x_0) \mathcal{G}_t(x-\sqrt{\bar\alpha_t}x_0)\right)dx\\
+%     &= \sum_{n=1}^{N} \int_{\R^P} \int_{v_n^{-1}(b)} v_{h,n}(t,\Sigma_n \omega)\left(\sum_{x_0 \in \mathcal{D}}  v_{f^*,n}(t,\Sigma_n\omega)\mathcal{G}_t(\omega-\sqrt{\bar\alpha_t}x_0)-\frac{-1}{1-\bar\alpha_t}\sum_{x_0\in\mathcal{D}}(\omega-\sqrt{\bar{\alpha_t}}x_0) \mathcal{G}_t(\omega-\sqrt{\bar\alpha_t}x_0)\right)d\H^{N-P}(\omega) db\\
+%     &= \sum_{n=1}^{N} \int_{\R^P}  v_{h,n}(t,z)\left(\sum_{x_0 \in \mathcal{D}}  v_{f^*,n}(t,z)\int_{v_n^{-1}(b)}\mathcal{G}_t(\omega-\sqrt{\bar\alpha_t}x_0)d\H^{N-P}(\omega)-\frac{-1}{1-\bar\alpha_t}\sum_{x_0\in\mathcal{D}}\int_{v_n^{-1}(b)}(\omega-\sqrt{\bar{\alpha_t}}x_0) \mathcal{G}_t(\omega-\sqrt{\bar\alpha_t}x_0)d\H^{N-P}(\omega)\right) db\\
+% \end{align*}
 
 
 
 
 % La propriété de localité s'exprime par le fait que la sortie de $M_t$ sur le pixel se situant en $x$ ne dépend pas de pixels en dehors du voisinage local $\Omega_x$. Le modèle local $M_t$ peut s'écrire comme suit:
-% \[ M_t[\phi](x) = f_x[\phi_{\Omega_x}] \]
+% \[ M_t[x](x) = f_x[x_{\Omega_x}] \]
 
 % Le problème d'identifier le modèle local optimal revient à chercher l'optimal fonctionnel qui minimise la fonction de coût suivante :
-% \[ \mathcal{L}(f_x) = \mathbb{E}_{\phi \sim \pi_t} \left[ \| f_x[\phi_{\Omega_x}] - s_t[\phi](x) \|^2 \right] \]
+% \[ \mathcal{L}(f_x) = \mathbb{E}_{x \sim \pi_t} \left[ \| f_x[x_{\Omega_x}] - s_t[x](x) \|^2 \right] \]
 
 % En écrivant l'espérance sous forme d'intégrale,
-% \[ \mathcal{L}(f_x) = \int_{\mathbb{R}^N} \pi_t(\phi) \| f_x(\phi_{\Omega_x}) - s_t[\phi](x) \|^2 d\phi \]
+% \[ \mathcal{L}(f_x) = \int_{\mathbb{R}^N} \pi_t(x) \| f_x(x_{\Omega_x}) - s_t[x](x) \|^2 dx \]
 
 % On introduit une perturbation fonctionnelle $h$ à $\mathcal{L}$, soit $\varepsilon > 0$,
-% \[ \mathcal{L}(f_x + \varepsilon h) = \mathcal{L}(f_x) + 2\varepsilon \int_{\mathbb{R}^N} \pi_t(\phi) \langle h(\phi_{\Omega_x}), f_x(\phi_{\Omega_x}) - s_t[\phi](x) \rangle d\phi + o(\varepsilon^2) \]
+% \[ \mathcal{L}(f_x + \varepsilon h) = \mathcal{L}(f_x) + 2\varepsilon \int_{\mathbb{R}^N} \pi_t(x) \langle h(x_{\Omega_x}), f_x(x_{\Omega_x}) - s_t[x](x) \rangle dx + o(\varepsilon^2) \]
 
 % $f_x$ est l'optimal fonctionnel de $\mathcal{L}$ si
 % \[ \frac{d\mathcal{L}}{d\varepsilon}(f_x) = 0 \quad \forall h \]
 
 % Ainsi,
-% \[ \int_{\mathbb{R}^N} \pi_t(\phi) (f_x(\phi_{\Omega_x}) - s_t[\phi](x)) h(\phi_{\Omega_x}) d\phi = 0 \]
+% \[ \int_{\mathbb{R}^N} \pi_t(x) (f_x(x_{\Omega_x}) - s_t[x](x)) h(x_{\Omega_x}) dx = 0 \]
 
-% On choisit $h$ de sorte que $h(\phi_{\Omega_x}) = \delta(\phi_{\Omega_x} - \Phi)$ avec $\Phi$ arbitraire point de meme dimension que $\phi_{\Omega x}$, ce qui nous donne :
+% On choisit $h$ de sorte que $h(x_{\Omega_x}) = \delta(x_{\Omega_x} - x)$ avec $x$ arbitraire point de meme dimension que $x_{\Omega x}$, ce qui nous donne :
 % \[
-% \int_{\mathbb{R}^N} \pi_t (\phi) \left[ \partial_x (\phi_{\Omega_x} - \Phi) - \partial_t \left[ \Phi_t(x) \right] \right] \delta(\phi_{\Omega_x} - \Phi) \, d\phi = 0
+% \int_{\mathbb{R}^N} \pi_t (x) \left[ \partial_x (x_{\Omega_x} - x) - \partial_t \left[ x_t(x) \right] \right] \delta(x_{\Omega_x} - x) \, dx = 0
 % \]
 
 % En arrangeant :
 % \[
-% \int_{\mathbb{R}^N} \pi_t (\phi) f_x (\phi_{\Omega_x} - \Phi) \delta(\phi_{\Omega_x} - \Phi) \, d\phi
-% = \int_{\mathbb{R}^N} \pi_t (\phi) s_t[\phi](x)\delta(\phi_{\Omega_x} - \Phi) \, d\phi
+% \int_{\mathbb{R}^N} \pi_t (x) f_x (x_{\Omega_x} - x) \delta(x_{\Omega_x} - x) \, dx
+% = \int_{\mathbb{R}^N} \pi_t (x) s_t[x](x)\delta(x_{\Omega_x} - x) \, dx
 % \]
 
 % Le terme à gauche s'écrit :
 % \begin{align*}
-% \int_{\mathbb{R}^N} \pi_t(\phi) f_x(\phi_{\Omega_x}) \delta(\phi_{\Omega_x} - \Phi) d\phi &= f_x(\Phi) \int_{\mathbb{R}^N} \pi_t(\phi) \delta(\phi_{\Omega_x} - \Phi) d\phi \\
-% &= f_x(\Phi) p_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi)\\
-% & \text{avec } p_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi) \text{ la densité marginale de }\phi_{t \Omega_x}
+% \int_{\mathbb{R}^N} \pi_t(x) f_x(x_{\Omega_x}) \delta(x_{\Omega_x} - x) dx &= f_x(x) \int_{\mathbb{R}^N} \pi_t(x) \delta(x_{\Omega_x} - x) dx \\
+% &= f_x(x) p_{x_t \sim \pi_t} (x_{t \Omega_x} = x)\\
+% & \text{avec } p_{x_t \sim \pi_t} (x_{t \Omega_x} = x) \text{ la densité marginale de }x_{t \Omega_x}
 % \end{align*}
 
-% Let denote $p(t,x,\Phi)=\int_{\mathbb{R}^N} \pi_t(\phi) \delta(\phi_{\Omega_x} - \Phi) d\phi$. We need to compute the weight $p(t,x,\Phi)$ for any $t\in [0,T]$, any pixel location $x$, and for any $\Phi \in \R^P$:
+% Let denote $p(t,x,x)=\int_{\mathbb{R}^N} \pi_t(x) \delta(x_{\Omega_x} - x) dx$. We need to compute the weight $p(t,x,x)$ for any $t\in [0,T]$, any pixel location $x$, and for any $x \in \R^P$:
 % \begin{equation*}
-%     p(t,x,\Phi)=\int_{\mathbb{R}^N} \pi_t(\phi) \delta(\phi_{\Omega_x} - \Phi) d\phi
+%     p(t,x,x)=\int_{\mathbb{R}^N} \pi_t(x) \delta(x_{\Omega_x} - x) dx
 % \end{equation*}
 
 
 
 % On manipule le terme à droite :
 % \begin{align*}
-% \int_{\mathbb{R}^N} \pi_t(\phi) s_t[\phi](x) \delta(\phi_{\Omega_x} - \Phi) d\phi &= \int_{\mathbb{R}^N} \delta(\phi_{\Omega_x} - \Phi) \pi_t(\phi) \nabla_{\phi(x)} \log \pi_t(\phi) d\phi \\
-% &= \int_{\mathbb{R}^N} \delta(\phi_{\Omega_x} - \Phi) \nabla_{\phi(x)} \pi_t(\phi) d\phi \\
-% &= \nabla_{\Phi(0)} p_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi)
+% \int_{\mathbb{R}^N} \pi_t(x) s_t[x](x) \delta(x_{\Omega_x} - x) dx &= \int_{\mathbb{R}^N} \delta(x_{\Omega_x} - x) \pi_t(x) \nabla_{x(x)} \log \pi_t(x) dx \\
+% &= \int_{\mathbb{R}^N} \delta(x_{\Omega_x} - x) \nabla_{x(x)} \pi_t(x) dx \\
+% &= \nabla_{x(0)} p_{x_t \sim \pi_t} (x_{t \Omega_x} = x)
 % \end{align*}
 
 % Injectons dans l'équation :
-% \[ f_x(\Phi)\, p_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi) = \nabla_{\Phi(0)} p_{\phi_t \sim \pi_t} (\phi_{t \Omega_x} = \Phi) \]
+% \[ f_x(x)\, p_{x_t \sim \pi_t} (x_{t \Omega_x} = x) = \nabla_{x(0)} p_{x_t \sim \pi_t} (x_{t \Omega_x} = x) \]
 
 % D'où
-% \[ f_x(\Phi) = \nabla_{\Phi(0)} \log p_{\phi_t \sim \pi_t} (\phi_{t\Omega_x} = \Phi) \]
+% \[ f_x(x) = \nabla_{x(0)} \log p_{x_t \sim \pi_t} (x_{t\Omega_x} = x) \]
 
 % On a :
 % \begin{align*}
-% \mathbb{P}_{\phi_t \sim \pi_t} (\phi_{t, \Omega_x} = \Phi) &= \int_{\mathbb{R}^N} \pi_t(\phi) \delta(\phi_{\Omega_x} = \Phi) d\phi \\
-% &= \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \int_{\mathbb{R}^N} g_t(\phi - \sqrt{\bar \alpha_t} \varphi) \delta(\phi_{\Omega_x} - \Phi) d\phi \\
-% &= \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} g_t(\Phi, \sqrt{\bar \alpha_t} \varphi_{\Omega_x} + (1 - \bar \alpha_t) I)
+% \mathbb{P}_{x_t \sim \pi_t} (x_{t, \Omega_x} = x) &= \int_{\mathbb{R}^N} \pi_t(x) \delta(x_{\Omega_x} = x) dx \\
+% &= \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \int_{\mathbb{R}^N} \mathcal{G}_t(x - \sqrt{\bar \alpha_t} \varphi) \delta(x_{\Omega_x} - x) dx \\
+% &= \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \mathcal{G}_t(x, \sqrt{\bar \alpha_t} \varphi_{\Omega_x} + (1 - \bar \alpha_t) I)
 % \end{align*}
 
 % Ainsi,
 % \begin{align*}
-%     f_x(\Phi) &= \nabla_{\Phi(0)} \log \left\{p_{\phi_t \sim \pi_t} (\phi_{t\Omega_x} = \Phi)\right\} \\
-%     &=\nabla_{\Phi(0)} \log \left\{ \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \mathcal{N}(\Phi \mid \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar\alpha_t) I) \right\}
+%     f_x(x) &= \nabla_{x(0)} \log \left\{p_{x_t \sim \pi_t} (x_{t\Omega_x} = x)\right\} \\
+%     &=\nabla_{x(0)} \log \left\{ \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \mathcal{N}(x \mid \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar\alpha_t) I) \right\}
 % \end{align*}
 
 % D'où
 % \begin{align*}
-% M_t[\phi](x) &= f(\phi_{\Omega_x}) = \nabla_{\phi(x)} \left\{ \sum\limits_{\varphi \in \mathcal{D}} \mathcal{N}(\phi_{\Omega_x} \mid \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I) \right\} \\
-% &= -\frac{1}{1 - \bar \alpha_t} \sum\limits_{\varphi \in \mathcal{D}} \left(\phi(x) - \sqrt{\bar \alpha_t} \varphi(x)\right) \frac{\mathcal{N}(\phi_{\Omega_x} \mid \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)}{\sum\limits_{\varphi' \in \mathcal{D}} \mathcal{N}(\phi_{\Omega_x} \mid \sqrt{\bar \alpha_t} \varphi'_{\Omega_x}, (1 - \bar \alpha_t) I)}
+% M_t[x](x) &= f(x_{\Omega_x}) = \nabla_{x(x)} \left\{ \sum\limits_{x_0  \in \mathcal{D}} \mathcal{N}(x_{\Omega_x} \mid \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I) \right\} \\
+% &= -\frac{1}{1 - \bar \alpha_t} \sum\limits_{x_0  \in \mathcal{D}} \left(x(x) - \sqrt{\bar \alpha_t} \varphi(x)\right) \frac{\mathcal{N}(x_{\Omega_x} \mid \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)}{\sum\limits_{x_0  \in \mathcal{D}} \mathcal{N}(x_{\Omega_x} \mid \sqrt{\bar \alpha_t} \varphi'_{\Omega_x}, (1 - \bar \alpha_t) I)}
 % \end{align*} 
 
-% La LS machine donne une sortie qui est quasiment identique à celle de l'apprentissage idéal de la fonction de score, sauf que l'ensemble de données $\mathcal{D}$ est remplacé par l'ensemble de local patches issus de $\mathcal{D}$. Intuitivement, un échantillon $\phi$ généré par la LS machine respecte trois conditions locales :
+% La LS machine donne une sortie qui est quasiment identique à celle de l'apprentissage idéal de la fonction de score, sauf que l'ensemble de données $\mathcal{D}$ est remplacé par l'ensemble de local patches issus de $\mathcal{D}$. Intuitivement, un échantillon $x$ généré par la LS machine respecte trois conditions locales :
 % \begin{itemize}[topsep=-5pt]
 %     \item Chaque pixel $x$ peut être attribué de manière unique à un patch d'apprentissage local $\varphi_x$ situé en $x$.
-%     \item La valeur du pixel $\phi(x)$ est exactement égale au pixel central $\varphi_x(0)$.
-%     \item Le reste du patch local généré $\phi_{\Omega_x}$ ressemble, au sens $l_2$, davantage au patch d'entraînement local $f$ qu'à tout autre patch d'entraînement possible.
+%     \item La valeur du pixel $x(x)$ est exactement égale au pixel central $\varphi_x(0)$.
+%     \item Le reste du patch local généré $x_{\Omega_x}$ ressemble, au sens $l_2$, davantage au patch d'entraînement local $f$ qu'à tout autre patch d'entraînement possible.
 % \end{itemize}
 
-% Ce résultat montre que la local score (LS) machine approxime la fonction score en se basant sur des patchs d’image locaux. Cela permet à différentes régions \( \phi_{\Omega_x} \) et \( \phi_{\Omega_{x'}} \) de s’aligner sur des patchs issus d’images d’entraînement distinctes, offrant ainsi une plus grande créativité combinatoire. Toutefois, une limitation persiste : chaque patch ne peut correspondre qu’à un patch d’entraînement situé au même emplacement spatial. L’ajout de l’équivariance lève cette contrainte, permettant aux patchs de se transférer entre différentes positions et d’accroître encore la créativité.
+% Ce résultat montre que la local score (LS) machine approxime la fonction score en se basant sur des patchs d’image locaux. Cela permet à différentes régions \( x_{\Omega_x} \) et \( x_{\Omega_{x'}} \) de s’aligner sur des patchs issus d’images d’entraînement distinctes, offrant ainsi une plus grande créativité combinatoire. Toutefois, une limitation persiste : chaque patch ne peut correspondre qu’à un patch d’entraînement situé au même emplacement spatial. L’ajout de l’équivariance lève cette contrainte, permettant aux patchs de se transférer entre différentes positions et d’accroître encore la créativité.
 
-\section{Local and equivariant score function}
-\subsection{Optimal score function}
-Dans cette section, nous allons intégrer les propriétés de localité et d'équivariance dans notre machine qui estime la fonction de score. On l'appelle \textbf{équivariant local machine} (ELM), notée $M_t$.
-
-On peut modéliser notre ELM par :
+\subsection{Local and translational equivariant score function}
+In this section, we will study the behavior of the score function estimator under the locality and translational equivariance constraints.
+The admissible set of functions is the set of functions that act locally and equivariant by tranlsation, i.e 
 \begin{equation*}
-    M_t[\phi](x) = f \left[ \phi_{\Omega_x} \right]
+    \mathcal{M} = {f:[0,T]\times\R^N \rightarrow \R^N \text{ such that }  \exists v_{f} : \R^P \rightarrow \R, f_n(t,x)=v_{f}(t,\Sigma_n x, \forall x\in \R^N)}
 \end{equation*}
 
-La fonction $f$ est optimisée sous la fonction de coût suivante :
+One has
+\begin{align*}
+    \E{\langle h(t,x),f^*(t,x) -s_t(x)\rangle} &= \int_{\R^N} \langle h(t,x),f^*(t,x)-s_t(x) \rangle \pi_t(x) dx\\
+    &= \int_{\R^N} \sum_{n=1}^{N} v_{h}(t,\Sigma_nx)\left(v_{f^*}(t,\Sigma_nx)-s_t(x) \right) \pi_t(x) dx\\
+\end{align*}
+We choose $(v_{h})$ defined by
 \begin{equation*}
-    \mathcal{L}(f) = \sum\limits_x \mathbb{E}_{\phi_t \sim \pi_t} \left( \| f(\phi_{t\Omega_x}) - s_t [\phi_t](x) \|^2 \right)
+    v_{h}(t,\Sigma_n x) = \delta(\Sigma_n x - z)
+\end{equation*}
+Thus
+\begin{equation*}
+    \int_{\R^N} \sum_{n=1}^{N}\langle v_{h}(t,\Sigma_nx),v_{f^*}(t,\Sigma_nx)-s_t(x)[n] \rangle \pi_t(x) dx = \sum_{n=1}^{N} \int_{\R^N} \delta(\Sigma_nx -b)\,(v_{f^*}(t,\Sigma_nx)-s_t(x)[n])  \pi_t(x) dx
+\end{equation*}
+According to the optimality condition, the alove quantity is zero, thus
+\begin{align*}
+    \int_{\R^N} \sum_{n=1}^{N}\delta(\Sigma_nx -b) \pi_t(x) dx &= \sum_{n=1}^{N}\int_{\R^N} \delta(\Sigma_nx -b) s_t(x)[n]\pi_t(x) dx \\
+    &= \sum_{n=1}^{N}\int_{\R^N} \delta(\Sigma_nx -b) \nabla_{x[n]}\pi_t(x) dx\\
+    &= \sum_{n=1}^{N}\nabla_{b[0]} \int_{\R^N} \delta(\Sigma_nx -b) \pi_t(x) dx\\
+\end{align*}
+
+Thus
+\begin{align*}
+    v_{f^*}(t,b) \sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} q(b, n, \sqrt{\bar\alpha_t}x_0) &= \nabla_{b[0]} \sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} q(b, n, \sqrt{\bar\alpha_t}x_0)\\
+    v_{f^*}(t,b) \sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R} &=  \sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} \left(b[0] -  \sqrt{\bar{\alpha_t}}x_0[n]\right) \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}\\
+\end{align*}
+
+We obtain the analytic formula for the local in translational equivariant MMSE
+\begin{equation*}
+    v_{f^*}(t,b) = -\frac{1}{1-\bar\alpha_t}\,\frac{\sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} \left(b[0] -  \sqrt{\bar{\alpha_t}}x_0[n]\right) \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}}{\sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}}
 \end{equation*}
 
-On écrit la fonction de coût sous forme d'integrale,
-\begin{equation*}
-    = \int_{\R^N} \pi_t(\phi) \sum\limits_x \| f(\phi_{\Omega_x}) - s_t [\phi](x) \|^2 d\phi
-\end{equation*}
+% \subsection{Optimal score function}
+% Dans cette section, nous allons intégrer les propriétés de localité et d'équivariance dans notre machine qui estime la fonction de score. On l'appelle \textbf{équivariant local machine} (ELM), notée $M_t$.
 
-Comme d'habitude, on introduit une perturbation fonctionnelle $h$ à $\mathcal{L}$, soit $\varepsilon > 0$,
-\begin{align*}
-    \mathcal{L}(f + \varepsilon h) &= \int_{\R^N} \pi_t(\phi) \sum\limits_x \| f(\phi_{\Omega_x}) + \varepsilon h(\phi_{\Omega_x}) - s_t [\phi](x) \|^2 d\phi\\
-    &= \mathcal{L}(f) + 2\varepsilon \int_{\R^N} \pi_t(\phi) \sum\limits_x \langle h(\phi_{\Omega_x}), f(\phi_{\Omega_x}) - s_t [\phi](x) \rangle d\phi + O(\varepsilon^2)
-\end{align*}
+% On peut modéliser notre ELM par :
+% \begin{equation*}
+%     M_t[x](x) = f \left[ x_{\Omega_x} \right]
+% \end{equation*}
 
-$f$ est minimiseur de $\mathcal{L}$ si :
-\begin{equation*}
-    \frac{d}{d\varepsilon} \mathcal{L}(f) = 0 \quad \forall h
-\end{equation*}
+% La fonction $f$ est optimisée sous la fonction de coût suivante :
+% \begin{equation*}
+%     \mathcal{L}(f) = \sum\limits_x \mathbb{E}_{x_t \sim \pi_t} \left( \| f(x_{t\Omega_x}) - s_t [x_t](x) \|^2 \right)
+% \end{equation*}
 
-C'est-à-dire :
-\begin{equation*}
-    \int_{\R^N} \pi_t(\phi) \sum\limits_x \left( f(\phi_{\Omega_x}) - s_t [\phi](x) \right) h(\phi_{\Omega_x}) d\phi = 0
-\end{equation*}
+% On écrit la fonction de coût sous forme d'integrale,
+% \begin{equation*}
+%     = \int_{\R^N} \pi_t(x) \sum\limits_x \| f(x_{\Omega_x}) - s_t [x](x) \|^2 dx
+% \end{equation*}
 
-On choisit $h$ de sorte que $h(\phi_{\Omega_x}) = \delta(\phi_{\Omega_x} - \Phi)$ avec $\Phi$ arbitraire lot. Ce qui nous donne
-\begin{equation*}
-    \int_{\R^N} \pi_t(\phi) \sum\limits_x \left( f(\phi_{\Omega_x}) - s_t [\phi](x) \right) \delta(\phi_{\Omega_x} - \Phi) d\phi = 0
-\end{equation*}
+% Comme d'habitude, on introduit une perturbation fonctionnelle $h$ à $\mathcal{L}$, soit $\varepsilon > 0$,
+% \begin{align*}
+%     \mathcal{L}(f + \varepsilon h) &= \int_{\R^N} \pi_t(x) \sum\limits_x \| f(x_{\Omega_x}) + \varepsilon h(x_{\Omega_x}) - s_t [x](x) \|^2 dx\\
+%     &= \mathcal{L}(f) + 2\varepsilon \int_{\R^N} \pi_t(x) \sum\limits_x \langle h(x_{\Omega_x}), f(x_{\Omega_x}) - s_t [x](x) \rangle dx + O(\varepsilon^2)
+% \end{align*}
 
-En arrangeant,
-\begin{align*}
-    \int_{\R^N} \pi_t(\phi) \sum\limits_x s_t [\phi](x) \delta(\phi_{\Omega_x} - \Phi) d\phi &= \int_{\R^N} \pi_t(\phi) \sum\limits_x f(\phi_{\Omega_x}) \delta(\phi_{\Omega_x} - \Phi) d\phi \\
-    &= f(\Phi) \sum\limits_x p_{\phi_t \sim \pi_t} (\phi_{t\Omega_x} = \Phi)\\
-    & \text{avec }  p_{\phi_t \sim \pi_t} (\phi_{t\Omega_x} = \Phi) \text{ la densité marginale de }\phi_{t\Omega_x}
-\end{align*}
+% $f$ est minimiseur de $\mathcal{L}$ si :
+% \begin{equation*}
+%     \frac{d}{d\varepsilon} \mathcal{L}(f) = 0 \quad \forall h
+% \end{equation*}
 
-Le terme à gauche s’écrit :
-\begin{align*}
-    \int_{\mathbb{R}^N} \pi_t(\phi) \sum\limits_x s_t[\phi](x) \delta(\phi_{\Omega_x} - \Phi) d\phi &= \sum\limits_x \int_{\mathbb{R}^N} \delta(\phi_{\Omega_x} - \Phi) \pi_t(\phi) \nabla_{\phi_(x)} \log \pi_t(\phi) d\phi\\
-    &= \sum\limits_x \int_{\mathbb{R}^N} \delta(\phi_{\Omega_x} - \Phi) \nabla_{\phi_(x)}\pi_t(\phi) d\phi\\
-    &= \sum\limits_x \nabla_{\Phi(0)} p_{\phi_t \sim \pi_t} \left(\phi_{t\Omega_x} = \Phi \right)
-\end{align*}
+% C'est-à-dire :
+% \begin{equation*}
+%     \int_{\R^N} \pi_t(x) \sum\limits_x \left( f(x_{\Omega_x}) - s_t [x](x) \right) h(x_{\Omega_x}) dx = 0
+% \end{equation*}
+
+% On choisit $h$ de sorte que $h(x_{\Omega_x}) = \delta(x_{\Omega_x} - x)$ avec $x$ arbitraire lot. Ce qui nous donne
+% \begin{equation*}
+%     \int_{\R^N} \pi_t(x) \sum\limits_x \left( f(x_{\Omega_x}) - s_t [x](x) \right) \delta(x_{\Omega_x} - x) dx = 0
+% \end{equation*}
+
+% En arrangeant,
+% \begin{align*}
+%     \int_{\R^N} \pi_t(x) \sum\limits_x s_t [x](x) \delta(x_{\Omega_x} - x) dx &= \int_{\R^N} \pi_t(x) \sum\limits_x f(x_{\Omega_x}) \delta(x_{\Omega_x} - x) dx \\
+%     &= f(x) \sum\limits_x p_{x_t \sim \pi_t} (x_{t\Omega_x} = x)\\
+%     & \text{avec }  p_{x_t \sim \pi_t} (x_{t\Omega_x} = x) \text{ la densité marginale de }x_{t\Omega_x}
+% \end{align*}
+
+% Le terme à gauche s’écrit :
+% \begin{align*}
+%     \int_{\mathbb{R}^N} \pi_t(x) \sum\limits_x s_t[x](x) \delta(x_{\Omega_x} - x) dx &= \sum\limits_x \int_{\mathbb{R}^N} \delta(x_{\Omega_x} - x) \pi_t(x) \nabla_{x_(x)} \log \pi_t(x) dx\\
+%     &= \sum\limits_x \int_{\mathbb{R}^N} \delta(x_{\Omega_x} - x) \nabla_{x_(x)}\pi_t(x) dx\\
+%     &= \sum\limits_x \nabla_{x(0)} p_{x_t \sim \pi_t} \left(x_{t\Omega_x} = x \right)
+% \end{align*}
 
 
 
-Ainsi,
-\begin{equation*}
-    f(\Phi) = \nabla_{\Phi(0)} \log \sum\limits_x p_{\phi_t \sim \pi_t} \left(\phi_{t\Omega_x} = \Phi \right)
-\end{equation*}
+% Ainsi,
+% \begin{equation*}
+%     f(x) = \nabla_{x(0)} \log \sum\limits_x p_{x_t \sim \pi_t} \left(x_{t\Omega_x} = x \right)
+% \end{equation*}
 
-On rappelle la distribution \(\pi_t\) :
-\begin{align*}
-        \pi_t(\phi) &= \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} g_t (\phi - \sqrt{\bar \alpha_t} \varphi)\\
-        & \text{avec \(g_t \) la fonction de densité de la loi normale $\mathcal{N}(0, (1 - \bar \alpha_t) I_N)$ }:
-\end{align*}
+% On rappelle la distribution \(\pi_t\) :
+% \begin{align*}
+%         \pi_t(x) &= \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \mathcal{G}_t (x - \sqrt{\bar \alpha_t} \varphi)\\
+%         & \text{avec \(\mathcal{G}_t \) la fonction de densité de la loi normale $\mathcal{N}(0, (1 - \bar \alpha_t) I_N)$ }:
+% \end{align*}
 
 
-On cherche :
-\begin{align*}
-    p_{\phi_t \sim \pi_t} \left( \phi_{t\Omega_x} = \Phi \right) &=
-\int_{\mathbb{R}^N} \pi_t(\phi) \delta(\phi_{\Omega_x} - \Phi) d\phi \\
-& = \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \int_{\mathbb{R}^N} g_t (\phi - \sqrt{\bar \alpha_t} \varphi) \delta(\phi_{\Omega_x} - \Phi) d\phi\\
-&= \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \int_{\mathbb{R}^N} \mathcal{N} (\phi | \sqrt{\bar \alpha_t} \varphi, (1 - \bar \alpha_t) I)\, \delta(\phi_{\Omega_x} - \Phi) d\phi\\
-&= \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \mathcal{N} (\phi | \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)
-\end{align*}
+% On cherche :
+% \begin{align*}
+%     p_{x_t \sim \pi_t} \left( x_{t\Omega_x} = x \right) &=
+% \int_{\mathbb{R}^N} \pi_t(x) \delta(x_{\Omega_x} - x) dx \\
+% & = \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \int_{\mathbb{R}^N} \mathcal{G}_t (x - \sqrt{\bar \alpha_t} \varphi) \delta(x_{\Omega_x} - x) dx\\
+% &= \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \int_{\mathbb{R}^N} \mathcal{N} (x | \sqrt{\bar \alpha_t} \varphi, (1 - \bar \alpha_t) I)\, \delta(x_{\Omega_x} - x) dx\\
+% &= \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \mathcal{N} (x | \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)
+% \end{align*}
 
-D’où :
-\begin{align*}
-    \sum\limits_x p_{\phi_t \sim \pi_t} \left( \phi_{t\Omega_x} = \Phi \right) &= \frac{1}{|\mathcal{D}|} \sum\limits_x \sum\limits_{\varphi \in \mathcal{D}} \mathcal{N} (\phi | \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)\\
-    &=\frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in P_\Omega(\mathcal{D})} \mathcal{N} (\phi | \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)
-\end{align*}
+% D’où :
+% \begin{align*}
+%     \sum\limits_x p_{x_t \sim \pi_t} \left( x_{t\Omega_x} = x \right) &= \frac{1}{|\mathcal{D}|} \sum\limits_x \sum\limits_{x_0  \in \mathcal{D}} \mathcal{N} (x | \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)\\
+%     &=\frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in P_\Omega(\mathcal{D})} \mathcal{N} (x | \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)
+% \end{align*}
 
-Injectons ce résultat dans l’expression de l’optimale fonctionnelle \( f_t \) :
-\begin{align*}
-f_t(\phi_{\Omega_x}) &= \nabla_{\phi(x)} \left\{ \sum\limits_{\varphi \in P_\Omega(\mathcal{D})} \mathcal{N} (\phi_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi, (1 - \bar \alpha_t) I) \right\}\\
-&= -\frac{1}{1 - \bar \alpha_t}\sum\limits_{\varphi \in P_\Omega(\mathcal{D})}  \left(\phi(x) - \sqrt{\bar \alpha_t} \varphi(0)\right)\, W(\varphi | \phi_{\Omega_x})\\
-& \text{avec } W(\varphi | \phi_{\Omega_x}) = \frac{\mathcal{N} (\phi_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi, (1 - \bar \alpha_t) I)}
-{\sum\limits_{\varphi' \in P_\Omega(\mathcal{D})} \mathcal{N} (\phi_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi', (1 - \bar \alpha_t) I)}
-\end{align*}
+% Injectons ce résultat dans l’expression de l’optimale fonctionnelle \( f_t \) :
+% \begin{align*}
+% f_t(x_{\Omega_x}) &= \nabla_{x(x)} \left\{ \sum\limits_{\varphi \in P_\Omega(\mathcal{D})} \mathcal{N} (x_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi, (1 - \bar \alpha_t) I) \right\}\\
+% &= -\frac{1}{1 - \bar \alpha_t}\sum\limits_{\varphi \in P_\Omega(\mathcal{D})}  \left(x(x) - \sqrt{\bar \alpha_t} \varphi(0)\right)\, W(\varphi | x_{\Omega_x})\\
+% & \text{avec } W(\varphi | x_{\Omega_x}) = \frac{\mathcal{N} (x_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi, (1 - \bar \alpha_t) I)}
+% {\sum\limits_{\varphi' \in P_\Omega(\mathcal{D})} \mathcal{N} (x_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi', (1 - \bar \alpha_t) I)}
+% \end{align*}
 
-En pratique, on utilise souvent zero-paddings dans un réseau CNN. On adapte notre ELS machine de sorte qu'elle peut prendre en compte les pixels dont le $\Omega$-voisinage dépasse la frontière de l'image. Plus précisément, on remplace l'ensemble de tout patch $P_\Omega(\mathcal{D})$ par les dictionnaires de patchs $P_\Omega^x(\mathcal{D})$ dependant de $x$ :
-\begin{align*}
-    M_t(\phi)[x] &=  -\frac{1}{1 - \bar \alpha_t}\sum\limits_{\varphi \in P_\Omega^x(\mathcal{D})}  \left(\phi(x) - \sqrt{\bar \alpha_t} \varphi(0)\right)\, W(\varphi | \phi_{\Omega_x},x)\\
-    & \text{avec } W(\varphi | \phi_{\Omega_x},x) = \frac{\mathcal{N} (\phi_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi, (1 - \bar \alpha_t) I)}
-    {\sum\limits_{\varphi' \in P_\Omega^x(\mathcal{D})} \mathcal{N} (\phi_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi', (1 - \bar \alpha_t) I)}
-\end{align*}
+% En pratique, on utilise souvent zero-paddings dans un réseau CNN. On adapte notre ELS machine de sorte qu'elle peut prendre en compte les pixels dont le $\Omega$-voisinage dépasse la frontière de l'image. Plus précisément, on remplace l'ensemble de tout patch $P_\Omega(\mathcal{D})$ par les dictionnaires de patchs $P_\Omega^x(\mathcal{D})$ dependant de $x$ :
+% \begin{align*}
+%     M_t(x)[x] &=  -\frac{1}{1 - \bar \alpha_t}\sum\limits_{\varphi \in P_\Omega^x(\mathcal{D})}  \left(x(x) - \sqrt{\bar \alpha_t} \varphi(0)\right)\, W(\varphi | x_{\Omega_x},x)\\
+%     & \text{avec } W(\varphi | x_{\Omega_x},x) = \frac{\mathcal{N} (x_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi, (1 - \bar \alpha_t) I)}
+%     {\sum\limits_{\varphi' \in P_\Omega^x(\mathcal{D})} \mathcal{N} (x_{\Omega_x} | \sqrt{\bar \alpha_t} \varphi', (1 - \bar \alpha_t) I)}
+% \end{align*}
 
-En présence de zero-paddings, différents dictionnaires de patchs de l'ensemble d'apprentissage sont utilisés pour le calcul de la machine ELS en fonction de l'information contextuelle fournie par la bordure visible à l'intérieur du patch. Pour un patch central sans information sur le bord, les patchs de l'ensemble d'apprentissage proviennent de l'ensemble de l'intérieur de l'image. Pour les patchs de bord, les patchs de l'ensemble d'apprentissage proviennent de tous les bords de l'image à la même distance de la bordure. Pour les patchs d'angle, seules les patchs provenant de cet endroit précis sont utilisées dans le calcul.
+% En présence de zero-paddings, différents dictionnaires de patchs de l'ensemble d'apprentissage sont utilisés pour le calcul de la machine ELS en fonction de l'information contextuelle fournie par la bordure visible à l'intérieur du patch. Pour un patch central sans information sur le bord, les patchs de l'ensemble d'apprentissage proviennent de l'ensemble de l'intérieur de l'image. Pour les patchs de bord, les patchs de l'ensemble d'apprentissage proviennent de tous les bords de l'image à la même distance de la bordure. Pour les patchs d'angle, seules les patchs provenant de cet endroit précis sont utilisées dans le calcul.
 
-\subsection{Convergence at $t = 0$}
+\subsubsection{Convergence at $t = 0$}
 \begin{definition}[Point localment cohérent]
-    Dans le contexte de ELS machine, un point \(\hat{\Phi}\) est dit localement cohérent si 
-    pour tout pixel \( x \), la valeur \(\hat{\Phi}(x)\) est égale au pixel central \( \varphi(0) \) avec :
+    Dans le contexte de ELS machine, un point \(\hat{x}\) est dit localement cohérent si 
+    pour tout pixel \( x \), la valeur \(\hat{x}(x)\) est égale au pixel central \( \varphi(0) \) avec :
 \[
-    \varphi = \arg \min_{\varphi \in P_{\Omega}^{x}} \|\Psi - \hat{\Phi}_{\Omega_t}^{x}\|^2.
+    \varphi = \arg \min_{\varphi \in P_{\Omega}^{x}} \|\Psi - \hat{x}_{\Omega_t}^{x}\|^2.
 \]
 \end{definition}
 
 
 \begin{theorem}
-    On se donne un échantillon \(\phi_T\) issu de la distribution \(\pi_T\) et on évolue cet échantillon d'après le processus inverse :
+    On se donne un échantillon \(x_T\) issu de la distribution \(\pi_T\) et on évolue cet échantillon d'après le processus inverse :
     \[
-    \partial_t \phi_t = - \gamma_t \left( \phi_t + M_t(\phi_t) \right) \quad \text{avec} \quad \gamma_t = -\frac{\partial_t \bar{\alpha}_t}{2 \bar \alpha_t}.
+    \partial_t x_t = - \gamma_t \left( x_t + M_t(x_t) \right) \quad \text{avec} \quad \gamma_t = -\frac{\partial_t \bar{\alpha}_t}{2 \bar \alpha_t}.
     \]
-    Sous l’hypothèse que les limites \( \lim\limits_{t \to 0} \phi_t \) et \( \lim\limits_{t \to 0} \partial_t \phi_t \) existent, l’échantillon \( \phi_t \) converge vers un point localement cohérent.
+    Sous l’hypothèse que les limites \( \lim\limits_{t \to 0} x_t \) et \( \lim\limits_{t \to 0} \partial_t x_t \) existent, l’échantillon \( x_t \) converge vers un point localement cohérent.
 \end{theorem}
 
 
 \begin{proof}
-    L’hypothèse de l’existence de \( \lim\limits_{t \to 0} \partial_t \bar \alpha_t \) et de \( \lim\limits_{t \to 0} \phi_t \) entraîne que \( \gamma_t M_t(\phi_t) \) reste borné lorsque \( t \to 0 \).
+    L’hypothèse de l’existence de \( \lim\limits_{t \to 0} \partial_t \bar \alpha_t \) et de \( \lim\limits_{t \to 0} x_t \) entraîne que \( \gamma_t M_t(x_t) \) reste borné lorsque \( t \to 0 \).
 
     On a :
     \[
-    \lim\limits_{t \to 0} M_t [\phi_t] (x) = \lim\limits_{t \to 0} - \frac{\partial_t \bar \alpha_t}{2\bar  \alpha_t (1 - \bar \alpha_t)} \sum_{\varphi \in P_{\Omega}^{x}} \left(\phi_t(x) - \sqrt{\bar{\alpha}_t} \varphi(0)\right) W(\varphi | \phi_t, x).
+    \lim\limits_{t \to 0} M_t [x_t] (x) = \lim\limits_{t \to 0} - \frac{\partial_t \bar \alpha_t}{2\bar  \alpha_t (1 - \bar \alpha_t)} \sum_{\varphi \in P_{\Omega}^{x}} \left(x_t(x) - \sqrt{\bar{\alpha}_t} \varphi(0)\right) W(\varphi | x_t, x).
     \]
     
     Avec :
     \[
-    W(\varphi | \phi_t, x) = \frac{\mathcal{N}(\phi_{t\Omega_x} | \sqrt{\bar{\alpha}_t} \varphi, (1 - \alpha_t)I)}
-    {\sum\limits_{\varphi \in P_{\Omega}^{x}} \mathcal{N}(\phi_{t\Omega_x} | \sqrt{\bar{\alpha}_t} \varphi', (1 - \alpha_t)I)}.
+    W(\varphi | x_t, x) = \frac{\mathcal{N}(x_{t\Omega_x} | \sqrt{\bar{\alpha}_t} \varphi, (1 - \alpha_t)I)}
+    {\sum\limits_{\varphi \in P_{\Omega}^{x}} \mathcal{N}(x_{t\Omega_x} | \sqrt{\bar{\alpha}_t} \varphi', (1 - \alpha_t)I)}.
     \]
 
     Comme $
@@ -908,26 +914,26 @@ En présence de zero-paddings, différents dictionnaires de patchs de l'ensemble
     \frac{\partial_t \bar \alpha_t}{2 \bar \alpha_t} = \gamma_t \text{ existe et continue en } t=0,$
     la somme à droite doit tendre vers 0 lorsque \( t \to 0 \), c'est-à-dire :    
     \[
-    \lim\limits_{t \to 0} \sum_{\varphi \in P_{\Omega}^{x}} \left(\phi_t(x) - \sqrt{\bar{\alpha}_t} \varphi(0)\right) W(\varphi | \phi_t, x) = 0.
+    \lim\limits_{t \to 0} \sum_{\varphi \in P_{\Omega}^{x}} \left(x_t(x) - \sqrt{\bar{\alpha}_t} \varphi(0)\right) W(\varphi | x_t, x) = 0.
     \]
     
     On remarque que :    
     \[
-    \lim\limits_{t \to 0} W(\varphi | \phi_t, x) =
+    \lim\limits_{t \to 0} W(\varphi | x_t, x) =
     \begin{cases} 
-    1, & \text{si } \varphi = \tilde{\varphi} \coloneqq \arg\min\limits_{\psi \in P_{\Omega}^{x}} \|\phi_{\Omega_{x}|_{t=0}} - \psi \|^2, \\
+    1, & \text{si } \varphi = \tilde{\varphi} \coloneqq \arg\min\limits_{\psi \in P_{\Omega}^{x}} \|x_{\Omega_{x}|_{t=0}} - \psi \|^2, \\
     0, & \text{sinon}.
     \end{cases}
     \]
     
     Donc, la limite de la somme se réduit à :    
     \[
-    (\phi_0(x) - \tilde{\varphi}(0)).
+    (x_0(x) - \tilde{\varphi}(0)).
     \]
     
     La somme s’annule à \( t \to 0 \) implique que :    
     \[
-    \phi_0(x) = \tilde{\varphi}(0).
+    x_0(x) = \tilde{\varphi}(0).
     \]
 \end{proof}
 
@@ -972,29 +978,29 @@ dY_k = \frac{\partial g_k}{\partial t} dt
 
 
 Soit une fonction test $F: \mathbb{R}^N \rightarrow \mathbb{R}$, de classe $C^{\infty}$, à support compact. En utilisant la formule d'Ito, on obtient
-%     \[dF(\phi_t) = \sum\limits_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} d\phi_t^i + \frac{1}{2} \sum\limits_{i=1}^N \sum\limits_{j=1}^N \frac{\partial^2 F(\phi_t)}{\partial x_i^2}d\langle \phi^i,\phi^j\rangle_t\]
+%     \[dF(x_t) = \sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} dx_t^i + \frac{1}{2} \sum\limits_{i=1}^N \sum\limits_{j=1}^N \frac{\partial^2 F(x_t)}{\partial x_i^2}d\langle x^i,x^j\rangle_t\]
 % En utilisant l'équation \eqref{eq:SDE} et en notant que 
 %  on obtient:
 \begin{align*}
-    dF(\phi_t) &= \sum\limits_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} (f^i_t(\phi_t)dt + g_tdW^i_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2 dt \\
-    &= \left(\sum\limits_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2\right)dt + \sum\limits_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i}  g_t^2dW^i_t
+    dF(x_t) &= \sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} (f^i_t(x_t)dt + \mathcal{G}_tdW^i_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2 dt \\
+    &= \left(\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2\right)dt + \sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i}  \mathcal{G}_t^2dW^i_t
 \end{align*}
 
 Le terme $dW_t^i$ disparaît en prenant l'espérance  (car $\mathbb{E}[dW_t^i] = 0$ ), donc :
-\[\E{dF(\phi_t)} = \E{\left(\sum\limits_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t) + \frac{1}{2} \sum\limits_{i=1}^N \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2\right)dt}\]
+\[\E{dF(x_t)} = \E{\left(\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2\right)dt}\]
 
 Ou encore, en utilisant la linéarité de l'opérateur espérance, on peut sortir la dérivée, l'équation ci-dessus s'écrit :
-\[ d\E{F(\phi_t)} = \E{\sum\limits_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t) + \frac{1}{2} \sum\limits_{i=1}^N \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2}dt\]
+\[ d\E{F(x_t)} = \E{\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2}dt\]
 
 Ainsi,
 \begin{align}
-    \frac{d\E{F(\phi_t)}}{dt} &= \E{\sum\limits_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2}g_t^2} \nonumber \\
-    &=\E{\sum\limits_{i=1}^N \frac{\partial F(\phi_t)}{\partial x_i} f^i_t(\phi_t)} + \E{\frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(\phi_t)}{\partial x_i^2} g_t^2} \nonumber\\
-    &=\E{ \nabla\ F(\phi_t) \cdot f_t(\phi_t)} + \frac{1}{2}\E{\nabla^2 F(\phi_t) g_t^2} \label{eq:EsperanceEgality}
+    \frac{d\E{F(x_t)}}{dt} &= \E{\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2}\mathcal{G}_t^2} \nonumber \\
+    &=\E{\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t)} + \E{\frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2} \nonumber\\
+    &=\E{ \nabla\ F(x_t) \cdot f_t(x_t)} + \frac{1}{2}\E{\nabla^2 F(x_t) \mathcal{G}_t^2} \label{eq:EsperanceEgality}
 \end{align}
 
-$F$ est continue, donc mesurable, supposons que $\phi \rightarrow \frac{\partial\pi_t(\phi)}{\partial t}$ existe, $\phi \rightarrow F(\phi)\frac{\partial\pi_t(\phi)}{\partial t}$ est intégrable en $\R^N$ car F est à support compact. D'après la règle de Leibniz, le premier terme à droite s'écrit :
-\[\frac{d\mathbb{E}[F(\phi_t)]}{dt} = \frac{d (\int_{\mathbb{R^N}} F(\phi) \pi_t(\phi) d\phi)} {dt} = \int_{\mathbb{R^N}}F(\phi)\frac{\partial\pi_t(\phi)}{\partial t} d\phi\]
+$F$ est continue, donc mesurable, supposons que $x \rightarrow \frac{\partial\pi_t(x)}{\partial t}$ existe, $x \rightarrow F(x)\frac{\partial\pi_t(x)}{\partial t}$ est intégrable en $\R^N$ car F est à support compact. D'après la règle de Leibniz, le premier terme à droite s'écrit :
+\[\frac{d\mathbb{E}[F(x_t)]}{dt} = \frac{d (\int_{\mathbb{R^N}} F(x) \pi_t(x) dx)} {dt} = \int_{\mathbb{R^N}}F(x)\frac{\partial\pi_t(x)}{\partial t} dx\]
 \vspace{2em}
 
 Nous allons rappeler la première identité de Green (Green's first identity) qui est fort utile dans la suite.
@@ -1008,62 +1014,62 @@ Avec n le vecteur normal unitaire à la frontière $\partial\Omega$ et $dS$ la m
 \end{theorem}
 \vspace{3em}
 
-Supposons qu'il existe une fonction $v_t$ telle que $\nabla_{\phi} v_t = f_t \pi_t$.
+Supposons qu'il existe une fonction $v_t$ telle que $\nabla_{x} v_t = f_t \pi_t$.
 
 On utilise la première identité de Green sur le premier terme à gauche en remarquant que l'intégrale sur le bord s'annule car F est à support compact, on obtient :
 \begin{align*}
-    \E{\nabla\ F(\phi_t)\cdot f_t(\phi_t)}  &=\int_{\mathbb{R^N}} \nabla\ F(\phi)\cdot \big(f_t(\phi) \pi_t(\phi) \bigr)d\phi \\
-    &= - \int_{\mathbb{R}^N}F(\phi) (\nabla \cdot f_t(\phi)\pi_t(\phi))d\phi
+    \E{\nabla\ F(x_t)\cdot f_t(x_t)}  &=\int_{\mathbb{R^N}} \nabla\ F(x)\cdot \big(f_t(x) \pi_t(x) \bigr)dx \\
+    &= - \int_{\mathbb{R}^N}F(x) (\nabla \cdot f_t(x)\pi_t(x))dx
 \end{align*}
 
 De la même manière, en appliquant l'intégration par parties deux fois sur le deuxième terme à droite, on obtient :
 \begin{align*}
-    \E{\nabla^2 F(\phi_t) g_t^2} &= \int_{\mathbb{R}^N } \nabla^2 F(\phi) g_t^2 \pi_t(\phi)d\phi\\
-    &= -\int_{\R^N}\nabla F(\phi) \cdot\nabla(g_t^2\pi_t(\phi)) d\phi\\
-    &= \int_{\mathbb{R}^N } F(\phi) \nabla^2(g_t^2 \pi_t(\phi)) d\phi
+    \E{\nabla^2 F(x_t) \mathcal{G}_t^2} &= \int_{\mathbb{R}^N } \nabla^2 F(x) \mathcal{G}_t^2 \pi_t(x)dx\\
+    &= -\int_{\R^N}\nabla F(x) \cdot\nabla(\mathcal{G}_t^2\pi_t(x)) dx\\
+    &= \int_{\mathbb{R}^N } F(x) \nabla^2(\mathcal{G}_t^2 \pi_t(x)) dx
 \end{align*}
 
 Injectons les résultats précédents dans l'équation \eqref{eq:EsperanceEgality} :
-\[\int_{\mathbb{R^N}}F(\phi)\frac{\partial\pi_t(\phi)}{\partial t} d\phi = - \int_{\mathbb{R}^N}F(\phi) (\nabla \cdot f_t(\phi)\pi_t(\phi))d\phi + \frac{1}{2}\int_{\mathbb{R}^N } F(\phi) \nabla^2(g_t^2 \pi_t(\phi)) d\phi\]
+\[\int_{\mathbb{R^N}}F(x)\frac{\partial\pi_t(x)}{\partial t} dx = - \int_{\mathbb{R}^N}F(x) (\nabla \cdot f_t(x)\pi_t(x))dx + \frac{1}{2}\int_{\mathbb{R}^N } F(x) \nabla^2(\mathcal{G}_t^2 \pi_t(x)) dx\]
 
 Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e ensemble des fonctions infiniment dérivables à support compact), la théorie des distributions nous dit : 
-\[\frac{\partial\pi_t(\phi)}{\partial t} = -\nabla \cdot (f_t(\phi)\pi_t(\phi)) + \frac{1}{2}\nabla^2(g_t^2 \pi_t(\phi)) \quad \] 
+\[\frac{\partial\pi_t(x)}{\partial t} = -\nabla \cdot (f_t(x)\pi_t(x)) + \frac{1}{2}\nabla^2(\mathcal{G}_t^2 \pi_t(x)) \quad \] 
 \end{proof}
 
 \section{Proof of \cref{prop:solution_processus_direct}} \label{sec:proof_solution_processus_direct}
 
 \begin{proof}
     D'après l'équation \eqref{eq:OU}:
-    \[d\phi_t^i = -\gamma_t \phi_t^i dt + \sqrt{2\gamma_t}dW_t^i, \quad \forall i=1,2,\dots,N\] 
+    \[dx_t^i = -\gamma_t x_t^i dt + \sqrt{2\gamma_t}dW_t^i, \quad \forall i=1,2,\dots,N\] 
     
     Posons $\mu_t = \exp{\left(\int_0^t \gamma_s ds\right)}, \quad \forall t \geq 0$.
     
-    Soit $Y_t$ un processus stochastique défini par $Y_t \coloneqq f(t,\phi_t^i)= \mu_t \phi_t^i$.
+    Soit $Y_t$ un processus stochastique défini par $Y_t \coloneqq f(t,x_t^i)= \mu_t x_t^i$.
     
     En utilisant la formule d'Ito, on obtient:
-    \[dY_t = \frac{\partial f(t,\phi_t^i)}{\partial t} dt + \frac{\partial f(t,\phi_t^i)}{\partial x} d\phi_t + \frac{1}{2}\frac{\partial^2f(t,\phi_t^i)}{\partial x^2}d\langle\phi,\phi\rangle_t\]
+    \[dY_t = \frac{\partial f(t,x_t^i)}{\partial t} dt + \frac{\partial f(t,x_t^i)}{\partial x} dx_t + \frac{1}{2}\frac{\partial^2f(t,x_t^i)}{\partial x^2}d\langle x,x \rangle_t\]
 
     En particulier:
     \begin{itemize}
-        \item $\frac{\partial f(t,\phi_t^i)}{\partial t} = \gamma_t \mu_t \phi_t^i$
-        \item $\frac{\partial f(t,\phi_t^i)}{\partial x} = \mu_t$
-        \item $\frac{\partial^2f(t,\phi_t^i)}{\partial x^2}=0$
+        \item $\frac{\partial f(t,x_t^i)}{\partial t} = \gamma_t \mu_t x_t^i$
+        \item $\frac{\partial f(t,x_t^i)}{\partial x} = \mu_t$
+        \item $\frac{\partial^2f(t,x_t^i)}{\partial x^2}=0$
     \end{itemize}
 
     Ainsi,
     \begin{align*}
-        dY_t &= \gamma_t \mu_t \phi_t^i dt + \mu_t d\phi_t^i\\
-        &= \gamma_t \mu_t \phi_t^i dt + \mu_t (-\gamma_t \phi_t^i dt + \sqrt{2\gamma_t}dW_t^i)\\
+        dY_t &= \gamma_t \mu_t x_t^i dt + \mu_t dx_t^i\\
+        &= \gamma_t \mu_t x_t^i dt + \mu_t (-\gamma_t x_t^i dt + \sqrt{2\gamma_t}dW_t^i)\\
         &= \mu_t\sqrt{2\gamma_t}dW_t^i
     \end{align*}
     
     On passe à l'intégrale pour 2 côtés :
     \[Y_t = Y_0 + \int_0^t \mu_s\sqrt{2\gamma_s}dW_s^i\]
 
-    Remplaçons $Y_t$ par $\mu_t \phi_t^i$, puis divisons les 2 côtés par $\mu_t$ pour faire apparaitre $\phi_t^i$, on obtient:
+    Remplaçons $Y_t$ par $\mu_t x_t^i$, puis divisons les 2 côtés par $\mu_t$ pour faire apparaitre $x_t^i$, on obtient:
     \begin{align*}
-        \phi_t^i &= \frac{1}{\mu_t}\phi_0^i + \frac{1}{\mu_t} \int_0^t \mu_s\sqrt{2\gamma_s}dW_s^i \\
-        &= \sqrt{\bar{\alpha_t}}\phi_0^i + \frac{1}{\mu_t} \int_0^t \mu_s\sqrt{2\gamma_s}dW_s^i
+        x_t^i &= \frac{1}{\mu_t}x_0^i + \frac{1}{\mu_t} \int_0^t \mu_s\sqrt{2\gamma_s}dW_s^i \\
+        &= \sqrt{\bar{\alpha_t}}x_0^i + \frac{1}{\mu_t} \int_0^t \mu_s\sqrt{2\gamma_s}dW_s^i
     \end{align*}
 
     Notons $Z_t = \int_0^t\mu_s\sqrt{2\gamma_s}dW_s^i$. On remarque que $Z_t$ est une intégrale d'Itô par rapport à un mouvement brownien. On peut réécrire cette intégrale sous forme :
@@ -1085,12 +1091,12 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
     D'où :
     \[\frac{1}{\mu_t}Z_t \sim \mathcal{N}\left(0, 1-\bar{\alpha_t}\right)\]
 
-    On injecte ce résultat dans l'équation de $\phi_t^i$, on obtient :
-    \[\phi_t^i = \sqrt{\bar{\alpha_t}}\phi_0^i + \sqrt{1-\bar \alpha_t}\,\eta^i\]
+    On injecte ce résultat dans l'équation de $x_t^i$, on obtient :
+    \[x_t^i = \sqrt{\bar{\alpha_t}}x_0^i + \sqrt{1-\bar \alpha_t}\,\eta^i\]
     avec $\eta^i \sim \sqrt{1-\bar{\alpha_t}}\,\mathcal{N}\left(0, 1\right)$
 
-    On obtient $\phi_t$ en rassemblant les expressions de ses composantes. 
-    \[\phi_t = \sqrt{\bar{\alpha_t}}\phi_0 + \sqrt{1-\bar{\alpha_t}}\eta_t \quad \] 
+    On obtient $x_t$ en rassemblant les expressions de ses composantes. 
+    \[x_t = \sqrt{\bar{\alpha_t}}x_0 + \sqrt{1-\bar{\alpha_t}}\eta_t \quad \] 
     Avec $\eta$ est définie telle que chaque composante de $\eta$ a une distribution normale centrée réduite. L'espérance de $\eta$ est donc $0_{\R^N}$. Il nous reste à chercher sa matrice de covariance.
 
     On remarque  que chaque composante $\eta^i$ de $\eta$ ne dépend que de $W_t^i$, de plus, $W_t^i$ est à son tour indépendante de l'autre composante de $W_t$. On peut donc conclure que les composantes de $\eta$ sont indépendantes l'une de l'autre. $\eta$ est donc un vecteur gaussien isotrope car ses composantes sont des variables indépendamment et identiquement distribuées i.e
@@ -1160,24 +1166,24 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
 \begin{proof}
     On commence par rappeler le processus direct:
     \begin{align*}
-    \phi_t &= \sqrt{\bar \alpha_t}\phi_0 + \sqrt{1-\bar \alpha_t} \eta \quad \text{avec } \eta \sim \mathcal{N}(0_{\R^N},I_N)\\
+    x_t &= \sqrt{\bar \alpha_t}x_0 + \sqrt{1-\bar \alpha_t} \eta \quad \text{avec } \eta \sim \mathcal{N}(0_{\R^N},I_N)\\
     \end{align*}
 
-    Posons $X = \sqrt{\bar \alpha_t}\phi_0$ et $Y = \sqrt{1-\bar \alpha_t} \eta$. Comme $\phi_0$ et $\eta$ sont indépendantes, $X$ et $Y$ le sont. En utilisant le résultat (i) de \cref{prop:quelques_resultats_sur_la_densite}, on obtient la fonction de densité de $X$ :
+    Posons $X = \sqrt{\bar \alpha_t}x_0$ et $Y = \sqrt{1-\bar \alpha_t} \eta$. Comme $x_0$ et $\eta$ sont indépendantes, $X$ et $Y$ le sont. En utilisant le résultat (i) de \cref{prop:quelques_resultats_sur_la_densite}, on obtient la fonction de densité de $X$ :
     \[f_X(x) = \frac{1}{\sqrt{\bar{\alpha_t}}^N} \pi_0\left(\frac{x}{\sqrt{\bar{\alpha_t}}}\right) \quad\forall x \in \R^N\]
 
     La fonction de densité de $Y$ est $g$ qui est celle d'une loi normale $\mathcal{N}\left(0_{\R^N}, (1-\bar \alpha _t\,)I_N\right)$.
 
-    D'après le résultat (ii) de la  \cref{prop:quelques_resultats_sur_la_densite}, la fonction de densité $\pi_t$ de $\phi_t$ est donnée par :
+    D'après le résultat (ii) de la  \cref{prop:quelques_resultats_sur_la_densite}, la fonction de densité $\pi_t$ de $x_t$ est donnée par :
     \begin{align*}
-        \pi_t(\phi) &= (f_X*g)(\phi) \quad \forall\phi\in \R^N \\
-        &= \int_{\R_N} \frac{1}{\sqrt{\bar{\alpha_t}}^N} \pi_0\left(\frac{\theta}{\sqrt{\bar{\alpha_t}}}\right) g_t(\phi -\theta) d\theta\\
+        \pi_t(x) &= (f_X*g)(x) \quad \forall x\in \R^N \\
+        &= \int_{\R_N} \frac{1}{\sqrt{\bar{\alpha_t}}^N} \pi_0\left(\frac{z}{\sqrt{\bar{\alpha_t}}}\right) \mathcal{G}_t(x -z) dz\\
     \end{align*}
 
-    On remarque $\frac{1}{\sqrt{\bar{\alpha_t}}^n} d\theta = d\left(\frac{\theta}{\sqrt{\bar{\alpha_t}}}\right)$. En faisant une changement de variable $\omega = \frac{\omega}{\sqrt{\bar{\alpha_t}}}$, la distribution de $\phi_t$ s'écrit :
+    On remarque $\frac{1}{\sqrt{\bar{\alpha_t}}^n} dz = d\left(\frac{z}{\sqrt{\bar{\alpha_t}}}\right)$. En faisant une changement de variable $\omega = \frac{\omega}{\sqrt{\bar{\alpha_t}}}$, la distribution de $x_t$ s'écrit :
     \begin{align*}
-        \pi_t(\phi) &= (f_X*g)(\phi) \quad \forall\phi\in \R^N \\
-        &= \int_{\R_N}  \pi_0(\omega) g_t(\phi -\sqrt{\bar{\alpha_t}}\,\omega) d\omega\\
+        \pi_t(x) &= (f_X*g)(x) \quad \forall x\in \R^N \\
+        &= \int_{\R_N}  \pi_0(\omega) \mathcal{G}_t(x -\sqrt{\bar{\alpha_t}}\,\omega) d\omega\\
     \end{align*}
 \end{proof}
 
@@ -1185,49 +1191,49 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
 % \begin{proof}
 %     L'espérance conditionnelle mentionnée ci-dessus s'écrit :
 %     \begin{align}
-%         \E{\eta|\phi_t = \phi} &= \int_{\R^N} z f_{\eta|\phi_t=\phi}(z) dz \nonumber\\
-%         &= \int_{R^N} z \frac{f_{\eta,\phi_t}(z,\phi)}{\pi_t(\phi)}dz \label{eq:first_developpement} 
+%         \E{\eta|x_t = x} &= \int_{\R^N} z f_{\eta|x_t=x}(z) dz \nonumber\\
+%         &= \int_{R^N} z \frac{f_{\eta,x_t}(z,x)}{\pi_t(x)}dz \label{eq:first_developpement} 
 %     \end{align}
 
-%     La densité de probabilité jointe de $\eta$ et $\phi_t$ est donnée par :
+%     La densité de probabilité jointe de $\eta$ et $x_t$ est donnée par :
 %     \begin{align*}
-%         f_{\eta,\phi_t}(z,\phi) &= f_{\eta,\sqrt{\bar \alpha_t}\phi_0 + \sqrt{1-\bar\alpha_t}\eta }(z,\phi) \\
-%         &= f_{\eta,\phi_0}\left(z,\frac{\phi-\sqrt{1-\bar \alpha_t} z}{\sqrt{\bar \alpha_t}}\right)
+%         f_{\eta,x_t}(z,x) &= f_{\eta,\sqrt{\bar \alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\eta }(z,x) \\
+%         &= f_{\eta,x_0}\left(z,\frac{x-\sqrt{1-\bar \alpha_t} z}{\sqrt{\bar \alpha_t}}\right)
 %     \end{align*}
 
-%     Et comme $\eta$ et $\phi_0$ sont indépendantes, la densité jointe est égale au produit de deux densités, on obtient :
+%     Et comme $\eta$ et $x_0$ sont indépendantes, la densité jointe est égale au produit de deux densités, on obtient :
 %     \begin{equation*}
-%         f_{\eta,\phi_t} = f_{\mathcal{N}(0,I_N)}(z) \,\pi_0\left(\frac{\phi-\sqrt{1-\bar \alpha_t} z}{\sqrt{\bar \alpha_t}}\right)
+%         f_{\eta,x_t} = f_{\mathcal{N}(0,I_N)}(z) \,\pi_0\left(\frac{x-\sqrt{1-\bar \alpha_t} z}{\sqrt{\bar \alpha_t}}\right)
 %     \end{equation*}
 
 %     Injectons ce résultat dans l'\cref{eq:first_developpement} :
 %     \begin{equation*}
-%         \E{\eta|\phi_t = \phi}=\int_{\R^N} z \,\frac{f_{\mathcal{N}(0,I_N)}(z) \,\pi_0\left(\frac{\phi-\sqrt{1-\bar \alpha_t} z}{\sqrt{\bar \alpha_t}}\right)}{\pi_t(\phi)}\, dz
+%         \E{\eta|x_t = x}=\int_{\R^N} z \,\frac{f_{\mathcal{N}(0,I_N)}(z) \,\pi_0\left(\frac{x-\sqrt{1-\bar \alpha_t} z}{\sqrt{\bar \alpha_t}}\right)}{\pi_t(x)}\, dz
 %     \end{equation*}
 
-%     On fait un changement de variable, posons $\theta = \frac{\phi-\sqrt{1-\bar \alpha_t} z}{\sqrt{\bar \alpha_t}}$. De cette manière, on obtient :
+%     On fait un changement de variable, posons $z = \frac{x-\sqrt{1-\bar \alpha_t} z}{\sqrt{\bar \alpha_t}}$. De cette manière, on obtient :
 %     \begin{equation*}
 %         \begin{cases}    
-%             z = \frac{\phi-\sqrt{\bar \alpha_t}\theta}{\sqrt{1-\bar\alpha_t}} \\
-%             dz = \left| \frac{\sqrt{\bar \alpha_t}}{\sqrt{1-\bar\alpha_t}}\right|^N d\theta = \left( \frac{\bar \alpha_t}{1-\bar\alpha_t}\right)^\frac{N}{2}d\theta
+%             z = \frac{x-\sqrt{\bar \alpha_t}z}{\sqrt{1-\bar\alpha_t}} \\
+%             dz = \left| \frac{\sqrt{\bar \alpha_t}}{\sqrt{1-\bar\alpha_t}}\right|^N dz = \left( \frac{\bar \alpha_t}{1-\bar\alpha_t}\right)^\frac{N}{2}dz
 %         \end{cases}
 %     \end{equation*}
 
 %     Ainsi,
 %     \begin{equation*}
-%         \E{\eta|\phi_t = \phi} = \int_{\R^N} \frac{\phi-\sqrt{\bar \alpha_t}\,\theta}{\sqrt{1-\bar\alpha_t}}\, \frac{f_{\mathcal{N}(0,I_N)}\left(\frac{\phi-\sqrt{\bar \alpha_t}\,\theta}{\sqrt{1-\bar\alpha_t}}\right)\, \pi_0(\theta)}{\pi_t(\phi)}\,\left( \frac{\bar \alpha_t}{1-\bar\alpha_t}\right)^\frac{N}{2} d\theta
+%         \E{\eta|x_t = x} = \int_{\R^N} \frac{x-\sqrt{\bar \alpha_t}\,z}{\sqrt{1-\bar\alpha_t}}\, \frac{f_{\mathcal{N}(0,I_N)}\left(\frac{x-\sqrt{\bar \alpha_t}\,z}{\sqrt{1-\bar\alpha_t}}\right)\, \pi_0(z)}{\pi_t(x)}\,\left( \frac{\bar \alpha_t}{1-\bar\alpha_t}\right)^\frac{N}{2} dz
 %     \end{equation*}
 
 %     Ou encore, par le point (i) de la \cref{prop:quelques_resultats_sur_la_densite} :
 %     \begin{align*}
-%         \left( \frac{1}{1-\bar\alpha_t}\right)^\frac{N}{2}f_{\mathcal{N}(0,I_N)}\left(\frac{\phi-\sqrt{\bar \alpha_t}\theta}{\sqrt{1-\bar\alpha_t}}\right) &=  f_{\mathcal{N}(0,(1-\bar \alpha_t)I_N)}(\phi-\sqrt{\bar \alpha_t}\theta) \\
-%         &= g(\phi-\sqrt{\bar \alpha_t}\,\theta)
+%         \left( \frac{1}{1-\bar\alpha_t}\right)^\frac{N}{2}f_{\mathcal{N}(0,I_N)}\left(\frac{x-\sqrt{\bar \alpha_t}z}{\sqrt{1-\bar\alpha_t}}\right) &=  f_{\mathcal{N}(0,(1-\bar \alpha_t)I_N)}(x-\sqrt{\bar \alpha_t}z) \\
+%         &= g(x-\sqrt{\bar \alpha_t}\,z)
 %     \end{align*}
 
 %     D'où :
 %     \begin{align*}
-%         \E{\eta|\phi_t = \phi} &= \frac{\bar \alpha_t^{\frac{N}{2}}}{\sqrt{1-\bar\alpha_t}} \int_{\R^N} \frac{\pi_0(\theta)\, g(\phi - \sqrt{\bar \alpha_t} \,\theta)(\phi - \sqrt{\bar \alpha_t} \,\theta)}{\pi_t(\phi)} d\theta \\
-%         % &= - \bar \alpha_t^{\frac{N}{2}} \sqrt{1-\bar\alpha_t}\, s_t(\phi)
+%         \E{\eta|x_t = x} &= \frac{\bar \alpha_t^{\frac{N}{2}}}{\sqrt{1-\bar\alpha_t}} \int_{\R^N} \frac{\pi_0(z)\, g(x - \sqrt{\bar \alpha_t} \,z)(x - \sqrt{\bar \alpha_t} \,z)}{\pi_t(x)} dz \\
+%         % &= - \bar \alpha_t^{\frac{N}{2}} \sqrt{1-\bar\alpha_t}\, s_t(x)
 %     \end{align*}
     
 % \end{proof}
@@ -1264,15 +1270,15 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
 
         \item Soit \( f \in C^1(X, \R) \) et \( x \in X \). On veut montrer que :
         \[
-        \nabla_\phi f(U^{-1}x) = U \, \nabla f(U^{-1}x).
+        \nabla_x f(U^{-1}x) = U \, \nabla f(U^{-1}x).
         \]
         Par définition du gradient, pour tout vecteur \( h \in X \), on a :
         \[
-        \langle \nabla_\phi f(U^{-1}x), h \rangle = D_\phi f(U^{-1}x) \cdot h,
+        \langle \nabla_x f(U^{-1}x), h \rangle = D_x f(U^{-1}x) \cdot h,
         \]
-        où \( D_\phi f(U^{-1}x) \) est la dérivée directionnelle de \( f \) en \( U^{-1}x \) dans la direction \( h \). En utilisant la règle de dérivation en chaîne, on obtient :
+        où \( D_x f(U^{-1}x) \) est la dérivée directionnelle de \( f \) en \( U^{-1}x \) dans la direction \( h \). En utilisant la règle de dérivation en chaîne, on obtient :
         \[
-        D_\phi f(U^{-1}x) \cdot h = D f(U^{-1}x) \cdot (U^{-1} h) = \langle \nabla f(U^{-1}x), U^{-1} h \rangle.
+        D_x f(U^{-1}x) \cdot h = D f(U^{-1}x) \cdot (U^{-1} h) = \langle \nabla f(U^{-1}x), U^{-1} h \rangle.
         \]
         Comme \( U \) est unitaire, \( U^{-1} = U^\dagger \), donc :
         \[
@@ -1280,11 +1286,11 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
         \]
         Ainsi, on a :
         \[
-        \langle \nabla_\phi f(U^{-1}x), h \rangle = \langle U \nabla f(U^{-1}x), h \rangle.
+        \langle \nabla_x f(U^{-1}x), h \rangle = \langle U \nabla f(U^{-1}x), h \rangle.
         \]
         Comme cette égalité est vraie pour tout \( h \in X \), on en déduit que :
         \[
-        \nabla_\phi f(U^{-1}x) = U \, \nabla f(U^{-1}x).
+        \nabla_x f(U^{-1}x) = U \, \nabla f(U^{-1}x).
         \]
     \end{enumerate}
 \end{proof}
@@ -1293,22 +1299,22 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
 % \begin{proof}
 % Soit $M_t$ G-équivariant modèle qui approxime la fonction du score $s_t$. $M_t$ est donc optimisé sous la fonction de coût suivante:
 % \[
-% \mathcal{L}_t(M_t) = \mathbb{E}_{\phi \sim \pi_t} \left[ \| M_t(\phi) - s_t(\phi) \|^2 \right]
+% \mathcal{L}_t(M_t) = \mathbb{E}_{x \sim \pi_t} \left[ \| M_t(x) - s_t(x) \|^2 \right]
 % \]
 
-% On fixe un point $\psi \in \mathbb{R}^N$. Par définition, l'orbite de $\psi$ sous le groupe $G$ est $G(\psi) = \{ \phi |\, \exists U \in G, U \psi = \phi \}$. Comme $M_t$ est G-équivariant modele, pour tout $\phi \in G(\psi)$, $\exists U \in G$ tel que $M_t(\phi) = U M_t(\psi)$.
+% On fixe un point $\psi \in \mathbb{R}^N$. Par définition, l'orbite de $\psi$ sous le groupe $G$ est $G(\psi) = \{ x |\, \exists U \in G, U \psi = x \}$. Comme $M_t$ est G-équivariant modele, pour tout $x \in G(\psi)$, $\exists U \in G$ tel que $M_t(x) = U M_t(\psi)$.
 
-% Le problème d'optimiser $M_t(\phi)$ pour tout $\phi \in G(\psi)$ revient à chercher $M_t$ minimiser la fonction de coût suivante:
+% Le problème d'optimiser $M_t(x)$ pour tout $x \in G(\psi)$ revient à chercher $M_t$ minimiser la fonction de coût suivante:
 % \begin{align*}
-% \widetilde{\mathcal{L}}_t(M_t) &= \mathbb{E}_{\phi_t \sim \pi_t | \phi_t \in G(\psi)} \left[ \| M_t(\phi_t) - \nabla \log \pi_t(\phi_t) \|^2 \right]\\ 
-% &= \mathbb{E}_{\phi_t \sim \pi_t} \left[ \| M_t(\phi_t) - \nabla \log \pi_t(\phi_t) \|^2 \,|\, \phi_t \in G(\psi) \right] \\
-% &= \frac{1}{\mathbb{P}_{\phi_t \sim \pi_t} (\phi_t \in G(\psi))}\,\mathbb{E}_{\phi_t \sim \pi_t} \left[ \| M_t(\phi_t) - \nabla \log \pi_t(\phi_t) \|^2\, \mathbb{1}_{\phi_t \in G(\psi)} \right] \\
-% &= \frac{1}{\mathbb{P}_{\phi_t \sim \pi_t} (\phi_t \in G(\psi))} \int_{G(\psi)} \pi_t(\theta) \| M_t(\theta) - \nabla \log \pi_t(\theta) \|^2 \, d\theta
+% \widetilde{\mathcal{L}}_t(M_t) &= \mathbb{E}_{x_t \sim \pi_t | x_t \in G(\psi)} \left[ \| M_t(x_t) - \nabla \log \pi_t(x_t) \|^2 \right]\\ 
+% &= \mathbb{E}_{x_t \sim \pi_t} \left[ \| M_t(x_t) - \nabla \log \pi_t(x_t) \|^2 \,|\, x_t \in G(\psi) \right] \\
+% &= \frac{1}{\mathbb{P}_{x_t \sim \pi_t} (x_t \in G(\psi))}\,\mathbb{E}_{x_t \sim \pi_t} \left[ \| M_t(x_t) - \nabla \log \pi_t(x_t) \|^2\, \mathbb{1}_{x_t \in G(\psi)} \right] \\
+% &= \frac{1}{\mathbb{P}_{x_t \sim \pi_t} (x_t \in G(\psi))} \int_{G(\psi)} \pi_t(z) \| M_t(z) - \nabla \log \pi_t(z) \|^2 \, dz
 % \end{align*}
 
 % On va rappeler la propriété de stabilisateur orbital qui nous permet de convertir l'intégrale sur l'orbite à l'intégrale sur le groupe entier. Mathématiquement, la propriété s'annonce que  
 % \begin{align*}
-%     & \int_{G(\psi)} u(\theta) \, d\theta = \int\limits_{G/Stab(\psi)} u(U\psi) \, dU\\
+%     & \int_{G(\psi)} u(z) \, dz = \int\limits_{G/Stab(\psi)} u(U\psi) \, dU\\
 %     & \text{avec } Stab(\psi) \coloneqq \{U\in G \, | U\psi = \psi\}
 % \end{align*}
 
@@ -1321,18 +1327,18 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
 
 % De plus, par l'invariance de la mesure de Haar, on a $dU = dU^{-1}$. Ainsi,
 % \[
-% \int_{G(\psi)} u(\theta) \, d\theta = \int_{G/Stab(\psi)} u(U^{-1}\psi) \, dU
+% \int_{G(\psi)} u(z) \, dz = \int_{G/Stab(\psi)} u(U^{-1}\psi) \, dU
 % \]
 
 % Injectons ce résultat dans l'expression de $\widetilde{\mathcal{L}}_t$, on obtient :
 % \[
-% \widetilde{\mathcal{L}}(M_t) = \frac{1}{\mathbb{P}_{\phi_t \sim \pi_t} (\phi_t \in G(\psi))} \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) \| M_t(U^{-1}\psi) - \nabla \log \pi_t(U^{-1}\psi) \|^2 \, dU
+% \widetilde{\mathcal{L}}(M_t) = \frac{1}{\mathbb{P}_{x_t \sim \pi_t} (x_t \in G(\psi))} \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) \| M_t(U^{-1}\psi) - \nabla \log \pi_t(U^{-1}\psi) \|^2 \, dU
 % \]
 
 % Tout élément $U$ du groupe $G$ préserve la norme, c'est-à-dire $\|Ux\| = \|x\|$, on en déduit:
 
 % \[
-% \widetilde{\mathcal{L}}_t(M_t) = \frac{1}{\mathbb{P}_{\phi_t \sim \pi_t} (\phi_t \in G(\psi))} \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) \|UM_t(U^{-1}\psi) - U\nabla \log \pi_t(U^{-1}\psi)\|^2 dU
+% \widetilde{\mathcal{L}}_t(M_t) = \frac{1}{\mathbb{P}_{x_t \sim \pi_t} (x_t \in G(\psi))} \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) \|UM_t(U^{-1}\psi) - U\nabla \log \pi_t(U^{-1}\psi)\|^2 dU
 % \]
 
 % Comme $M_t$ est un $G$-équivariant modèle, on a:
@@ -1342,19 +1348,19 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
 
 % Ainsi,
 % \[
-% \widetilde{\mathcal{L}}_t(M_t) = \frac{1}{\mathbb{P}_{\phi_t \sim \pi_t} (\phi_t \in G(\psi))} \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) \|M_t(\psi) - U\nabla \log \pi_t(U^{-1}\psi)\|^2 dU.
+% \widetilde{\mathcal{L}}_t(M_t) = \frac{1}{\mathbb{P}_{x_t \sim \pi_t} (x_t \in G(\psi))} \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) \|M_t(\psi) - U\nabla \log \pi_t(U^{-1}\psi)\|^2 dU.
 % \]
 
 % On ajoute une petite perturbation $\varepsilon h$ à $\widetilde{\mathcal{L}}_t$ avec $\varepsilon \in \R$ et $h$ une fonction arbitraire, ce qui nous donne :
 % \begin{align*}
-%     \widetilde{\mathcal{L}}_t(M_t + \varepsilon h) &= \frac{1}{\mathbb{P}_{\phi_t \sim \pi_t} (\phi_t \in G(\psi))} \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) \|M_t(\psi) + \varepsilon h(\psi) - U\nabla \log \pi_t(U^{-1}\psi)\|^2 dU\\
-%     &= \widetilde{\mathcal{L}}_t(M_t) + 2\varepsilon \frac{1}{\mathbb{P}_{\phi_t \sim \pi_t} (\phi_t \in G(\psi))} \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) \langle h(\psi), M_t(\psi) - U\nabla \log \pi_t(U^{-1}\psi) \rangle dU + O(\varepsilon^2)
+%     \widetilde{\mathcal{L}}_t(M_t + \varepsilon h) &= \frac{1}{\mathbb{P}_{x_t \sim \pi_t} (x_t \in G(\psi))} \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) \|M_t(\psi) + \varepsilon h(\psi) - U\nabla \log \pi_t(U^{-1}\psi)\|^2 dU\\
+%     &= \widetilde{\mathcal{L}}_t(M_t) + 2\varepsilon \frac{1}{\mathbb{P}_{x_t \sim \pi_t} (x_t \in G(\psi))} \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) \langle h(\psi), M_t(\psi) - U\nabla \log \pi_t(U^{-1}\psi) \rangle dU + O(\varepsilon^2)
 % \end{align*}
 
 % La variation de premier ordre de $\widetilde{\mathcal{L}}_t$ correspond à:
 % \begin{align*}
 %     \delta \widetilde{\mathcal{L}}_t(M_t) &= \lim\limits_{\varepsilon \to 0} \frac{\widetilde{\mathcal{L}}_t(M_t + \varepsilon h) - \widetilde{\mathcal{L}}_t(M_t)}{\varepsilon}\\
-%     &= \frac{2}{\mathbb{P}_{\phi_t \sim \pi_t} (\phi_t \in G(\psi))} \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) \langle h(\psi), M_t(\psi) - U\nabla \log \pi_t(U^{-1}\psi) \rangle dU
+%     &= \frac{2}{\mathbb{P}_{x_t \sim \pi_t} (x_t \in G(\psi))} \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) \langle h(\psi), M_t(\psi) - U\nabla \log \pi_t(U^{-1}\psi) \rangle dU
 % \end{align*}
 
 
@@ -1378,7 +1384,7 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
 
 % Notons
 % \[
-% \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) dU = \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \int_{G/Stab(\psi)} \mathcal{N}(U^{-1}\psi | \sqrt{\bar \alpha_t} \varphi, (1-\bar \alpha_t) I) dU
+% \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) dU = \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \int_{G/Stab(\psi)} \mathcal{N}(U^{-1}\psi | \sqrt{\bar \alpha_t} \varphi, (1-\bar \alpha_t) I) dU
 % \]
 
 % Comme $U$ est unitaire, il en résulte que :
@@ -1392,18 +1398,18 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
 
 % Alors
 % \[
-% \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) dU = \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \int_{G/Stab(\psi)} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} U \varphi, (1-\bar \alpha_t) I) dU
+% \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) dU = \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \int_{G/Stab(\psi)} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} U \varphi, (1-\bar \alpha_t) I) dU
 % \]
 
 % Par la propriété du stabilisateur orbital :
 % \[
-% \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) dU = \frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in \mathcal{D}} \int_{G(\varphi)} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) d\varphi'
+% \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) dU = \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \int_{G(\varphi)} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) d\varphi'
 % \]
 
 % D'où
 % \begin{align*}
 %     M_t(\psi) &= \nabla_\psi \log \int_{G/Stab(\psi)} \pi_t(U^{-1}\psi) d\psi\\
-%     &= -\frac{1}{1-\bar \alpha_t} \frac{\sum\limits_{\varphi \in \mathcal{D}} \int_{G(\varphi)} (\psi - \sqrt{\bar \alpha_t} \varphi') \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) d\varphi'}{\sum\limits_{\varphi \in \mathcal{D}} \int_{G(\varphi)} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) d\varphi'}
+%     &= -\frac{1}{1-\bar \alpha_t} \frac{\sum\limits_{x_0  \in \mathcal{D}} \int_{G(\varphi)} (\psi - \sqrt{\bar \alpha_t} \varphi') \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) d\varphi'}{\sum\limits_{x_0  \in \mathcal{D}} \int_{G(\varphi)} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) d\varphi'}
 % \end{align*}
 % \end{proof}
 
@@ -1440,7 +1446,7 @@ En notant que $\nabla \log p_Y(y) = \frac{\nabla p_Y(y)}{p_Y(y)}$, on déduit :
     \begin{equation*}
         \mathcal{V} = \psi(\R^{N-K}) = \left\{ v_0 + V u: u \in \R^{N - K} \right\}
     \end{equation*}
-    Since $\psi$ is an affine isometry, we have $\det{J_{\phi} J_{\phi}^T} = 1$ and therefore we can relate the Hausdorff measure with the Lebesgue measure: 
+    Since $\psi$ is an affine isometry, we have $\det{J_{x} J_{x}^T} = 1$ and therefore we can relate the Hausdorff measure with the Lebesgue measure: 
     \begin{align*}
         \int_{\mathcal{V}} \Normal{w; \mu, \sigma^2 \Id_{N}} d \mathcal{H}^{N - K}(w)
         &=  \int_{\R^{N - K}} \Normal{\psi(u); \mu, \sigma^2 \Id_N} d u  \\
