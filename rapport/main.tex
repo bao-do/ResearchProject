@@ -13,7 +13,7 @@
 \usepackage{cleveref} % Pour pouvoir utiliser cref
 
 \theoremstyle{definition} % Style pour les définitions
-\newtheorem{definition}{Définition}[section]
+\newtheorem{definition}{Definition}[section]
 
 \theoremstyle{definition} % Style pour les propositions et lemmes
 \newtheorem{proposition}[definition]{Proposition}
@@ -25,23 +25,31 @@
 \theoremstyle{definition} % Style pour les remarques
 \newtheorem{remark}[definition]{Remark}
 
-\newcommand{\E}[1]{\mathbb{E}\left[#1\right]}
+\newtheorem{example}{Example}[section]
+
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+
+
+% Real
 \newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\C}{\mathbb{C}}
-\newcommand{\Xc}{\mathcal{X}}
-\newcommand{\Ac}{\mathcal{A}}
-\renewcommand{\H}{\mathcal{H}}
-\newcommand{\dist}{\mathrm{dist}}
-\newcommand{\eqdef}{\stackrel{\mathrm{def}}{=}}
-\newcommand{\argmin}{\mathop{\mathrm{argmin}}}
-\newcommand{\argmax}{\mathop{\mathrm{argmax}}}
-\newcommand{\xmap}{x_{\scalebox{0.5}{\textrm{MAP}}}}
-\newcommand{\xmmse}{x_{\scalebox{0.5}{\textrm{MMSE}}}}
-\newcommand{\xmarginal}{x_{\scalebox{0.5}{\textrm{MARG}}}}
-% Linear algebra
+
+% Expectation, probability, Gaussian, Covariance and Variance
+\newcommand{\E}[1]{\mathbb{E} \left[ {#1} \right] }
+\newcommand{\EE}[2]{\mathbb{E}_{#2} \left[ {#1} \right] }
+\newcommand{\Ec}[2]{\mathbb{E}_{{#2}} \left[ {#1} \right] }
+
+\newcommand{\Pro}[1]{\mathbb{P}\left( {#1} \right) }
 \newcommand{\Normal}[1]{\mathcal{N}\left( {#1} \right)}
+\newcommand{\Cov}[1]{\mathrm{Cov}\left( {#1} \right)}
+\newcommand{\Var}[1]{\mathrm{Var}\left( {#1} \right)}
+
+% Linear algebra
 \renewcommand{\ker}[1]{\mathrm{ker}\left( {#1} \right)}
+\newcommand{\rank}[1]{\mathrm{rank}\left( {#1} \right)}
 \newcommand{\supp}[1]{\mathrm{supp}\left( {#1} \right)}
 \newcommand{\Id}{\mathrm{I}}
 \newcommand{\trace}[1]{\mathrm{tr}\left( #1 \right)}
@@ -50,13 +58,48 @@
 \newcommand{\norm}[1]{\left\| #1 \right \|}
 \newcommand{\inner}[1]{\left\langle #1 \right\rangle}
 
+% bold symbol
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+
+% Manifold
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\x}{\boldsymbol{x}}
+\newcommand{\z}{\boldsymbol{z}}
+\renewcommand{\i}{\boldsymbol{i}}
+\newcommand{\w}{\boldsymbol{w}}
+\newcommand{\beps}{\boldsymbol{\epsilon}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\A}{\boldsymbol{A}}
+\newcommand{\y}{\boldsymbol{y}}
+\newcommand{\n}{\boldsymbol{n}}
+\newcommand{\0}{\boldsymbol{0}}
+\renewcommand{\Im}[1]{\mathrm{Im} \left( {#1}  \right)}
+
+
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+\renewcommand{\H}{\mathcal{H}}
+\newcommand{\D}{\mathcal{D}}
+\renewcommand{\det}[1]{\mathrm{det}\left( #1 \right)}
+\newcommand{\Tx}{T^{\X}}
+\newcommand{\Ty}{T^{\Y}}
+
+
+
+\newcommand{\eqdef}{\stackrel{\mathrm{def}}{=}}
+
+
 
 \newcommand{\todo}[1]{\textcolor{red}{\textbf{TODO:} #1}}
 
 
 \title{An Analysis of Locality and Equivariant on Diffusion Model and MMSE Denoiser}
-\author{Quoc-Bao DO}
+\author{Quoc-Bao DO \\
+4th Year Student, Department of Applied Mathematics, INSA Toulouse, France \\
+Tutor: Pierre Weiss \\
+Researcher, Integrative Biology Center, Toulouse, France}
 \date{Fevrier 2024}
+
 
 % \setlength{\parskip}{1em} % Pour choisir l'espace entre paragraphes
 
@@ -69,18 +112,19 @@
 
 \newpage
 \section*{Abstract}
-Convolutional Neural Networks (CNNs) have achieved remarkable success in image processing tasks such as face generation, inpainting and super-resolution. Despite their empirical effectiveness, one major limitation remains: the lack of a clear analytical understanding of how these models work. This project aims to explain the internal mechanisms of CNNs by seeking to describe analytically the solutions of these models. We focus on two key areas: diffusion-based generative models and inverse problems in image processing. Our approach is inspired by the work of Ganguli et al. (2024), which provides some of the first analytical interpretations of convolutional neural networks by exploiting the locality and equivariance properties of these models. By using standard and advanced mathematical techniques, including functional analysis, measure theory, and probability, we obtain the analytical solution for the MMSE (minimum mean squared error) denoiser and the analytical solution for the MMSE inverse problem. Our work can be used to assess the performance of convolutional neural networks and predict their outputs.
+Convolutional Neural Networks (CNNs) have achieved remarkable success in image processing tasks such as face generation, inpainting and super-resolution. Despite their empirical effectiveness, one major limitation remains: the lack of a clear analytical understanding of how these models work. This project aims to explain the internal mechanisms of CNNs by seeking to describe analytically the solutions of these models. We focus on two key areas: diffusion-based generative models and inverse problems in image processing. Our approach is inspired by the work of Ganguli et al. (2024) \cite{kamb2024analytictheorycreativityconvolutional}, which provides some of the first analytical interpretations of convolutional neural networks by exploiting the locality and equivariance properties of these models. By using standard and advanced mathematical techniques, including functional analysis, measure theory, and probability, we obtain the analytical solution for the MMSE (minimum mean squared error) denoiser and the analytical solution for the MMSE inverse problem. Our work can be used to assess the performance of convolutional neural networks and predict their outputs.
 
-Keyword: Convolutional network model, locality, equivariance, MMSE denoiser, inverse problem.
+\textbf{Keywords}: Convolutional network model, locality, equivariance, MMSE denoiser, inverse problem.
+
 \section{Introduction}
 
 In recent years, Convolutional Neural Networks (CNNs) have assumed a pivotal role in the domain of image processing. These methods find application in a variety of tasks, including face generation, image inpainting, and super-resolution, where they frequently yield results that surpass the efficacy of conventional techniques. Despite the efficacy of CNNs in practice, the underlying mechanisms and principles that govern their function remain to not be fully explained. This absence of understanding poses a significant challenge, particularly in the context of seeking reliable and explainable models.
 
-Ganguli et al. (2024) offers one of the first mathematical explanations of CNNs. The paper demonstrated that specific properties inherent to CNNs, such as locality and equivariance are suffiscent to predict the behavior of these models.
+Ganguli et al. (2024) \cite{kamb2024analytictheorycreativityconvolutional} provided one of the first mathematical explanations of CNNs. The paper demonstrated that specific properties inherent to CNNs, such as locality and equivariance are suffiscent to predict the behavior of these models.
 \begin{figure}[h] % 'h' means 'here'
     \centering
     \includegraphics[width=0.5\textwidth]{../images/introduction_Ganguli.png} % Change width and filename
-    \caption{Predicted images by analytic theory (left columns) and the output of convolutional diffusion model (right coloumns)}
+    \caption{Predicted images by analytic theory (left columns) and the output of convolutional diffusion model (right columns) (Source:Ganguli et al. (2024) \cite{kamb2024analytictheorycreativityconvolutional})}
     \label{fig:introduction_im}
 \end{figure}
 
@@ -90,14 +134,12 @@ The remainder of this paper is structured as follows. Section 2 introduces the c
 
 \section{Premilinairy}
 \subsection{Convolutional neural network (CNN)}
-Convolutional Neural Networks (CNNs) are a class of neural architectures grounded in the principles of locality, translation equivariance, and hierarchical composition. CNNs are particularly well-suited for analyzing spatially structured data, such as images, physical fields, or spatiotemporal patterns, due to their ability to exploit the intrinsic structure and symmetries of such data.
-
-The composition of multiple convolutional layers forms a hierarchical representation: early layers extract primitive features (e.g., edges, gradients), which are then recombined by deeper layers into more complex and semantically meaningful structures. This hierarchical organization reflects how many natural and physical systems are structured and enables efficient learning across different spatial scales.
+Convolutional Neural Networks (CNNs) are a class of neural architectures grounded in the principles of locality, translation equivariance, and hierarchical composition. CNNs are particularly well-suited for analyzing spatially structured data, such as images, physical fields, or spatiotemporal patterns, due to their ability to exploit the intrinsic structure and symmetries of such data. The composition of multiple convolutional layers forms a hierarchical representation: early layers extract primitive features (e.g., edges, gradients), which are then recombined by deeper layers into more complex and semantically meaningful structures. 
 \subsubsection{Network Structure and Hierarchical Representation}
 \begin{figure}[h] % 'h' means 'here'
     \centering
     \includegraphics[width=0.5\textwidth]{../images/CNN_illustration.png} % Change width and filename
-    \caption{Convolutional neural network illustration}
+    \caption{An exemple of convolutional neural network}
     \label{fig:CNN_illustration}
 \end{figure}
 CNNs process input data as multidimensional grids and extract features through the application of convolutional filters, also referred to as kernels. These filters are small, learnable matrices that slide across the input domain to compute local dot products. Each application of a kernel results in a response that highlights the presence of a particular pattern or structure within a localized region. The composition of multiple convolutional layers forms a hierarchical representation: early layers extract primitive features (e.g., edges, gradients), which are then recombined by deeper layers into more complex and semantically meaningful structures. This hierarchical organization reflects how many natural and physical systems are structured and enables efficient learning across different spatial scales.
@@ -108,7 +150,7 @@ Indeed, given an input $x$, a filter $k$, we denote $y$ the convolution of $x$ a
 \begin{equation*}
     y[m,n] = (x*k)[m,n] = \sum_{i,j} x[m-i,n-j]*k[i,j]
 \end{equation*}
-Let denote $z$ the shifted version of $x$ obtained by shifting $\delta_h$ to the left and $\delta_v$ to the bottom, i.e $z[i,j] = x[i+\delta_h,j+\delta_v]$ the convolution of $z$ and $k$ follows:
+Let denote $z$ the shifted version of $x$ obtained by shifting $\delta_h$ pixels to the left and $\delta_v$ pixels to the bottom, i.e. $z[i,j] = x[i+\delta_h,j+\delta_v]$ the convolution of $z$ and $k$ follows:
 \begin{align*}
     (z*k)[m,n] &= \sum_{i,j} z[m-i,n-j]*k[i,j]\\
     &= \sum_{i,j} x[m-i+\delta_h,n-j+\delta_v]*k[i,j]\\
@@ -117,7 +159,22 @@ Let denote $z$ the shifted version of $x$ obtained by shifting $\delta_h$ to the
 \subsubsection{Locality}
 CNNs incorporate the principle of locality by using filters (kernels) of finite spatial extent. This means each computation depends only on a bounded region of the input, reflecting the assumption that meaningful patterns and interactions are primarily local.
 \subsection{Diffusion Model}
+Diffusion models generate data by learning to reverse a gradual noising process. In the forward process, clean data is progressively corrupted by adding noise in multiple steps until it becomes indistinguishable from random noise. In the backward process, a neural network is trained to denoise the data step by step, effectively learning how to reconstruct the original samples. This two-stage approach has proven highly effective for generating high-quality images, audio, and other complex data.
+\begin{figure}[h] % 'h' means 'here'
+    \centering
+    \includegraphics[width=0.5\textwidth]{../images/Diffusion_model.png} % Change width and filename
+    \caption{Ilustration of forward and backward process, \\source : www.slideshare.net/slideshow/introduction-to-diffusion-models/250964363}
+    \label{fig:Diffusion_model}
+\end{figure}
 
+\subsubsection{Notations conventions}
+In what follows, we use the following notation:
+\begin{itemize}
+    \item[] $\D$ will represent the training set
+    \item[] $x_0\in\R^N$ will represent an example from the training set. For images of size L pixels by L pixels by C channels, we will have $N=L\times L \times C$.
+    \item[] For image data, $x[n]$ and $x_0[n]$ will represent the pixel values of the images $x$ and $x_0$ at pixel location $n$; both are elements of $\R^C$.
+    \item[] For a square image patch $b$ with an odd-dimension side length, the value $b[0] \in \R^C$ indicates the pixel at the center of the patch.
+\end{itemize}
 \subsubsection{Stochastic differential equations (SDE) and probability flows}
 
 An important part of probalistic modeling is to generate samples from a data distribution whose precise shape is unknown or too complex to allow direct sampling. Diffusion models offer a solution to this problem by learning a time-inhomogeneous differential equation, which gradually transforms samples from a simple Gaussian distribution into samples corresponding to the more complex target distribution.
@@ -128,13 +185,13 @@ Consider a time-dependent stochastic differential equation (Itô), given as foll
     \end{equation}
     with 
     \begin{itemize}
-        \item $x \in \mathbb{R}^N$
+        \item[] $x \in \mathbb{R}^N$
         
-        \item $f_t : \mathbb{R}^N \rightarrow \mathbb{R}^N$ is in $C^1$ and is linearly increasing, i.e., $\exists\, C > 0$ such that $\|f_t(x)\| \leq C(1 + \|x\|)$, where $\|\cdot\|$ denotes the $L^2$ norm, i.e., $\forall n \in \mathbb{N}^*, \forall x \in \mathbb{R}^n,\ \|x\| = \sqrt{\sum\limits_{i=1}^n x_i^2}$.
+        \item[] $f_t : \mathbb{R}^N \rightarrow \mathbb{R}^N$ is in $C^1$ and is linearly increasing, i.e., $\exists\, C > 0$ such that $\|f_t(x)\| \leq C(1 + \|x\|)$, where $\|\cdot\|$ denotes the $L^2$ norm, i.e., $\forall n \in \mathbb{N}^*, \forall x \in \mathbb{R}^n,\ \|x\| = \sqrt{\sum\limits_{i=1}^n x_i^2}$.
         
-        \item $\mathcal{G}_t : \mathbb{R} \rightarrow \mathbb{R}$ is in $C^2$
+        \item[] $\mathcal{G}_t : \mathbb{R} \rightarrow \mathbb{R}$ is in $C^2$
         
-        \item $W_t$ is a standard Wiener process in $\mathbb{R}^N$, with
+        \item[] $W_t$ is a standard Wiener process in $\mathbb{R}^N$, with
         \begin{equation*}
             \langle W^i, W^j \rangle_t =
             \begin{cases}
@@ -146,7 +203,7 @@ Consider a time-dependent stochastic differential equation (Itô), given as foll
     \end{itemize}
     
     \begin{remark}
-        The condition that $f_t$ is at most linearly increasing guarantees the existence of an SDE solution.
+        The condition that $f_t$ is at most linearly increasing guarantees the existence of a SDE solution.
     \end{remark}
 
 \begin{proposition}[Forward Process (Fokker – Planck)\label{prop:fokker}] 
@@ -158,11 +215,11 @@ Consider a time-dependent stochastic differential equation (Itô), given as foll
     The proof is given in \cref{sec:proof_focker}.
 \end{proof}
 % The condition that $f_t$ is at most linearly increasing guarantees the existence of an EDS solution.
-% In general, the direct process is usually constructed so that as $t \rightarrow \infty$ (or $t \rightarrow T$ for some finite time $T$), the distribution $\pi_t$ converges to a known and well-defined distribution $\pi_{\infty}$, often chosen as the normal distribution.
+% In general, the forward process is usually constructed so that as $t \rightarrow \infty$ (or $t \rightarrow T$ for some finite time $T$), the distribution $\pi_t$ converges to a known and well-defined distribution $\pi_{\infty}$, often chosen as the normal distribution.
 In the context of diffusion models, and more specifically implicit diffusion models for denoising (DDIMs), the objective is to identify a deterministic, time-dependent vector field $v_t$ that exhibits the same flow of probability distributions as the preceding stochastic equation. This reformulation enables the diffusion process to be inverted deterministically:
 \begin{itemize}
-    \item We begin by sampling $x_T \sim \pi_t$
-    \item Then we evolve the sample backwards in time, from $t=T$ to $t = 0$, by solving the following ODE:
+    \item[] We begin by sampling $x_T \sim \pi_t$
+    \item[] Then we evolve the sample backwards in time, from $t=T$ to $t = 0$, by solving the following ODE:
     \begin{equation}
         \frac{dx_t}{dt} = v_t(x_t)
     \end{equation}
@@ -175,13 +232,13 @@ The backward process is giving by the following equation
 \begin{proof}
     The above result is a direct application of \cref{eq:Fokker-Planck}.
 \end{proof}
-Our goal is to identify the deterministic, time-dependent $v_t$ function so that the above equation produces the same evolution as \eqref{prop:fokker} (flow-matching). To do this, we rewrite \eqref{prop:fokker} as follows:
+Our goal is to identify the deterministic, time-dependent $v_t$ function so that the above equation produces the same evolution as \cref{prop:fokker} (flow-matching). To do this, we rewrite \cref{prop:fokker} as follows:
 \[\frac{d\pi_t(x)}{dt} =\nabla \cdot([f_t(x)-\frac{1}{2}g_t^2\nabla \log\pi_t(x)]\pi_t(x))\]
 Thus,
 \[v_t(x) =f_t(x)-\frac{1}{2}g_t^2\nabla \log\pi_t(x) \]
 We denote $s_t(x) \equiv \nabla \log\pi_t(x)$, $s_t$ is called a score function. Determining this function plays an important role in recovering the initial image $x_0$.
-\subsection{Flow calculation}\label{sec:calcul_numerique}
-In practice, the most common choice of direct process for a DDIM is an inhomogeneous Ornstein-Uhlenbeck process. If a positive $(\gamma_t)$ sequence is chosen, it takes the following form:
+\subsubsection{Flow calculation}\label{sec:calcul_numerique}
+In practice, the most common choice of forward process for a DDIM is an inhomogeneous Ornstein-Uhlenbeck process. If a positive $(\gamma_t)$ sequence is chosen, it takes the following form:
 \begin{equation}\label{eq:OU}
     dx_t = -\gamma_tx_t \,dt + \sqrt{2\gamma_t}\,dW_t
 \end{equation}
@@ -191,9 +248,9 @@ By identifying in this case $f_t(x) = -\gamma_tx_t$ et $ \mathcal{G}_t = \sqrt{2
 \end{equation}
 % In this particular instance, it can be demonstrated that $f_t (x_t) = -\gamma_t x_t,  \text{ and } \mathcal{G}_t = \sqrt{2\gamma_t}$. Through these relationships, the expression for $v_t$ can be deduced:
 % The expression $v_t (x_t)$ above defines a deterministic vector field, thereby enabling the diffusion process to be reversed by progressively eliminating the noise added during the direct phase. This field integrates the current position, denoted by the symbol $x_t$, and the score field, denoted by the symbol $s_t$, with the score field weighted by a factor $\gamma_t$. The integration of these two fields indicates the direction of maximum probability. In this manner, the quantity $v_t(x_t)$ functions as a guide for the evolution of $x_t$ in a continuous and reversible manner, thereby ensuring that the initially noisy sample $x_T$ is gradually transformed into the original domain data. This ordinary differential equation (ODE) reformulation is imperative for DDIM models, as it facilitates accelerated and optimized generation by circumventing the stochastic simulation of the inverse process.
-The direct process given by the equation \eqref{eq:OU} is selected due to the fact that, for any $t \geq 0$, the solution $x_t$ is distributed according to a known distribution, as indicated by the following proposition.
+The forward process given by the equation \cref{eq:OU} is selected due to the fact that, for any $t \geq 0$, the solution $x_t$ is distributed according to a known distribution, as indicated by the following proposition.
 \begin{proposition}\label{prop:solution_processus_direct}
-    The solution $x_t$ of \eqref{eq:OU} is given by :
+    The solution $x_t$ of \cref{eq:OU} is given by :
     \begin{equation}\label{eq:solforphi}
         x_t = \sqrt{\bar{\alpha_t}}x_0 + \sqrt{1-\bar{\alpha_t}}\eta
     \end{equation}
@@ -203,37 +260,36 @@ The direct process given by the equation \eqref{eq:OU} is selected due to the fa
 \begin{proof}
     The proof is detailed in \cref{sec:proof_solution_processus_direct}
 \end{proof}
-In particular, we implicitly choose $\gamma_t$ so that $\bar \alpha_t \rightarrow 0$ when t tends towards $\infty$, the distribution tends to reduced-centered normal distribution and no longer depends on the initial  distribution $\pi_0$ of $x_0$. The time-dependent parameter $\bar \alpha_t$ is called the “noise schedule”, as it controls the speed of convergence $\pi_t$. In practice, $\bar \alpha_t \rightarrow 0$ when t tends towards a certain finite time T. In this way, we can sample $x_T$ a centered reduced normal distribution, then recover $x_0$ thanks to the inverse process we'll see next.
+In particular, we implicitly choose $\gamma_t$ so that $\bar \alpha_t \rightarrow 0$ when t tends towards $T$. Therefore, the distribution $\pi_t$ tends to reduced-centered normal distribution and no longer depends on the initial  distribution $\pi_0$ as $t \rightarrow T$. The time-dependent parameter $\bar \alpha_t$ is called the “noise schedule”, as it controls the speed of convergence $\pi_t$. We can therefore sample $x_T$ a centered reduced normal distribution, then recover $x_0$ by using the backward process.
 
-% The fundamental premise of the diffusion model hinges on the reversal of the direct process, thereby facilitating the sampling of the target distribution, denoted by $p_0$, through the inverse process. The latter requires knowledge of the score function $s_t = -d/dlog(p_t)$. The initial step in this process is the calculation of the probability distribution of the random variable $x_t$, denoted by $\pi_t$.
+% The fundamental premise of the diffusion model hinges on the reversal of the forward process, thereby facilitating the sampling of the target distribution, denoted by $p_0$, through the inverse process. The latter requires knowledge of the score function $s_t = -d/dlog(p_t)$. The initial step in this process is the calculation of the probability distribution of the random variable $x_t$, denoted by $\pi_t$.
 
 % The following two results are essentially useful for calculating the analytical expression of $\pi_t$.
-\begin{proposition}\label{prop:quelques_resultats_sur_la_densite}
-    Let X and Y be two independent random variables in $\R^n$, $f_X$ and $f_Y$ are the density functions of $X$ and $Y$ respectively. We obtain the following properties:
-    \vspace{-10pt}
-\begin{enumerate}[label=(\roman*)]
-    \item Let $\alpha \in \R_+^*$, and $U = \alpha X$, then the density fonction of $U$ is given by $\forall x\in \R^n$, $f_U(x) = \frac{1}{\alpha^n} f_X(\frac{x}{\alpha})$.
-    \item Let $Z = X+Y$, The density of $Z$ is the convolution of the the density funciton of $X$ and the density function of $Y$, i.e $f_Z(x) = (f_X * f_Y)(x)$
-\end{enumerate}
-\end{proposition}
+% \begin{proposition}\label{prop:quelques_resultats_sur_la_densite}
+%     Let X and Y be two independent random variables in $\R^n$, $f_X$ and $f_Y$ are the density functions of $X$ and $Y$ respectively. We obtain the following properties:
+% \begin{enumerate}[label=(\roman*)]
+%     \item[] Let $\alpha \in \R_+^*$, and $U = \alpha X$, then the density fonction of $U$ is given by $\forall x\in \R^n$, $f_U(x) = \frac{1}{\alpha^n} f_X(\frac{x}{\alpha})$.
+%     \item[] Let $Z = X+Y$, The density of $Z$ is the convolution of the the density funciton of $X$ and the density function of $Y$, i.e. $f_Z(x) = (f_X * f_Y)(x)$
+% \end{enumerate}
+% \end{proposition}
 
-\begin{proof}
-The proof of these results is detailed in appendix \cref{sec:proof_quelques_resultates_sur_la_densite}.
-\end{proof}
+% \begin{proof}
+% The proof of these results is detailed in \cref{sec:proof_quelques_resultates_sur_la_densite}.
+% \end{proof}
 
 
-% The objective is to express the density of the target state, denoted by the symbol $\pi_t$, in terms of the transformations undergone by the probe state, denoted by the symbol $x_t$, during the direct process. Two above results on the densities of random variables are employed: firstly, the linear transformation of a random variable, which enables the deduction of the effect of a scaling factor on the density; and secondly, the convolution of densities, which facilitates the calculation of the density of the sum of two independent random variables. By employing the aforementioned properties, it is possible to express the probability of the occurrence of the phenomenon under consideration, denoted here by $\pi_t$, as an integral of the initial density $\pi_0$, convolved with a normal distribution of covariance \((1 - \bar{\alpha}_t) I_N\). This reflects the progressive diffusion of the initial distribution under the effect of Gaussian noise. To be more precise, the distribution of the random variable $t$ is given by the following proposition.
+% The objective is to express the density of the target state, denoted by the symbol $\pi_t$, in terms of the transformations undergone by the probe state, denoted by the symbol $x_t$, during the forward process. Two above results on the densities of random variables are employed: firstly, the linear transformation of a random variable, which enables the deduction of the effect of a scaling factor on the density; and secondly, the convolution of densities, which facilitates the calculation of the density of the sum of two independent random variables. By employing the aforementioned properties, it is possible to express the probability of the occurrence of the phenomenon under consideration, denoted here by $\pi_t$, as an integral of the initial density $\pi_0$, convolved with a normal distribution of covariance \((1 - \bar{\alpha}_t) I_N\). This reflects the progressive diffusion of the initial distribution under the effect of Gaussian noise. To be more precise, the distribution of the random variable $t$ is given by the following proposition.
 \begin{proposition}\label{prop:distribution_a_etap_t}
-    Let the direct process presented by \cref{eq:solforphi}, under the assumption of the existence of the $\pi_t$ distribution of $x_t$, The distribution $\pi_t$ is given by :    \begin{equation}\label{eq:distribution_pi_t}
+    Let the forward process presented by \cref{eq:solforphi}, under the assumption of the existence of the $\pi_t$ distribution of $x_t$, The distribution $\pi_t$ is given by :    \begin{equation}\label{eq:distribution_pi_t}
         \pi_t(x) = \int_{\R^N} \pi_0(z)\, \mathcal{G}_t(x - \sqrt{\bar \alpha_t}\,z) dz
     \end{equation}
-    with $\mathcal{G}_t$ the density fonction of a normal distribution$\mathcal{N}\left(0_{\R^N}, (1- \alpha _t \,)I_N\right)$
+    with $\mathcal{G}_t$ the density function of a normal distribution$\mathcal{N}\left(0_{\R^N}, (1- \bar\alpha _t \,)I_N\right)$
 \end{proposition}
 
 \begin{proof}
-    See \cref{sec:proof_distribution_a_etap_t} for a full demonstration.
+    See \cref{sec:proof_distribution_a_etap_t} for the full proof.
 \end{proof}
-% The analytical expression of $\pi_t$ shows that the direct process applies a progressive smoothing to the initial distribution $\pi_0$, convolving it with a normal distribution. Under the assumption that $\bar \alpha_t \rightarrow \infty$ when $t$ tends towards $1$ (or towards some large $T$), the larger $t$ is, the further $x_t$ is from its initial state and tends towards an isotropic normal distribution.
+% The analytical expression of $\pi_t$ shows that the forward process applies a progressive smoothing to the initial distribution $\pi_0$, convolving it with a normal distribution. Under the assumption that $\bar \alpha_t \rightarrow \infty$ when $t$ tends towards $1$ (or towards some large $T$), the larger $t$ is, the further $x_t$ is from its initial state and tends towards an isotropic normal distribution.
 We derive the score function from $\pi_t$ :
 \begin{align*}
         s_t(x) &= \nabla \log \pi_t(x) = \frac{1}{\pi_t(x)}\nabla\pi_t(x) \\
@@ -257,23 +313,22 @@ Thus
 \begin{equation*}
     \nabla_x \,\mathcal{G}_t(x - \sqrt{\bar \alpha_t} \,z) = -\frac{1}{1-\bar \alpha_t}\,\mathcal{G}_t(x - \sqrt{\bar \alpha_t} \,z)(x - \sqrt{\bar \alpha_t} \,z)
 \end{equation*}
-Plugging this result into \eqref{eq:score_formule_premilinaire} :
+Substituting this result into \cref{eq:score_formule_premilinaire} :
 \begin{equation}\label{eq:score_formule_analytique}
-    s_t(x) = -\frac{1}{1- \bar \alpha_t} \int_{\R^N} \frac{\pi_0(z)\, \mathcal{G}_t(x - \sqrt{\bar \alpha_t} \,z)(x - \sqrt{\bar \alpha_t} \,z)}{\pi_t(x)} dz
+    s_t(x) = -\frac{1}{1- \bar \alpha_t} \int_{\R^N} \frac{\pi_0(z)\, (x - \sqrt{\bar \alpha_t} \,z) \mathcal{G}_t(x - \sqrt{\bar \alpha_t} \,z)}{\pi_t(x)} dz
 \end{equation}
-% The equation \eqref{eq:score_formule_analytique} expresses the score function \(s_t\), which represents the logarithmic gradient of the density \(\pi_t\). This function indicates the direction in which \(\pi_t\) must be adjusted to recover a probable initial state. The integral shows that \(s_t(x)\) is obtained by averaging over all possible initial values \(z\), weighted by their original probability \(\pi_0(z)\) and the noise added during diffusion. The term \((x - \sqrt{\bar{\alpha}_t}\, z)\) reflects the correction needed to reverse the diffusion, and normalization by \(\pi_t(x)\) ensures that this correction is local. Finally, the factor \(-\frac{1}{1- \bar \alpha_t}\) adjusts the intensity of this correction according to the noise level. This result is fundamental to scattering models, as it enables us to estimate the optimal direction in which to remove the added noise, thus generating realistic samples from initial noise.
-The intervention of the target distribution $\pi_0$ makes the score function $s_t$ implicit. However, there's an extremely useful fact about this score function that we can take advantage of to learn it from the data by using the Tweedie's formula.
+% The equation \cref{eq:score_formule_analytique} expresses the score function \(s_t\), which represents the logarithmic gradient of the density \(\pi_t\). This function indicates the direction in which \(\pi_t\) must be adjusted to recover a probable initial state. The integral shows that \(s_t(x)\) is obtained by averaging over all possible initial values \(z\), weighted by their original probability \(\pi_0(z)\) and the noise added during diffusion. The term \((x - \sqrt{\bar{\alpha}_t}\, z)\) reflects the correction needed to reverse the diffusion, and normalization by \(\pi_t(x)\) ensures that this correction is local. Finally, the factor \(-\frac{1}{1- \bar \alpha_t}\) adjusts the intensity of this correction according to the noise level. This result is fundamental to scattering models, as it enables us to estimate the optimal direction in which to remove the added noise, thus generating realistic samples from initial noise.
+The intervention of the target distribution $\pi_0$ makes the score function $s_t$ implicit. However, this score function can be learn from the data by using the Tweedie's formula.
 \begin{theorem}[Tweedie's formula]\label{theo:formule_de_Tweedie}
     Let $X \in \mathbb{R}^n$ be a random variable of density $f_X$ and $B \sim \mathcal{N}(0, \sigma^2 I_n)$ a Gaussian noise independent of $X$. We define :
     \[ Y = X + B \]
     Let's denote $\varphi_B$ and $p_Y$ the density function of $B$ and $Y$ respectively. We obtain :
     \[ \mathbb{E}[X | Y = y] = y + \sigma^2 \nabla \log p_Y(y) \]
 \end{theorem}
-
 \begin{proof}
     The proof given in \cref{sec:proof_formule_de_Tweedie}
 \end{proof}
-Let recall the direct process
+Let recall the forward process
 \[ x_t = \sqrt{\bar \alpha_t} x_0 + \sqrt{1 - \bar \alpha_t} \eta \]
 Using the  Tweedie formula, we derive the score function :
 \begin{align*}
@@ -281,10 +336,12 @@ s_t(x) &= \nabla \log \pi_t(x) \\
 &= \frac{-x + \mathbb{E} \left[\sqrt{\bar \alpha_t}\, x_0 \mid x_t = x \right]}{1 - \bar \alpha_t} \\
 &= \frac{1}{1 - \bar \alpha_t} \left( -x + \sqrt{\bar \alpha_t} \,\mathbb{E} \left[ x_0 \mid x_t = x \right] \right)
 \end{align*}
-This result is extremely useful, as it allows us to numerically approximate the score function $s_t$, which is proportional to $\mathbb{E}[x_0 | x_t]$. Indeed, by definition of conditional expectation, $\mathbb{E}[x_0 | x_t]$ is the orthogonal projection of $x_0$ onto the functional space of $x_t$. This relationship can be represented mathematically as :
+The above result is extremely useful, allowing us to numerically approximate the score function $s_t$, which is proportional to $\mathbb{E}[x_0 | x_t]$. Indeed, $\mathbb{E}[x_0 | x_t]$ is the orthogonal projection of $x_0$ onto the functional space of $x_t$, i.e. 
 \[
 \mathbb{E}[x_0 | x_t] = \argmin_{f \in \mathbb{L}^2(\mathbb{R}^N)} \mathbb{E}\left[ \| x_0 - f(x_t) \|^2 \right], \quad t \in [0,T]
 \]
+Therefore, learning the score function is equivalent to finding an MMMSE estimator of $x_0$. Theoretically, the learned function is found by minimizing the above MSE regression on $L_2(\R^N)$. However, in the context of convolutional diffusion models, the learned function is constrained to be local and translation equivariant due to the architectural nature of convolutional neural networks, motivating us to analytically describe the behavior of CNN outputs.
+
 % Ainsi, la fonction de score $s_t = \frac{-1}{(\alpha_t)^{N/2} \sqrt{1-\bar{\alpha}_t}} \mathbb{E}\left[ \eta - f(x_t) \right]$ est définie comme :
 % \[
 % s_t = \argmin_{f \in \mathbb{L}^2(\mathbb{R}^N)} \mathbb{E}\left[ \left\| \frac{1}{(\bar \alpha_t)^{N/2} \sqrt{1-\bar{\alpha}_t}} \eta + f(x_t) \right\|_2^2 \right], \quad t \in [0,T]
@@ -301,27 +358,30 @@ This result is extremely useful, as it allows us to numerically approximate the 
 \subsection{Inverse Problem}
 Inverse problems aim to recover a target variable $x \in \R^N$ from a noisy mesure $y \in \R^M$, typically modeled as
 \begin{equation*}
-    y = Ax +b, \text{ with } A:\R^N \rightarrow \R^N
+    y = Ax +b, \text{ with } A:\R^N \rightarrow \R^M
 \end{equation*}
 A modern approach is to learn a function $f : y \rightarrow \hat{x}$ using a convolutional neural network trained on a supervised dataset ${(x_i,y_i)}_{i=1}^\mathcal{D}$. The network is trained by minimizing the empirical risk associated with a loss function
 \begin{equation*}
-    \min_{f} \E{f(y)-x}
+    \argmin_{f\in \mathcal{F}_{\text{CNN}}} \E{\norm{f(y)-x}}
 \end{equation*}
+where $\mathcal{F}_{\text{CNN}}$ denotes the admissible set of functions expressible by the chosen CNN architecture. This restriction imposes structural constraints like locality and translation equivariance.
+
+
     
 
 \subsection{Conclusion}
-In the context of both difusion models and inverse problems, uderstanding how a neural network works requires us to analyze empirical risk minnimizers. Surprisingly, we will see that that locality and equivariance constraints aone are sufficient to predict the network's behavior.
+In the context of both diffusion models and inverse problems, uderstanding how a neural network works requires us to analyze MMSE estimator. Surprisingly, we will see that locality and equivariance constraints alone are sufficient to predict the network's behavior.
 
 \section{Analytical solution for the MMSE denoising}
-In this section, our work is to understand and reconstruct the proofs to better grasp the cencepts \todo{of what}.
+The MMSE denoising problem corresponds to a special case of the inverse problem where the forward operator is the identity, i.e., $A = \mathrm{Id}$. This is precisely the setting studied in Ganguli et al. (2024) \cite{kamb2024analytictheorycreativityconvolutional}. In this section, our objective is to understand and reconstruct the main theoretical results presented in their work in order to grasp the behavior and expressivity of convolutional denoising networks.
 \subsection{Ideal Score (IS) machine}
-We will show in this section that a diffusion model that learns the ideal score function on a finite set of data can only memorize and cannot create new samples far from the training data.
+We will show in this section that a diffusion model that learns the ideal score function, i.e. without any constraints, on a finite dataset can only memorize and cannot create new samples that are different from the training data.
 
 We do not have access to the target distribution $\pi_0$ because we have a finite number of samples, so we estimate it by the empirical discrete distribution on the training data set $\mathcal{D}$ :
 \begin{equation*}
     \pi_0(x) = \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \delta(x - \varphi)
 \end{equation*}
-With $|\mathcal{D}|$ the number of elements in $\mathcal{D}$ and $\delta$ a Dirac mass.En utilisant \cref{eq:distribution_pi_t}, à l'étape temporelle $t$, on obtient la distribution des images bruitées :
+With $|\mathcal{D}|$ the number of elements in $\mathcal{D}$ and $\delta$ a Dirac mass. By using \cref{eq:distribution_pi_t}, At temporal step $t$, we obtain the distribution of noised images :
 \begin{align*}
 \pi_t(x) &= \int_{\mathbb{R}^N} \pi_0(z) \mathcal{G}_t(x - \sqrt{\bar \alpha_t}z) dz \quad \text{with } \mathcal{G}_t \text{ is the density function of normal distribution } \mathcal{N}(0, (1-\bar \alpha_t)I_N) \\
 &= \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \int_{\mathbb{R}^N} \delta(z - x_0) \mathcal{G}_t(x - \sqrt{\bar \alpha_t}z) dz \\
@@ -335,7 +395,7 @@ s_t(x) &= \nabla \log \pi_t(x) = -\sum\limits_{x_0  \in \mathcal{D}} (x - \sqrt{
 & \text{with }W_t(x_0| x) = \frac{\mathcal{G}_t(x - \sqrt{ \bar \alpha_t}x_0)}{\sum\limits_{x_0  \in \mathcal{D}} \mathcal{G}_t(x - \sqrt{\bar \alpha_t}x_0')}
 \end{align*}
 % In general, this process involves averaging the added noise. This is done by taking the noise vectors $\eta \propto (x - \sqrt{\bar \alpha_t}x_0)$ between the observed example $x$ and each training element $\varphi$, with weights based on the probability $W(\varphi|x)$ that the noisy image $x_t$ at time step $t$ would come from a point $\varphi$ of the training set $\mathcal{D}$ . This probability is calculated using Bayes' theorem: it is the probability that a training example $\varphi$ will give the observed example $x$, as a function of the amount of noise required to transform $\varphi$ into $x$, compared with all other possible examples $\varphi'$. The weights $W(\varphi|x)$ are calculated using a simple softmax function applied to a quadratic loss function $-\frac{1}{2(1-\bar \alpha_t)}\||x - \sqrt{\bar \alpha_t}x_0|^2$ for each $\varphi$ point in the training set.
-Our aim is to show that learning the ideal score function on the finite data set can only memorize, meaning that $x_t$ converge to an element $x_0 \in \mathcal{D}$ as $t \rightarrow 0$. We first recall the inverse process:
+Our aim is to show that $x_t$ converge to an element $x_0 \in \mathcal{D}$ as $t \rightarrow 0$. We first recall the backward process:
 \begin{equation*}
     \frac{dx}{dt} =  -\gamma_t(x+s_t(x)), \quad \text{avec } \gamma_t = -\frac{\partial \bar \alpha_t}{2\bar \alpha_t} 
 \end{equation*}
@@ -348,109 +408,106 @@ Assume that the limits \( \lim_{t \to 0} x_t \) and \( \lim_{t \to 0} \partial_t
 \]
 One has
 \begin{equation*}
-    \lim\limits_{t \to 0} \gamma_t s_t (x_t) = \lim\limits_{t \to 0} \frac{\partial \bar{\alpha}_t}{2\bar{\alpha}_t} \frac{1}{1 - \bar{\alpha}_t} \sum\limits_{\varphi \in D} \left( x_t - \sqrt{\bar{\alpha}_t} \varphi \right) W(\varphi | x_t)
+    \lim\limits_{t \to 0} \gamma_t s_t (x_t) = \lim\limits_{t \to 0} \frac{\partial \bar{\alpha}_t}{2\bar{\alpha}_t} \frac{1}{1 - \bar{\alpha}_t} \sum\limits_{x_0 \in \mathcal{D}} \left( x_t - \sqrt{\bar{\alpha}_t} x_0 \right) W(x_0 | x_t)
 \end{equation*}
 As  $\lim\limits_{t \to 0} \bar{\alpha}_t = 1$, the prefactor diverges. This means:
 \begin{equation*}
-    \lim\limits_{t \to 0} \sum\limits_{\varphi \in D} (x_t - \sqrt{\bar{\alpha}_t} \varphi) W(\varphi | x_t) = 0
+    \lim\limits_{t \to 0} \sum\limits_{x_0 \in D} (x_t - \sqrt{\bar{\alpha}_t} x_0) W(x_0 | x_t) = 0
 \end{equation*}
-we note that $\mathcal{N}(x_t | \sqrt{\bar{\alpha}_t} \varphi, (1 - \bar{\alpha}_t) I_N)$ tends towards a dirac function when $t \to 0$ because $\bar{\alpha}_t \xrightarrow[]{t \to 0} 1$ . Thus
+we note that $\mathcal{N}(x_t | \sqrt{\bar{\alpha}_t} x_0, (1 - \bar{\alpha}_t) I_N)$ tends towards a dirac function when $t \to 0$ because $\bar{\alpha}_t \xrightarrow[]{t \to 0} 1$ . Thus
 \begin{equation*}
-    \lim\limits_{t \to 0} W(\varphi | x_t) =
+    \lim\limits_{t \to 0} W(x_0 | x_t) =
 \begin{cases} 
-1 & \text{if } \varphi = \varphi^* \coloneq \arg\min_{\varphi \in D} ||x_t - \varphi||^2 \\
+1 & \text{if } x_0 = x_0^* \coloneq \arg\min_{x_0 \in D} ||x_t - x_0||^2 \\
 0 & \text{else}
 \end{cases}
 \end{equation*}
 Indeed
 \begin{equation*}
-    W(\varphi | x_t) =
-\frac{\exp\left( -\frac{||x_t - \sqrt{\bar{\alpha}_t} \varphi||^2}{(1 - \bar{\alpha}_t)^N} \right)}
-{\sum\limits_{\varphi' \in D} \exp\left( -\frac{||x_t - \sqrt{\bar{\alpha}_t} \varphi'||^2}{(1 - \bar{\alpha}_t)^N} \right)}
-=\frac{1}{\sum\limits_{\varphi' \in D} \exp\left( \frac{||x_t - \sqrt{\bar{\alpha}_t} \varphi'||^2 - ||x_t - \sqrt{\bar{\alpha}_t} \varphi||^2}{(1 - \bar{\alpha}_t)^N} \right)}
+    W(x_0 | x_t) =
+\frac{\exp\left( -\frac{||x_t - \sqrt{\bar{\alpha}_t} x_0||^2}{(1 - \bar{\alpha}_t)^N} \right)}
+{\sum\limits_{x_0' \in D} \exp\left( -\frac{||x_t - \sqrt{\bar{\alpha}_t} x_0'||^2}{(1 - \bar{\alpha}_t)^N} \right)}
+=\frac{1}{\sum\limits_{x_0' \in D} \exp\left( \frac{||x_t - \sqrt{\bar{\alpha}_t} x_0'||^2 - ||x_t - \sqrt{\bar{\alpha}_t} x_0||^2}{(1 - \bar{\alpha}_t)^N} \right)}
 \end{equation*}
-Let $A(x_t, \varphi, \varphi' ) = \exp\left( \frac{||x_t - \sqrt{\bar{\alpha}_t} \varphi'||^2 - ||x_t - \sqrt{\bar{\alpha}_t} \varphi||^2}{(1 - \bar{\alpha}_t)^N} \right)$, we note that
+Let $A(x_t, x_0, x_0' ) = \exp\left( \frac{||x_t - \sqrt{\bar{\alpha}_t} x_0'||^2 - ||x_t - \sqrt{\bar{\alpha}_t} x_0||^2}{(1 - \bar{\alpha}_t)^N} \right)$, we note that
 \begin{equation*}
-    \lim\limits_{t \to 0} A(x_t, \varphi, \varphi^*) =
+    \lim\limits_{t \to 0} A(x_t, x_0, x_0^*) =
 \begin{cases} 
-+\infty & \text{if } \varphi \neq \varphi^* \\
-1 & \text{if } \varphi = \varphi^*
++\infty & \text{if } x_0 \neq x_0^* \\
+1 & \text{if } x_0 = x_0^*
 \end{cases}
 \end{equation*}
 In addition
 \begin{equation*}
-    \lim\limits_{t \to 0} A(x_t, \varphi^*, \varphi') = 0 \quad \forall \varphi' \in D \setminus \{\varphi^*\}
+    \lim\limits_{t \to 0} A(x_t, x_0^*, x_0') = 0 \quad \forall x_0' \in D \setminus \{x_0^*\}
 \end{equation*}
 Thus
 \[
-\lim\limits_{t \to 0} W(\varphi | x_t) =
+\lim\limits_{t \to 0} W(x_0 | x_t) =
 \begin{cases} 
-1 & \text{if } \varphi = \varphi^* \\
+1 & \text{if } x_0 = x_0^* \\
 0 & \text{else}
 \end{cases}
 \]
 We obtain
 \[
-0 = \lim\limits_{t \to 0} \sum\limits_{\varphi \in D} (x_t - \sqrt{\bar{\alpha}_t} \varphi) W(\varphi | x_t) = \lim\limits_{t \to 0} (x_t - \varphi^*)
+0 = \lim\limits_{t \to 0} \sum\limits_{x_0 \in D} (x_t - \sqrt{\bar{\alpha}_t} x_0) W(x_0 | x_t) = \lim\limits_{t \to 0} (x_t - x_0^*)
 \]
 \begin{equation*}
-    \lim\limits_{t\rightarrow 0} x_t = \varphi^* \in \mathcal{D}
+    \lim\limits_{t\rightarrow 0} x_t = x_0^* \in \mathcal{D}
 \end{equation*}
 
 In conclusion, at date $t = 0$, the sample tends towards an image in the training set $\mathcal{D}$. The fact that the ideal score function is not a good model for realistic diffusion processes shows us that we need to understand why these models don't solve their tasks perfectly. We therefore need to examine the biases and constraints that prevent these models from learning the ideal score function, and see how they perform despite these limitations.
-\section{Score function estimator under constraints}
-\subsection{General}
-\subsubsection{Problem}
+\subsection{Score function estimator under constraints}
+\subsubsection{General}
 We would like to solve
 \begin{equation*}
-    \min_{f\in\mathcal{M}} \E{\| f(t,x)-s_t(x)}
+    \min_{f\in\mathcal{M}} \E{\| f(t,x)-s_t(x)\|}
 \end{equation*}
-for some vector space $\mathcal{M}$
-\subsubsection{Optimal condition}
+for some vector space $\mathcal{M}$\\
 $f^* \in \mathcal{M}$ is a minimiser of $J$ if $J(f^*+\epsilon h) \geq J(f^*)$ for all $\epsilon \in \R$ and all $h\in \mathcal{M}$. We have
 \begin{align*}
     J(f^*+\epsilon h) &= \E{\|(f^*+\epsilon h)(t,x)-s_t(x)\|^2}\\
     & = J(f^*)+\epsilon^2\E{\|h(t,x)\|^2}+2\epsilon\E{\langle h(t,x),f*(t,x) - s_t(x) \rangle}
 \end{align*}
-therefore, the optimal condition
+therefore, the \textbf{optimal condition} follows
 \begin{equation}\label{eq:optimal_condition_score_function}
     \E{\langle h(t,x),f*(t,x) - s_t(x) \rangle} = 0 \text{ for all } x \in \mathcal{M}
 \end{equation}
 
-\subsection{Equivairant (ES) machine}
-\subsubsection{Group of transformation}
+\subsubsection{Equivariant score (ES) machine}
 \begin{definition}[Group of transformation]
     A \textbf{group of transformations} is a set \( G \) of applications of a set \( X \) into itself, with a composition operation of transformations that satisfies the following axioms:
     \begin{itemize}[topsep=-5pt]
-    \item \textbf{Fermeture} : \( \forall U, V \in G, \quad U \circ V \in G \).
-    \item \textbf{Associativité} : \( (U \circ V) \circ W = U \circ (V \circ W) \).
-    \item \textbf{Identité} : \( \exists e \in G \) so that \( e \circ U = U \circ e = U \).
-    \item \textbf{Inverses} : \( \forall U \in G, \quad \exists !\,U^{-1} \in G \text{ tel que } U \circ U^{-1} = U^{-1} \circ U = e \).
+    \item[] \textbf{Fermeture} : \( \forall U, V \in G, \quad U \circ V \in G \).
+    \item[] \textbf{Associativité} : \( (U \circ V) \circ W = U \circ (V \circ W) \).
+    \item[] \textbf{Identité} : \( \exists e \in G \) so that \( e \circ U = U \circ e = U \).
+    \item[] \textbf{Inverses} : \( \forall U \in G, \quad \exists \,U^{-1} \in G \text{ tel que } U \circ U^{-1} = U^{-1} \circ U = e \).
 \end{itemize}
 \end{definition}
 
 
 
-For example, the symmetry group in $\R^2$ is the set of transformations that preserve the Euclidean distance. More precisely, it includes rotation and reflection:
-\begin{itemize}
-    \item A rotation of angle $z$ about the origin is given by the rotation matrix :\[
-R_z =
-\begin{bmatrix}
-\cos z & -\sin z \\
-\sin z & \cos z
-\end{bmatrix}.
-\]
+% For example, the symmetry group in $\R^2$ is the set of transformations that preserve the Euclidean distance. More precisely, it includes rotation and reflection:
+% \begin{itemize}
+%     \item[] A rotation of angle $z$ about the origin is given by the rotation matrix :\[
+% R_z =
+% \begin{bmatrix}
+% \cos z & -\sin z \\
+% \sin z & \cos z
+% \end{bmatrix}.
+% \]
 
-\item a reflection about any axis in \( \mathbb{R}^2 \) can be represented by a matrix of the form :
-\[
-S_\varphi =
-\begin{bmatrix}
-\cos \varphi & \sin \varphi \\
-\sin \varphi & -\cos \varphi
-\end{bmatrix}.
-\]
-This retains the standard, but reverses the direction.
-\end{itemize}
+% \item[] a reflection about any axis in \( \mathbb{R}^2 \) can be represented by a matrix of the form :
+% \[
+% S_\varphi =
+% \begin{bmatrix}
+% \cos \varphi & \sin \varphi \\
+% \sin \varphi & -\cos \varphi
+% \end{bmatrix}.
+% \]
+% This retains the standard, but reverses the direction.
+% \end{itemize}
 
 \begin{definition}
     A transformation group $G$ acting on a complex vector space $X$ provided with the scalar product $\langle \cdot,\cdot \rangle$ is said to be unitary if for any transformation $U \in G$, we have :
@@ -460,63 +517,70 @@ This retains the standard, but reverses the direction.
 \end{definition}
 
 
-Transformations in a unitary group preserve geometric properties such as distances and angles between vectors, but only in complex vector spaces. The example of the $\R^2$ symmetry group above is also a unitary group.
-\begin{proposition}\label{prop:Groupe_unitaire}
-    Let G be a group of unitary transformations acting on a complex vector space X. Let $U$ be an element in $G$, and we have the following properties:
-        \begin{enumerate}[label=(\roman*)]
-        \item \textbf{Inverse et adjoint} : $\forall U \in G$, $U^{-1} = U^\dagger$ avec $U^\dagger$ l'adjoint de $U$.
-        \item \textbf{Préservation de norme} : $\|Ux\| = \|x\| \quad \forall x\in X$.
-        \item \textbf{Transformation de gradient} : pour toute fonction $f \in C^1(X,\R)$, le gradient se transforme comme :
-        \begin{equation*}
-            \nabla_x f(U^{-1}x) = U\, \nabla f(U^{-1}x) \quad \forall x\in X.
-        \end{equation*}
-    \end{enumerate}
-\end{proposition}
+% Transformations in a unitary group preserve geometric properties such as distances and angles between vectors, but only in complex vector spaces. The example of the $\R^2$ symmetry group above is also a unitary group.
+% \begin{proposition}\label{prop:Groupe_unitaire}
+%     Let G be a group of unitary transformations acting on a complex vector space X. Let $U$ be an element in $G$, and we have the following properties:
+%         \begin{enumerate}[label=(\roman*)]
+%         \item[] \textbf{Inverse et adjoint} : $\forall U \in G$, $U^{-1} = U^\dagger$ with $U^\dagger$ adjoint operateur of $U$.
+%         \item[] \textbf{Préservation de norme} : $\|Ux\| = \|x\| \quad \forall x\in X$.
+%         \item[] \textbf{Transformation de gradient} : for any $f \in C^1(X,\R)$, for any $x \in X$:
+%         \begin{equation*}
+%             \nabla_x f(U^{-1}x) = U\, \nabla f(U^{-1}x) \quad \forall x\in X.
+%         \end{equation*}
+%     \end{enumerate}
+% \end{proposition}
 
-\begin{proof}
-    The proof is in '\cref{sec:proof_groupe_unitaire}
-\end{proof}
-\subsubsection{Analytical expression for Equivariance score (ES) machine}
+% \begin{proof}
+%     The proof is in \cref{sec:proof_groupe_unitaire}
+% \end{proof}
 % L'équivariance dans les modèles de diffusion garantit que le processus génératif respecte les symétries naturelles des données, ce qui est essentiel pour de nombreuses applications. En intégrant ces symétries dans l'architecture du modèle, on préserve la cohérence structurelle des échantillons générés, tout en réduisant la redondance dans l'apprentissage et en améliorant la généralisation. Cela permet également une optimisation plus stable et évite l’introduction de dépendances arbitraires qui pourraient nuire à la performance du modèle. On va étudier dans cette section comment un modèle de diffusion apprend la fonction de score sous la contrainte d'équivariance.
 The admissible set of function $\mathcal{M}$ is defined by
 \begin{equation*}
-    \mathcal{M} = {f:[0,T]\times \R^N} \rightarrow \R^N \text{ such that } f(t,T_g x) = T_g f(t,x), \quad \forall g\in G,\forall x\in \R^N
+    \mathcal{M} = \{f:[0,T]\times \R^N \rightarrow \R^N \text{ such that } f(t,T_g x) = T_g f(t,x), \quad \forall g\in G,\forall x\in \R^N \}
 \end{equation*}
-Plugging this estimator into the optimal condition \eqref{eq:optimal_condition_score_function}
+
+
+We recall the optimal condition \cref{eq:optimal_condition_score_function}
 \begin{equation*}
-\E{\langle h(t,x),f^*(t,x) -s_t(x)\rangle} = 0
+\E{\langle h(t,x),f^*(t,x) -s_t(x)\rangle} = 0, \text{ for any } h \in \mathcal{M}
 \end{equation*}
 One has
 \begin{align*}
     & \E{\langle h(t,x),f^*(t,x) -s_t(x)\rangle} \\
     &= \frac{1}{|\mathcal{D}|}\sum_{x_0  \in \mathcal{D}} \int_{\R^N} \langle h(t,x),f^*(t,x)-s_t(x) \rangle \mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0)dx\\
-    &= \frac{1}{|\mathcal{D}|}\sum_{x_0  \in \mathcal{D}} \int_{\R^N} \int_\mathcal{G }\langle h(t,x),f^*(t,x) \mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0)-s_t(x) \mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0) \rangle dx\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,x),\sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (x -\sqrt{\bar \alpha_t})\mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0) \rangle dx\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,x),\sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{G}_t(T_g(x -\sqrt{\bar \alpha_t}x_0))-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (x -\sqrt{\bar \alpha_t})\mathcal{G}_t(T_g(x -\sqrt{\bar \alpha_t}x_0)) \rangle dx dT_g\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,x),\sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (x -\sqrt{\bar \alpha_t})\mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \rangle dx dT_g\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle T_g^{-1}h(t,T_gx),\sum_{x_0  \in \mathcal{D}}T_g^{-1}f^*(t,T_gx) \mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} T_g^{-1}(T_gx -T_g \sqrt{\bar \alpha_t})\mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \rangle dx dT_g\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle T_g^{-1}h(t,T_gx),\sum_{x_0  \in \mathcal{D}}T_g^{-1}f^*(t,T_gx) \mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} T_g^{-1}(T_gx -T_g \sqrt{\bar \alpha_t})\mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \rangle dx dT_g\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,T_gx),\sum_{x_0  \in \mathcal{D}}f^*(t,T_gx) \mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (T_gx -T_g \sqrt{\bar \alpha_t})\mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \rangle dx dT_g\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\langle h(t,x),\sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (x -T_g \sqrt{\bar \alpha_t})\mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \rangle dx dT_g\\
-    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \langle h(t,x),\int_G \sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} \int_G(x -T_g \sqrt{\bar \alpha_t})\mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|}\sum_{x_0  \in \mathcal{D}} \int_{\R^N} \int_{G }\langle h(t,x),f^*(t,x) \mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0)-s_t(x) \mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0) \rangle dx\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G \left\langle h(t,x),\sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0)-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (x -\sqrt{\bar \alpha_t})\mathcal{G}_t(x -\sqrt{\bar \alpha_t}x_0)  \right\rangle dx\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G  \left\langle h(t,x),\sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{G}_t(T_g(x -\sqrt{\bar \alpha_t}x_0))-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (x -\sqrt{\bar \alpha_t})\mathcal{G}_t(T_g(x -\sqrt{\bar \alpha_t}x_0))  \right\rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\Big\langle h(t,x),\sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \\
+    & \hspace{3cm}  - \sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (x -\sqrt{\bar \alpha_t})\mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)  \Big\rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G \Big\langle T_g^{-1}h(t,T_gx),\sum_{x_0  \in \mathcal{D}}T_g^{-1}f^*(t,T_gx) \mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)\\
+    & \hspace{3cm} -\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} T_g^{-1}(T_gx -T_g \sqrt{\bar \alpha_t}x_0)\mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)  \Big\rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G \Big\langle T_g^{-1}h(t,T_gx),\sum_{x_0  \in \mathcal{D}}T_g^{-1}f^*(t,T_gx) \mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)\\
+    & \hspace{3cm} -\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} T_g^{-1}(T_gx -T_g \sqrt{\bar \alpha_t}x_0)\mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)  \Big\rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\Big\langle h(t,T_gx),\sum_{x_0  \in \mathcal{D}}f^*(t,T_gx) \mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)\\
+    & \hspace{3cm}-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (T_gx -T_g \sqrt{\bar \alpha_t}x_0)\mathcal{N}(T_gx,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)  \Big\rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N} \int_G\Big\langle h(t,x),\sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)\\
+    & \hspace{3cm}-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} (x -T_g \sqrt{\bar \alpha_t}x_0)\mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)  \Big\rangle dx dT_g\\
+    &= \frac{1}{|\mathcal{D}|} \int_{\R^N}  \Big\langle h(t,x),\int_G \sum_{x_0  \in \mathcal{D}}f^*(t,x) \mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)\\
+    & \hspace{3cm}-\sum_{x_0  \in \mathcal{D}} \frac{-1}{1-\bar \alpha_t} \int_G(x -T_g \sqrt{\bar \alpha_t}x_0)\mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) \Big\rangle dx dT_g\\
 \end{align*}
 The optimality condition implies that the above quantity is zero $\forall h \in \mathcal{M}$, thus
 \begin{equation*}
-    \sum_{x_0  \in \mathcal{D}}\int_G f^*(t,x) \mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)-\sum_{x_0  \in \mathcal{D}} \int_G \frac{-1}{1-\bar \alpha_t} (x -T_g \sqrt{\bar \alpha_t})\mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)  =0
+    \sum_{x_0  \in \mathcal{D}}\int_G f^*(t,x) \mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)dT_g-\sum_{x_0  \in \mathcal{D}} \int_G \frac{-1}{1-\bar \alpha_t} (x -T_g \sqrt{\bar \alpha_t}x_0)\mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N)dT_g  =0
 \end{equation*}
 Thus
 \begin{equation*}
-    f^*(t,x) =\frac{-1}{1-\bar \alpha_t}\frac{\sum_{x_0  \in \mathcal{D}}\int_G  (x -T_g \sqrt{\bar \alpha_t})\mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) dT_g}{\sum_{x_0  \in \mathcal{D}}\int_G \mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) d T_g}
+    f^*(t,x) =\frac{-1}{1-\bar \alpha_t}\frac{\sum_{x_0  \in \mathcal{D}}\int_G  (x -T_g \sqrt{\bar \alpha_t}x_0)\mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) dT_g}{\sum_{x_0  \in \mathcal{D}}\int_G \mathcal{N}(x,T_g \sqrt{\bar \alpha_t}x_0,(1-\bar\alpha_t)I_N) d T_g}
 \end{equation*}
-The conditions on the transformation $T_g$ are important: We need to do a change of variable $T_g x \rightarrow x$ and pass the adjoint $T_g^{-1}$ to the other side of the inner product. The following properties were used:
-\begin{itemize}
-    \item $|\det(T_g T_g^\top)| = 1$
-    \item $(T_g^{-1})^\top=T_g $
-\end{itemize}
+% The conditions on the transformation $T_g$ are important: We need to do a change of variable $T_g x \rightarrow x$ and pass the adjoint $T_g^{-1}$ to the other side of the inner product. The following properties were used:
+% \begin{itemize}
+%     \item[] $|\det(T_g T_g^\top)| = 1$
+%     \item[] $(T_g^{-1})^\top=T_g $
+% \end{itemize}
 In the image case, $G$ corresponds to every possible spatial translation, which is indeed a group of unitary transformations. We also note that $G(\mathcal{D})$ is finite, since $\mathcal{D}$ contains a finite number of images and each image has a finite number of pixels. Consequently, integrals over $G$ in the above expression convert to sums over $G(\varphi)$ 
 \begin{align*}
-        f^*(t,x) &= -\frac{1}{1-\bar \alpha_t} \sum\limits_{x_0  \in \mathcal{D}} \sum\limits_{\varphi' \in G(\varphi)} (x - \sqrt{\bar \alpha_t} \varphi') \frac{\mathcal{N}(x | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I_N) }{\sum\limits_{x_0  \in \mathcal{D}} \sum\limits_{\varphi'\in G(\varphi)} \mathcal{N}(x | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I_N)}\\
-        &= -\frac{1}{1-\bar \alpha_t}  \sum\limits_{\varphi' \in G(\mathcal{D})} (x - \sqrt{\bar \alpha_t} \varphi') \frac{\mathcal{N}(x | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I_N) }{ \sum\limits_{\varphi'\in G(\mathcal{D})} \mathcal{N}(x | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I_N)}
+        f^*(t,x) &= -\frac{1}{1-\bar \alpha_t} \sum\limits_{x_0  \in \mathcal{D}} \sum\limits_{x_0' \in G(\varphi)} (x - \sqrt{\bar \alpha_t} x_0') \frac{\mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N) }{\sum\limits_{x_0  \in \mathcal{D}} \sum\limits_{x_0'\in G(\varphi)} \mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N)}\\
+        &= -\frac{1}{1-\bar \alpha_t}  \sum\limits_{x_0' \in G(\mathcal{D})} (x - \sqrt{\bar \alpha_t} x_0') \frac{\mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N) }{ \sum\limits_{x_0'\in G(\mathcal{D})} \mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N)}
 \end{align*}
 % \begin{definition}
 % Soit \( G \) un groupe particulier de transformations agissant sur les données \( x \). On dit qu'un modèle \( M_t \) est \( G \)-équivariant si, pour tout \( U \in G \), notre modèle satisfait
@@ -527,7 +591,7 @@ In the image case, $G$ corresponds to every possible spatial translation, which 
 % \end{definition}
 % Cela signifie que l'application de la transformation $U$ à l'entrée$x$, suivie du passage à travers le modèle$M_t$, produit le même résultat que l'application du modèle $M_t$ à $x$, suivie de la transformation $U$ sur la sortie. En particulier, on cherche l'expression analytique de $M_t$ sous un groupe de transformation unitaire, le résultat est donné par le théorème suivant.
 % \begin{theorem}\label{theo:equivariant_modele}
-% Soit $G$ un groupe de transformation unitaire, l'approximation \( G \)-équivariante optimale de la fonction de score empirique sous l'objectif de score matching est donnée par la fonction de score empirique pour l'ensemble de données \( G(\mathcal{D}) \) consistant en l'orbite de l'ensemble de données \( \mathcal{D} \) sous le groupe \( G \), i.e 
+% Soit $G$ un groupe de transformation unitaire, l'approximation \( G \)-équivariante optimale de la fonction de score empirique sous l'objectif de score matching est donnée par la fonction de score empirique pour l'ensemble de données \( G(\mathcal{D}) \) consistant en l'orbite de l'ensemble de données \( \mathcal{D} \) sous le groupe \( G \), i.e. 
 % \begin{equation}\label{eq:model_sous_equivariant_contraint}
 %     M_t(\psi) = -\frac{1}{1-\bar \alpha_t} \frac{\sum\limits_{x_0  \in \mathcal{D}} \int_{G(\varphi)} (\psi - \sqrt{\bar \alpha_t} \varphi') \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) d\varphi'}{\sum\limits_{x_0  \in \mathcal{D}} \int_{G(\varphi)} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) d\varphi'} \quad ,\forall\psi \in \R^N
 % \end{equation}
@@ -541,13 +605,13 @@ In the image case, $G$ corresponds to every possible spatial translation, which 
 %         &= -\frac{1}{1-\bar \alpha_t}  \sum\limits_{\varphi' \in G(\mathcal{D})} (\psi - \sqrt{\bar \alpha_t} \varphi') \frac{\mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I) }{ \sum\limits_{\varphi'\in G(\mathcal{D})} \mathcal{N}(\psi | \sqrt{\bar \alpha_t} \varphi', (1-\bar \alpha_t) I)}
 % \end{align*}
 % La sortie de la machine ES est quasiment identique à celle de l'apprentissage idéal de la fonction de score, sauf qu'ici l'ensemble de données $\mathcal{D}$ est augmenté par les translations spatiales de $G$. Ce résultat montre que la machine ES appliquée aux images n'atteint qu'une créativité limitée : elle ne peut générer que des translations des images dans l'ensemble d'entraînement.
-\subsection{Local score machine}
+\subsubsection{Local score (LS) machine}
 In this section, we will study the behavior of the score function estimator under the locality constraint.
-The admissible set of functions is the set of functions that act locally, i.e 
+The admissible set of functions is the set of functions that act locally, i.e. 
 \begin{equation*}
     \mathcal{M} = {f:[0,T]\times\R^N \rightarrow \R^N \text{ such that } \forall n, \exists v_{f,n} : \R^P \rightarrow \R, f_n(t,x)=v_{f,n}(t,\Sigma_n x, \forall x\in \R^N)}
 \end{equation*}
-Where $\Sigma_n \in \R{P\times N}$ is a selection matrix, which take $P$ pixels centered at $n$ (with e.g., circular boundary condition). The function $f = (f_1,f_2,\dots,f_N)$ have the output $f_n(x)$ depend only on $\Sigma_n x$, a small patch centered at n with the aciton $v_{f,n}$.
+Where $\Sigma_n \in \R^{P\times N}$ is a selection matrix, which take $P$ pixels centered at $n$ (with e.g., circular boundary condition). The function $f = (f_1,f_2,\dots,f_N)$ have the output $f_n(x)$ depend only on $\Sigma_n x$, a small patch centered at n with the aciton $v_{f,n}$.
 
 At some point, we need to do a change of variables so it's helpful to look at the section matrices 
 $\Sigma_n : \mathbb{R}^N \rightarrow \mathbb{R}^P$. 
@@ -592,27 +656,31 @@ According to the optimality condition, the alove quantity is zero, thus
     v_{f^*,n}(t,b)\int_{\R^N} \delta(\Sigma_nx -b) \pi_t(x) dx &= \int_{\R^N} \delta(\Sigma_nx -b) s_t(x)[n]\pi_t(x) dx \\
     &= \int_{\R^N} \delta(\Sigma_nx -b) \nabla_{x[n]}\pi_t(x) dx\\
     &= \nabla_{b[0]} \int_{\R^N} \delta(\Sigma_nx -b) \pi_t(x) dx\\
+    & \text{with } b[0] \text{ the center pixel of the patch b}
 \end{align*}
 We consider
 \begin{align*}
     \int_{\R^N} \delta(\Sigma_nx -b) \pi_t(x) dx &= \frac{1}{|\mathcal{D}|} \sum_{x_0  \in \mathcal{D}} \int_{\R^N} \delta(\Sigma_nx -b) \Normal{x; \sqrt{\bar \alpha_t} x_0, (1-\bar\alpha_t) \Id_N} dx\\
     & \eqdef \frac{1}{|\mathcal{D}|} \sum_{x_0  \in \mathcal{D}} q(b, n, \sqrt{\bar\alpha_t}x_0)
 \end{align*}
-We need to compute the weights $q(b, n, \sqrt{\bar\alpha_t}x_0)$ for any $x \in \R^P$, $b\in \R^P$, $n \in [1, \dots, N]$, one has
+We need to compute the weights $q(b, n, \sqrt{\bar\alpha_t}x_0)$ for any $x \in \R^P$, $b\in \R^P$, $n \in [1, \dots, N]$. By using \cref{eq:key_equation} with $B = \Sigma_n, n = N, m = r =P$ and $U_r = \Sigma_r = \Id_r$, we obtain 
 \begin{align*}
     q(b, n, \sqrt{\bar\alpha_t}x_0)&=\int_{\R^N} \delta(\Sigma_nx -b) \Normal{x; \sqrt{\bar \alpha_t} x_0, (1-\bar\alpha_t) \Id_N} dx\\
-    &= \int_{\R^P} \delta(z -b) \Normal{z; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R} dz\\
-    &= \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}
+    &= \int_{\R^P} \delta(z -b) \Normal{z; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_P} dz\\
+    &= \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_P}
 \end{align*}
-\begin{proposition}[Normal integration on subspace]\label{propr:normal_on_subspace}
-    Let $\mathcal{V} = v_0 + \mathcal{V'} \subset \R^N$ be a $(N - K)$ dimensional affine subspace of $\R^N$. Suppose that  $V$ is an orthonormal basis of $\mathcal{V'}$. For any $\mu \in \R^N$, we have:
-    \begin{equation*}
-        \int_{\mathcal{V}} \Normal{w; \mu, \sigma^2 \Id_{N}} d \mathcal{H}^{N - K}(w) = \frac{1}{(2 \pi \sigma^2)^{(K / 2)}} \exp \left( -\frac{\norm{(\Id - VV^T)(\mu - v_0)}^2}{2\sigma^2} \right)
-    \end{equation*}
-\end{proposition}
-\begin{proof}
-    The proof is in \cref{sec:proof_normal_on_subspace}
-\end{proof}
+
+% \begin{proposition}[Normal integration on subspace]\label{propr:normal_on_subspace}
+%     Let $\mathcal{V} = v_0 + \mathcal{V'} \subset \R^N$ be a $(N - K)$ dimensional affine subspace of $\R^N$. Suppose that  $V$ is an orthonormal basis of $\mathcal{V'}$. For any $\mu \in \R^N$, we have:
+%     \begin{equation*}
+%         \int_{\mathcal{V}} \Normal{w; \mu, \sigma^2 \Id_{N}} d \mathcal{H}^{N - K}(w) = \frac{1}{(2 \pi \sigma^2)^{(K / 2)}} \exp \left( -\frac{\norm{(\Id - VV^T)(\mu - v_0)}^2}{2\sigma^2} \right)
+%     \end{equation*}
+% \end{proposition}
+% \begin{proof}
+%     The proof is in \cref{sec:proof_normal_on_subspace}
+% \end{proof}
+
+
 
 % \begin{align*}
 %     q(b, n, \sqrt{\bar\alpha_t}x_0) &= \int_{\R^N} \delta(\Sigma_nx -b) \Normal{x; \sqrt{\bar \alpha_t} x_0, (1-\bar\alpha_t) \Id_N} dx\\
@@ -635,13 +703,13 @@ We need to compute the weights $q(b, n, \sqrt{\bar\alpha_t}x_0)$ for any $x \in 
 Thus,
 \begin{align*}
     \nabla_{b[0]}q(b, n, \sqrt{\bar\alpha_t}x_0) &= \frac{-1}{1-\bar\alpha_t} \left(b[0] -  \sqrt{\bar{\alpha_t}}x_0[n]\right) q(b, n, \sqrt{\bar\alpha_t}x_0)\\
-    &= \frac{-1}{1-\bar\alpha_t} \left(b[0] -  \sqrt{\bar{\alpha_t}}x_0[n]\right) \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}
+    &= \frac{-1}{1-\bar\alpha_t} \left(b[0] -  \sqrt{\bar{\alpha_t}}x_0[n]\right) \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_P}
 \end{align*}
 We obtain finally the analytical expression for the LS machine
 \begin{equation}
-    v_{f^*,n}(t,b) = -\frac{1}{1-\bar\alpha_t} \frac{\sum_{x_0\in\mathcal{D}}\left(b[0] -  \sqrt{\bar{\alpha_t}}x_0[n]\right) \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}}{\sum_{x_0 \in \mathcal{D}} \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}}
+    v_{f^*,n}(t,b) = -\frac{1}{1-\bar\alpha_t} \frac{\sum_{x_0\in\mathcal{D}}\left(b[0] -  \sqrt{\bar{\alpha_t}}\,x_0[n]\right) \Normal{b; \sqrt{\bar \alpha_t} \,\Sigma_n x_0, (1-\bar\alpha_t) \Id_P}}{\sum_{x_0 \in \mathcal{D}} \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_P}}
 \end{equation}
-% The final step is to verify if the above expression of LS machine satisfies the optimality condition \eqref{eq:optimal_condition_score_function}
+% The final step is to verify if the above expression of LS machine satisfies the optimality condition \cref{eq:optimal_condition_score_function}
 % \begin{align*}
 %     &\E{\langle h(t,x),f^*(t,x) -s_t(x)\rangle}\\
 %     &= \int_{\R^N} \langle h(t,x),f^*(t,x)-s_t(x) \rangle \pi_t(x) dx\\
@@ -708,7 +776,7 @@ We obtain finally the analytical expression for the LS machine
 % \[ f_x(x)\, p_{x_t \sim \pi_t} (x_{t \Omega_x} = x) = \nabla_{x(0)} p_{x_t \sim \pi_t} (x_{t \Omega_x} = x) \]
 
 % D'où
-% \[ f_x(x) = \nabla_{x(0)} \log p_{x_t \sim \pi_t} (x_{t\Omega_x} = x) \]
+% \[ f_x(x) = \nabla_{x(0)} \log p_{x_t \sim \pi_t} (\Sigma_n x_t = x) \]
 
 % On a :
 % \begin{align*}
@@ -719,7 +787,7 @@ We obtain finally the analytical expression for the LS machine
 
 % Ainsi,
 % \begin{align*}
-%     f_x(x) &= \nabla_{x(0)} \log \left\{p_{x_t \sim \pi_t} (x_{t\Omega_x} = x)\right\} \\
+%     f_x(x) &= \nabla_{x(0)} \log \left\{p_{x_t \sim \pi_t} (\Sigma_n x_t = x)\right\} \\
 %     &=\nabla_{x(0)} \log \left\{ \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \mathcal{N}(x \mid \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar\alpha_t) I) \right\}
 % \end{align*}
 
@@ -731,18 +799,20 @@ We obtain finally the analytical expression for the LS machine
 
 % La LS machine donne une sortie qui est quasiment identique à celle de l'apprentissage idéal de la fonction de score, sauf que l'ensemble de données $\mathcal{D}$ est remplacé par l'ensemble de local patches issus de $\mathcal{D}$. Intuitivement, un échantillon $x$ généré par la LS machine respecte trois conditions locales :
 % \begin{itemize}[topsep=-5pt]
-%     \item Chaque pixel $x$ peut être attribué de manière unique à un patch d'apprentissage local $\varphi_x$ situé en $x$.
-%     \item La valeur du pixel $x(x)$ est exactement égale au pixel central $\varphi_x(0)$.
-%     \item Le reste du patch local généré $x_{\Omega_x}$ ressemble, au sens $l_2$, davantage au patch d'entraînement local $f$ qu'à tout autre patch d'entraînement possible.
+%     \item[] Chaque pixel $x$ peut être attribué de manière unique à un patch d'apprentissage local $\varphi_x$ situé en $x$.
+%     \item[] La valeur du pixel $x(x)$ est exactement égale au pixel central $\varphi_x(0)$.
+%     \item[] Le reste du patch local généré $x_{\Omega_x}$ ressemble, au sens $l_2$, davantage au patch d'entraînement local $f$ qu'à tout autre patch d'entraînement possible.
 % \end{itemize}
 
 % Ce résultat montre que la local score (LS) machine approxime la fonction score en se basant sur des patchs d’image locaux. Cela permet à différentes régions \( x_{\Omega_x} \) et \( x_{\Omega_{x'}} \) de s’aligner sur des patchs issus d’images d’entraînement distinctes, offrant ainsi une plus grande créativité combinatoire. Toutefois, une limitation persiste : chaque patch ne peut correspondre qu’à un patch d’entraînement situé au même emplacement spatial. L’ajout de l’équivariance lève cette contrainte, permettant aux patchs de se transférer entre différentes positions et d’accroître encore la créativité.
 
-\subsection{Local and translational equivariant score function}
-In this section, we will study the behavior of the score function estimator under the locality and translational equivariance constraints.
-The admissible set of functions is the set of functions that act locally and equivariant by tranlsation, i.e 
+\subsubsection{Translation equivariant and local  score (ELS) machine}
+{\large \textbf{Analytic formula for ELS machine}}
+
+In this section, we will study the behavior of the score function estimator under the locality and translation equivariance constraints.
+The admissible set of functions is the set of functions that act locally and are equivariant by tranlsation, i.e. 
 \begin{equation*}
-    \mathcal{M} = {f:[0,T]\times\R^N \rightarrow \R^N \text{ such that }  \exists v_{f} : \R^P \rightarrow \R, f_n(t,x)=v_{f}(t,\Sigma_n x, \forall x\in \R^N)}
+    \mathcal{M} = \{f:[0,T]\times\R^N \rightarrow \R^N \text{ such that }  \exists v_{f} : \R^P \rightarrow \R, f_n(t,x)=v_{f}(t,\Sigma_n x), \forall x\in \R^N\}
 \end{equation*}
 
 One has
@@ -750,13 +820,13 @@ One has
     \E{\langle h(t,x),f^*(t,x) -s_t(x)\rangle} &= \int_{\R^N} \langle h(t,x),f^*(t,x)-s_t(x) \rangle \pi_t(x) dx\\
     &= \int_{\R^N} \sum_{n=1}^{N} v_{h}(t,\Sigma_nx)\left(v_{f^*}(t,\Sigma_nx)-s_t(x) \right) \pi_t(x) dx\\
 \end{align*}
-We choose $(v_{h})$ defined by
+We choose $v_{h}$ defined by
 \begin{equation*}
     v_{h}(t,\Sigma_n x) = \delta(\Sigma_n x - z)
 \end{equation*}
 Thus
 \begin{equation*}
-    \int_{\R^N} \sum_{n=1}^{N}\langle v_{h}(t,\Sigma_nx),v_{f^*}(t,\Sigma_nx)-s_t(x)[n] \rangle \pi_t(x) dx = \sum_{n=1}^{N} \int_{\R^N} \delta(\Sigma_nx -b)\,(v_{f^*}(t,\Sigma_nx)-s_t(x)[n])  \pi_t(x) dx
+    \int_{\R^N} \sum_{n=1}^{N}v_{h}(t,\Sigma_nx)(v_{f^*}(t,\Sigma_nx)-s_t(x)[n]) \pi_t(x) dx = \sum_{n=1}^{N} \int_{\R^N} \delta(\Sigma_nx -b)\,(v_{f^*}(t,\Sigma_nx)-s_t(x)[n])  \pi_t(x) dx
 \end{equation*}
 According to the optimality condition, the alove quantity is zero, thus
 \begin{align*}
@@ -767,11 +837,11 @@ According to the optimality condition, the alove quantity is zero, thus
 
 Thus
 \begin{align*}
-    v_{f^*}(t,b) \sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} q(b, n, \sqrt{\bar\alpha_t}x_0) &= \nabla_{b[0]} \sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} q(b, n, \sqrt{\bar\alpha_t}x_0)\\
-    v_{f^*}(t,b) \sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R} &=  \sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} \left(b[0] -  \sqrt{\bar{\alpha_t}}x_0[n]\right) \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}\\
+    v_{f^*}(t,b) \sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} q(b, n, \sqrt{\bar\alpha_t}x_0) &=  \sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} \nabla_{b[0]}q(b, n, \sqrt{\bar\alpha_t}x_0)\\
+    v_{f^*}(t,b) \sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_P} &=  \sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} \left(b[0] -  \sqrt{\bar{\alpha_t}}x_0[n]\right) \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_P}\\
 \end{align*}
 
-We obtain the analytic formula for the local in translational equivariant MMSE
+We obtain the analytic formula for the ELS machine 
 \begin{equation*}
     v_{f^*}(t,b) = -\frac{1}{1-\bar\alpha_t}\,\frac{\sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} \left(b[0] -  \sqrt{\bar{\alpha_t}}x_0[n]\right) \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}}{\sum_{n=1}^{N}\sum_{x_0  \in \mathcal{D}} \Normal{b; \sqrt{\bar \alpha_t} \Sigma_n x_0, (1-\bar\alpha_t) \Id_R}}
 \end{equation*}
@@ -786,7 +856,7 @@ We obtain the analytic formula for the local in translational equivariant MMSE
 
 % La fonction $f$ est optimisée sous la fonction de coût suivante :
 % \begin{equation*}
-%     \mathcal{L}(f) = \sum\limits_x \mathbb{E}_{x_t \sim \pi_t} \left( \| f(x_{t\Omega_x}) - s_t [x_t](x) \|^2 \right)
+%     \mathcal{L}(f) = \sum\limits_x \mathbb{E}_{x_t \sim \pi_t} \left( \| f(\Sigma_n x_t) - s_t [x_t](x) \|^2 \right)
 % \end{equation*}
 
 % On écrit la fonction de coût sous forme d'integrale,
@@ -818,22 +888,22 @@ We obtain the analytic formula for the local in translational equivariant MMSE
 % En arrangeant,
 % \begin{align*}
 %     \int_{\R^N} \pi_t(x) \sum\limits_x s_t [x](x) \delta(x_{\Omega_x} - x) dx &= \int_{\R^N} \pi_t(x) \sum\limits_x f(x_{\Omega_x}) \delta(x_{\Omega_x} - x) dx \\
-%     &= f(x) \sum\limits_x p_{x_t \sim \pi_t} (x_{t\Omega_x} = x)\\
-%     & \text{avec }  p_{x_t \sim \pi_t} (x_{t\Omega_x} = x) \text{ la densité marginale de }x_{t\Omega_x}
+%     &= f(x) \sum\limits_x p_{x_t \sim \pi_t} (\Sigma_n x_t = x)\\
+%     & \text{avec }  p_{x_t \sim \pi_t} (\Sigma_n x_t = x) \text{ la densité marginale de }\Sigma_n x_t
 % \end{align*}
 
 % Le terme à gauche s’écrit :
 % \begin{align*}
 %     \int_{\mathbb{R}^N} \pi_t(x) \sum\limits_x s_t[x](x) \delta(x_{\Omega_x} - x) dx &= \sum\limits_x \int_{\mathbb{R}^N} \delta(x_{\Omega_x} - x) \pi_t(x) \nabla_{x_(x)} \log \pi_t(x) dx\\
 %     &= \sum\limits_x \int_{\mathbb{R}^N} \delta(x_{\Omega_x} - x) \nabla_{x_(x)}\pi_t(x) dx\\
-%     &= \sum\limits_x \nabla_{x(0)} p_{x_t \sim \pi_t} \left(x_{t\Omega_x} = x \right)
+%     &= \sum\limits_x \nabla_{x(0)} p_{x_t \sim \pi_t} \left(\Sigma_n x_t = x \right)
 % \end{align*}
 
 
 
 % Ainsi,
 % \begin{equation*}
-%     f(x) = \nabla_{x(0)} \log \sum\limits_x p_{x_t \sim \pi_t} \left(x_{t\Omega_x} = x \right)
+%     f(x) = \nabla_{x(0)} \log \sum\limits_x p_{x_t \sim \pi_t} \left(\Sigma_n x_t = x \right)
 % \end{equation*}
 
 % On rappelle la distribution \(\pi_t\) :
@@ -845,7 +915,7 @@ We obtain the analytic formula for the local in translational equivariant MMSE
 
 % On cherche :
 % \begin{align*}
-%     p_{x_t \sim \pi_t} \left( x_{t\Omega_x} = x \right) &=
+%     p_{x_t \sim \pi_t} \left( \Sigma_n x_t = x \right) &=
 % \int_{\mathbb{R}^N} \pi_t(x) \delta(x_{\Omega_x} - x) dx \\
 % & = \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \int_{\mathbb{R}^N} \mathcal{G}_t (x - \sqrt{\bar \alpha_t} \varphi) \delta(x_{\Omega_x} - x) dx\\
 % &= \frac{1}{|\mathcal{D}|} \sum\limits_{x_0  \in \mathcal{D}} \int_{\mathbb{R}^N} \mathcal{N} (x | \sqrt{\bar \alpha_t} \varphi, (1 - \bar \alpha_t) I)\, \delta(x_{\Omega_x} - x) dx\\
@@ -854,7 +924,7 @@ We obtain the analytic formula for the local in translational equivariant MMSE
 
 % D’où :
 % \begin{align*}
-%     \sum\limits_x p_{x_t \sim \pi_t} \left( x_{t\Omega_x} = x \right) &= \frac{1}{|\mathcal{D}|} \sum\limits_x \sum\limits_{x_0  \in \mathcal{D}} \mathcal{N} (x | \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)\\
+%     \sum\limits_x p_{x_t \sim \pi_t} \left( \Sigma_n x_t = x \right) &= \frac{1}{|\mathcal{D}|} \sum\limits_x \sum\limits_{x_0  \in \mathcal{D}} \mathcal{N} (x | \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)\\
 %     &=\frac{1}{|\mathcal{D}|} \sum\limits_{\varphi \in P_\Omega(\mathcal{D})} \mathcal{N} (x | \sqrt{\bar \alpha_t} \varphi_{\Omega_x}, (1 - \bar \alpha_t) I)
 % \end{align*}
 
@@ -875,97 +945,487 @@ We obtain the analytic formula for the local in translational equivariant MMSE
 
 % En présence de zero-paddings, différents dictionnaires de patchs de l'ensemble d'apprentissage sont utilisés pour le calcul de la machine ELS en fonction de l'information contextuelle fournie par la bordure visible à l'intérieur du patch. Pour un patch central sans information sur le bord, les patchs de l'ensemble d'apprentissage proviennent de l'ensemble de l'intérieur de l'image. Pour les patchs de bord, les patchs de l'ensemble d'apprentissage proviennent de tous les bords de l'image à la même distance de la bordure. Pour les patchs d'angle, seules les patchs provenant de cet endroit précis sont utilisées dans le calcul.
 
-\subsubsection{Convergence at $t = 0$}
-\begin{definition}[Point localment cohérent]
-    Dans le contexte de ELS machine, un point \(\hat{x}\) est dit localement cohérent si 
-    pour tout pixel \( x \), la valeur \(\hat{x}(x)\) est égale au pixel central \( \varphi(0) \) avec :
-\[
-    \varphi = \arg \min_{\varphi \in P_{\Omega}^{x}} \|\Psi - \hat{x}_{\Omega_t}^{x}\|^2.
-\]
+% \subsubsection{Convergence at $t = 0$}
+% \begin{definition}[Point localment cohérent]
+%     Dans le contexte de ELS machine, un point $\hat{x}$ est dit localement cohérent si 
+%     pour tout pixel \( x \), la valeur \(\hat{x}(x)\) est égale au pixel central \( \varphi(0) \) avec :
+% \[
+%     \varphi = \arg \min_{\varphi \in P_{\Omega}^{x}} \|\Psi - \hat{x}_{\Omega_t}^{x}\|^2.
+% \]
+% \end{definition}
+
+
+% \begin{theorem}
+%     On se donne un échantillon \(x_T\) issu de la distribution \(\pi_T\) et on évolue cet échantillon d'après le processus inverse :
+%     \[
+%     \partial_t x_t = - \gamma_t \left( x_t + M_t(x_t) \right) \quad \text{avec} \quad \gamma_t = -\frac{\partial_t \bar{\alpha}_t}{2 \bar \alpha_t}.
+%     \]
+%     Sous l’hypothèse que les limites \( \lim\limits_{t \to 0} x_t \) et \( \lim\limits_{t \to 0} \partial_t x_t \) existent, l’échantillon \( x_t \) converge vers un point localement cohérent.
+% \end{theorem}
+
+
+% \begin{proof}
+%     L’hypothèse de l’existence de \( \lim\limits_{t \to 0} \partial_t \bar \alpha_t \) et de \( \lim\limits_{t \to 0} x_t \) entraîne que \( \gamma_t M_t(x_t) \) reste borné lorsque \( t \to 0 \).
+
+%     On a :
+%     \[
+%     \lim\limits_{t \to 0} M_t [x_t] (x) = \lim\limits_{t \to 0} - \frac{\partial_t \bar \alpha_t}{2\bar  \alpha_t (1 - \bar \alpha_t)} \sum_{x_0 \in P_{\Omega}} \left(x_t(n) - \sqrt{\bar{\alpha}_t} \x_0[0]\right) W(x_0|x_t,n).
+%     \]
+    
+%     Avec :
+%     \[
+%     W(x_0|x_t,n) = \frac{\mathcal{N}(\Sigma_n x_t | \sqrt{\bar{\alpha}_t} \varphi, (1 - \alpha_t)I)}
+%     {\sum\limits_{\varphi \in P_{\Omega}^{x}} \mathcal{N}(\Sigma_n x_t | \sqrt{\bar{\alpha}_t} \varphi', (1 - \alpha_t)I)}.
+%     \]
+
+%     Comme $
+%     \lim\limits_{t \to 0} \frac{1}{1 - \bar \alpha_t} = +\infty 
+%     \text{ et } 
+%     \frac{\partial_t \bar \alpha_t}{2 \bar \alpha_t} = \gamma_t \text{ existe et continue en } t=0,$
+%     la somme à droite doit tendre vers 0 lorsque \( t \to 0 \), c'est-à-dire :    
+%     \[
+%     \lim\limits_{t \to 0} \sum_{x_0 \in P_{\Omega}} \left(x_t(n) - \sqrt{\bar{\alpha}_t} \x_0[0]\right) W(x_0|x_t,n) = 0.
+%     \]
+    
+%     On remarque que :    
+%     \[
+%     \lim\limits_{t \to 0} W(x_0|x_t,n) =
+%     \begin{cases} 
+%     1, & \text{si } \varphi = \tilde{\varphi} \coloneqq \arg\min\limits_{\psi \in P_{\Omega}^{x}} \|x_{\Omega_{x}|_{t=0}} - \psi \|^2, \\
+%     0, & \text{sinon}.
+%     \end{cases}
+%     \]
+    
+%     Donc, la limite de la somme se réduit à :    
+%     \[
+%     (x_0(x) - \tilde{\varphi}(0)).
+%     \]
+    
+%     La somme s’annule à \( t \to 0 \) implique que :    
+%     \[
+%     x_0(x) = \tilde{\varphi}(0).
+%     \]
+% \end{proof}
+
+
+{\large \textbf{Convergence at $t = 0$}}`'
+\begin{definition}[Locally Coherent Point]
+    In the context of the ELS machine, a point $\tilde{x}$ is said to be locally coherent if 
+    for every pixel $n$, the value $\tilde{x}$ at this pixel is equal to the central pixel $x_0^*[0]$ of its $l2$-closest patch $x_0^* \in P_\Omega$, the set of all possible patches extrated from $\mathcal{D}$
+    \[
+        x_0^* = \arg \min_{x_0 \in P_{\Omega}} \|x_0 - \Sigma_n \tilde{x}\|^2.
+    \]
 \end{definition}
 
-
 \begin{theorem}
-    On se donne un échantillon \(x_T\) issu de la distribution \(\pi_T\) et on évolue cet échantillon d'après le processus inverse :
+    Let \(x_T\) be a sample drawn from the distribution \(\pi_T\), and suppose this sample evolves according to the reverse process:
     \[
-    \partial_t x_t = - \gamma_t \left( x_t + M_t(x_t) \right) \quad \text{avec} \quad \gamma_t = -\frac{\partial_t \bar{\alpha}_t}{2 \bar \alpha_t}.
+        \partial_t x_t = - \gamma_t \left( x_t + f^*(t,x_t) \right) \quad \text{with} \quad \gamma_t = -\frac{\partial_t \bar{\alpha}_t}{2 \bar \alpha_t}.
     \]
-    Sous l’hypothèse que les limites \( \lim\limits_{t \to 0} x_t \) et \( \lim\limits_{t \to 0} \partial_t x_t \) existent, l’échantillon \( x_t \) converge vers un point localement cohérent.
+    Assuming the limits \( \lim\limits_{t \to 0} x_t \) and \( \lim\limits_{t \to 0} \partial_t x_t \) exist, the sample \( x_t \) converges to a locally coherent point.
 \end{theorem}
 
-
 \begin{proof}
-    L’hypothèse de l’existence de \( \lim\limits_{t \to 0} \partial_t \bar \alpha_t \) et de \( \lim\limits_{t \to 0} x_t \) entraîne que \( \gamma_t M_t(x_t) \) reste borné lorsque \( t \to 0 \).
+    The assumption that \( \lim\limits_{t \to 0} \partial_t \bar \alpha_t \) and \( \lim\limits_{t \to 0} x_t \) exist implies that \( \gamma_t M_t(x_t) \) remains bounded as \( t \to 0 \).
 
-    On a :
+    We have:
     \[
-    \lim\limits_{t \to 0} M_t [x_t] (x) = \lim\limits_{t \to 0} - \frac{\partial_t \bar \alpha_t}{2\bar  \alpha_t (1 - \bar \alpha_t)} \sum_{\varphi \in P_{\Omega}^{x}} \left(x_t(x) - \sqrt{\bar{\alpha}_t} \varphi(0)\right) W(\varphi | x_t, x).
-    \]
-    
-    Avec :
-    \[
-    W(\varphi | x_t, x) = \frac{\mathcal{N}(x_{t\Omega_x} | \sqrt{\bar{\alpha}_t} \varphi, (1 - \alpha_t)I)}
-    {\sum\limits_{\varphi \in P_{\Omega}^{x}} \mathcal{N}(x_{t\Omega_x} | \sqrt{\bar{\alpha}_t} \varphi', (1 - \alpha_t)I)}.
+        \lim\limits_{t \to 0} v_{f^*,n}(t,x_t) (x) = \lim\limits_{t \to 0} - \frac{\partial_t \bar \alpha_t}{2\bar  \alpha_t (1 - \bar \alpha_t)} \sum_{x_0 \in P_{\Omega}} \left(x_t(n) - \sqrt{\bar{\alpha}_t} x_0[0]\right) W(x_0|x_t,n).
     \]
 
-    Comme $
-    \lim\limits_{t \to 0} \frac{1}{1 - \bar \alpha_t} = +\infty 
-    \text{ et } 
-    \frac{\partial_t \bar \alpha_t}{2 \bar \alpha_t} = \gamma_t \text{ existe et continue en } t=0,$
-    la somme à droite doit tendre vers 0 lorsque \( t \to 0 \), c'est-à-dire :    
+    With:
     \[
-    \lim\limits_{t \to 0} \sum_{\varphi \in P_{\Omega}^{x}} \left(x_t(x) - \sqrt{\bar{\alpha}_t} \varphi(0)\right) W(\varphi | x_t, x) = 0.
+        W(x_0|x_t,n) = \frac{\mathcal{N}(\Sigma_n x_t | \sqrt{\bar{\alpha}_t} \varphi, (1 - \alpha_t)I)}
+        {\sum\limits_{x_0' \in P_{\Omega}} \mathcal{N}(\Sigma_n x_t | \sqrt{\bar{\alpha}_t} \varphi', (1 - \alpha_t)I)}.
     \]
-    
-    On remarque que :    
+
+    Since 
     \[
-    \lim\limits_{t \to 0} W(\varphi | x_t, x) =
-    \begin{cases} 
-    1, & \text{si } \varphi = \tilde{\varphi} \coloneqq \arg\min\limits_{\psi \in P_{\Omega}^{x}} \|x_{\Omega_{x}|_{t=0}} - \psi \|^2, \\
-    0, & \text{sinon}.
-    \end{cases}
+        \lim\limits_{t \to 0} \frac{1}{1 - \bar \alpha_t} = +\infty 
+        \quad \text{and} \quad 
+        \frac{\partial_t \bar \alpha_t}{2 \bar \alpha_t} = \gamma_t \text{ exists and is continuous at } t=0,
     \]
-    
-    Donc, la limite de la somme se réduit à :    
+    the sum on the right must tend to zero as \( t \to 0 \), that is:
     \[
-    (x_0(x) - \tilde{\varphi}(0)).
+        \lim\limits_{t \to 0} \sum_{x_0 \in P_{\Omega}} \left(x_t[n] - \sqrt{\bar{\alpha}_t} x_0[0]\right) W(x_0|x_t,n) = 0.
     \]
-    
-    La somme s’annule à \( t \to 0 \) implique que :    
+
+    We note that:
     \[
-    x_0(x) = \tilde{\varphi}(0).
+        \lim\limits_{t \to 0} W(x_0|x_t,n) =
+        \begin{cases} 
+        1, & \text{if } x_0 = x_0^* \coloneqq \arg \min_{x_0 \in P_{\Omega}} \|x_0 - \Sigma_n \tilde{x}\|^2. \\
+        0, & \text{otherwise}.
+        \end{cases}
+    \]
+
+    Thus, the limit of the sum reduces to:
+    \[
+        (x_0[n] - x_0^*[0]).
+    \]
+
+    The sum vanishing as \( t \to 0 \) implies:
+    \[
+        x_0[n] = x_0^*[0].
     \]
 \end{proof}
 
+\section{Analytical solutions for MMSE inverse problems}
+In this section, we extend the analytical framework developed for MMSE denoising to the more general setting of inverse problems, where the observation model takes the form $y=Ax+b$. Unlike the denoising case where $A=I$, the presence of a general forward operator $A$ introduces new challenges related to the ill-posedness and instability of the inversion. Our goal is to characterize the MMSE estimator $\hat{x}(y)$ under architectural constraints such as locality and translation equivariance, as typically imposed by convolutional neural networks (CNNs). This project constitutes an ongoing research effort aimed at deriving analytical formulas for the MMSE estimator under these constraints, with the long-term objective of publishing the results. While the work is still in progress and some of the findings remain confidential, we already have preliminary results that offer valuable insights into the behavior of constrained neural estimators in inverse problem settings.
+\subsection{Notations}
+\begin{itemize}
+    \item[]  $\x, \y, \beps$ are random vectors 
+    \item[] Operator: $A: \R^N \to \R^M$, pseudo-inverse $A^+ : \R^M \to \R^N$
+    \item[] Constrained set of functions: $\M = \{ \phi : \R^N \to \R^N: \dots \}$
+\end{itemize}
+Linear inverse problem:
+\begin{equation*}
+   \y = A \x + \beps 
+\end{equation*}
+The distribution of $\x$ is empirical, i.e.
+\begin{equation}
+    p_{\x}(u) =  \frac{1}{|\D|}\sum_{x\in\D} \delta(u-x)
+\end{equation}
+The distribution of $\y$ is given by
+\begin{equation*}
+    p_{\y}(v) = \frac{1}{|\D|}\sum_{x\in\D} \Normal{y,Ax,\sigma^2\Id_M}
+\end{equation*}
+
+\subsection{General}
+\subsubsection{Problem}
+We would like to solve
+\begin{equation}\label{eq:general_problem}
+    \min_{\phi \in \M} \E{\norm{\phi(\y) - \x}^2} \eqdef J(\phi)
+\end{equation}
+for some vector space $\M$. 
+\subsubsection{Optimality condition}
+$\phi^* \in \M$ is a minimizer of $J$ if $J(\phi^* + t \varphi) \geqslant J(\phi^*)$ for all $t \in \R$ and all $\varphi \in \M$. We have 
+\begin{align*}
+    J(\phi^* + t \varphi) &= \E{\norm{(\phi^* + t \varphi) (\y) - \x}^2} \\
+    &= J(\phi^*) + t^2 \E{\norm{\varphi(\y)}^2} + 2t \E{\inner{\varphi(\y), \phi^*(\y) - \x}} 
+\end{align*}
+Therefore, the \textbf{optimality condition} is 
+\begin{equation}\label{eq:optimality_condition}
+    \E{\inner{\varphi(\y), \phi^*(\y) - \x}} = 0 \qquad \mbox{for all } \varphi \in \M
+\end{equation}
 
 
+% ############################################################################
+% ----------------------------------------------------------------------------
+% ----------------------------------------------------------------------------
+% ------------------- INVERSE PROBLEMS ---------------------------------------
+% ----------------------------------------------------------------------------
+% ----------------------------------------------------------------------------
+% ############################################################################
 
-\appendix
 
-\section{Proof of \cref{prop:fokker} \label{sec:proof_focker}}
-
+\subsubsection{Inverse problem: estimator with pseudo-inverse}
+In this section, we are interested in finding the minimizer of the general problem \cref{eq:general_problem} on a specific set of estimators:
+\begin{equation*}
+    \M = \left\{ \phi \circ A^+: \mbox{ for some } \phi: \R^N \to \R^N \right\}
+\end{equation*}
+and for the discrete data distribution. 
+\\Firstly, the MMSE denoising without any constraint for inverse problem is given as follows.
+\begin{proposition}[Unconstrained MMSE denoiser for inverse problem]
+    The unconstrained MMSE denoiser is given by:
+    \begin{equation}
+        \phi^{*}(y) =  \frac{\sum_{x \in \D} x \Normal{y; A x, \sigma^2 \Id}}{\sum_{x \in \D} \Normal{y; A x, \sigma^2 \Id}} =   \frac{\sum_{x \in \D} x \exp \left( -\frac{\norm{A x - y}^2}{2 \sigma^2} \right) }{\sum_{x \in \D}  \exp \left( -\frac{\norm{A x - y}^2}{2 \sigma^2} \right) }
+    \end{equation}
+\end{proposition}
 \begin{proof}
-Commençons par un rappel sur la formule d'Itô . 
-\begin{theorem}[Formule d'Itô \cite{Oksendal2003}]
-Soit \( X(t) \) un processus d’Itô de dimension \( n \) vérifiant  
+    One has
+    \begin{align*}
+        \E{\inner{\varphi(\y), \phi^*(\y) - \x}} &=\frac{1}{|\D|}\sum_{x\in\D}\int_{\R^M} \langle \varphi(y), \phi^*(y)-x\rangle \Normal{y,Ax,\sigma^2 \Id_M} dy\\
+        &= \frac{1}{|\D|}\int_{\R^M} \left\langle \varphi(y), \phi^*(y) \sum_{x\in\D}\Normal{y,Ax,\sigma^2 \Id_M}-x \sum_{x\in\D}\Normal{y,Ax,\sigma^2 \Id_M}\right\rangle dy\\
+        &=0
+    \end{align*} 
+\end{proof}
+
+% \subsubsection{Translation equivariant estimator}
+% We define 
+% \begin{equation}
+%     \M = \left\{ \phi \circ A^+, \phi: \R^N \to \R^N \mbox{ s.t } \phi(T_g x) = T_g \phi(x), \mbox{ for all } g \in G \right\},
+% \end{equation}
+% where $T_g$ is the translation operator.
+\subsection{Local estimator}
+We define 
+\begin{equation}
+    \M = \left\{\phi \circ A^+, \phi: \R^N \to \R^N \mbox{ s.t } \phi_n(x) = f_{\phi,n}(\Sigma_n x)\right\},
+\end{equation}
+where $\Sigma_n : \R^N \to \R^P$ ($P$ is the patch size) is the selection matrix and, $f_{\phi, n} : \R^P \to \R$ depends on $\phi$ and the pixel $n$.
+
+\begin{proposition}[Local estimator for inverse problem]
+    Suppose that $\det{\Sigma_n A^+ (\Sigma_n A^+)^T} = c \neq 0$ for all $n$ and $\dim(\Sigma_n \ker{A^+}) = M - P$.
+    The local-MMSE is given by, for any patch $z \in \R^P$ with $M \geqslant P$: 
+    \begin{equation*}
+        f_{\phi^*, n}(z) = \frac{\sum_{x \in \D} x_n q(z, n, x)}{\sum_{x \in \D} q(z, n, x)}
+    \end{equation*}
+    where the weights are: 
+    \begin{align*}
+        q(z, n, x) = \Normal{S_{n}^{-1} U_{n}^T z; V_{n}^T A x, \sigma^2 \Id_{r_n}}
+    \end{align*}
+    where $\Sigma_n A^+ = U_n S_n V_n^T$ is the truncated SVD. 
+\end{proposition}
+Inserting this estimator into the optimality \cref{eq:optimality_condition}, for any $\varphi \in \M$:
+\begin{align*}
+    &\E{\inner{\varphi(A^+ \y), \phi^*(A^+  \y) - \x}}  \\
+    &=  \frac{1}{|\D|} \int_{\R^M} \inner{\varphi(A^+  y), \phi^*(A^+  y) \sum_{x \in \D} \Normal{y; A x, \sigma^2 \Id_M} - \sum_{x \in \D} x \Normal{y; A x, \sigma^2 \Id_M}} dy \\
+    &=  \frac{1}{|\D|} \sum_{n = 1}^{N} \int_{\R^M} \varphi_n (A^+  y) \left( \phi^*_n(A^+  y) \sum_{x \in \D} \Normal{y; A x, \sigma^2 \Id_M} - \sum_{x \in \D} x_n \Normal{y; A x, \sigma^2 \Id_M} \right) dy \\
+    &=  \frac{1}{|\D|} \sum_{n = 1}^{N} \frac{1}{\det{S_n}} \int_{\R^M} f_{\varphi, n} (\Sigma_n A^+  y) \left( f_{\phi^*, n}(\Sigma_n A^+  y) \sum_{x \in \D} \Normal{y; A x, \sigma^2 \Id_N} - \sum_{x \in \D} x_n \Normal{y; A x, \sigma^2 \Id_N} \right) dy \\
+    \\&= \frac{1}{|\D|} \sum_{n = 1}^{N} \frac{1}{\det{S_n}} \int_{\R^{r_n}} f_{\varphi, n} (U_{n}  z)  \Big(   f_{\phi^*, n}(U_{n}  z) \sum_{x \in \D} \Normal{S_{n}^{-1} z; V_{n}^T A x, \sigma^2 \Id_{r_n}} \\
+    &\hspace{9cm} - \sum_{x \in \D} x_n \Normal{S_{n}^{-1} z; V_{n}^T A x, \sigma^2 \Id_{r_n}} \Big) dz
+    \\&= 0
+\end{align*}
+
+\subsection{Local and translation equivariant estimator}
+We define
+\begin{equation}
+    \M = \left\{\phi \circ A^+, \phi: \R^N \to \R^N \mbox{ s.t } \phi_n(x) = f_{\phi}(\Sigma_n x)\right\},
+\end{equation}
+a set of local and translation equivariant. Unlike the local denoiser, the mapping $f_{\phi}$ is now independent of the pixel location $n$, meaning the function behaves identically across all positions.
+
+Translation property: the translation is defined as $T_g : (x_1, \dots, x_N) \in \R^N \mapsto (x_{1 - g}, \dots, x_{N - g}) \in \R^N$, then we have: $\Sigma_n T_g x = \Sigma_{n - g} x$ for all $g$ and all $x \in \R^N$ (translate + crop is the same as crop the translated location). Therefore, the functions $\phi$ are translation equivariant in the sense that $\phi(T_g x) = T_g \phi(x)$.
+\begin{proposition}[Local estimator and translation equivariant for inverse problem]
+    Suppose that $\det{\Sigma_n A^+ (\Sigma_n A^+)^T} = c \neq 0$ for all $n$.
+    The local and translation-equivariant MMSE is given by, for any patch $z \in \R^P$ with $M \geqslant P$: 
+    \begin{equation*}
+        f_{\phi^*}(z) = \frac{\sum_{x \in \D} \sum_{n = 1}^{N} x_n q(z, n, x)}{\sum_{x \in \D} \sum_{n = 1}^{N} q(z, n, x)}
+    \end{equation*}
+    where the weights are: 
+    \begin{align*}
+        q(z, n, x) &= \int_{v_n^{-1}(z)} \Normal{w; A x, \sigma^2 \Id} d \H^{M - P}(w) 
+        \\&= \frac{1}{(2\pi \sigma^2)^{P/2}} \exp \left( -\frac{\norm{(\Id_M - V_n V_n^T)A x - (\Sigma_n A^+)^+ z}^2}{2\sigma^2} \right)
+    \end{align*}
+    with $v_n: w \in \R^M \mapsto \Sigma_n A^+ w \in \R^P$ and $V_n$ is an orthogonal basis of $\ker{\Sigma_n A^+}$.
+\end{proposition}
+
+Inserting this estimator into the optimality \cref{eq:optimality_condition}, for any $\varphi \in \M$:
+\begin{align*}
+    &\E{\inner{\varphi(A^+ \y), \phi^*(A^+  \y) - \x}}  \\
+    &=  \frac{1}{|\D|} \int_{\R^M} \inner{\varphi(A^+  y), \phi^*(A^+  y) \sum_{x \in \D} \Normal{y; A x, \sigma^2 \Id_N} - \sum_{x \in \D} x \Normal{y; A x, \sigma^2 \Id_N}} dy \\
+    &=  \frac{1}{|\D|} \sum_{n = 1}^{N} \int_{\R^M} \varphi_n (A^+  y) \left( \phi^*_n(A^+  y) \sum_{x \in \D} \Normal{y; A x, \sigma^2 \Id_N} - \sum_{x \in \D} x_n \Normal{y; x, \sigma^2 \Id_N} \right) dy \\
+    &=  \frac{1}{|\D|} \sum_{n = 1}^{N} \int_{\R^M} f_{\varphi} (\Sigma_n A^+  y) \left( f_{\phi^*}(\Sigma_n A^+  y) \sum_{x \in \D} \Normal{y; A x, \sigma^2 \Id_N} - \sum_{x \in \D} x_n \Normal{y; A x, \sigma^2 \Id_N} \right) dy \\
+    &=  \frac{1}{|\D|} \sum_{n = 1}^{N} \int_{\R^P} \int_{v_n^{-1}(z)} f_{\varphi} (\Sigma_n A^+ w) \left( f_{\phi^*}(\Sigma_n A^+ w) \sum_{x \in \D} \Normal{w; A x, \sigma^2 \Id_N} \right. 
+    \\& \left. \hspace{7cm} -\sum_{x \in \D} x_n \Normal{w; A x, \sigma^2 \Id_N} \right) d\H^{M - P}(w) dz \\
+    &=  \frac{1}{|\D|}  \int_{\R^P} f_{\varphi}(z) \left(  f_{\phi^*}(z) \sum_{x \in \D} \sum_{n = 1}^{N} \int_{v_n^{-1}(z)} \Normal{w; A x, \sigma^2 \Id_N} d\H^{M-P}(z) \right. 
+    \\& \left. \hspace{7cm} - \sum_{x \in \D} \sum_{n = 1}^{N} x_n \int_{v_n^{-1}(z)} \Normal{w; A x, \sigma^2 \Id_N} d\H^{M-P}(z)\right) dz \\
+    % &=  \frac{1}{|\D|} \int_{\R^P} f_{\varphi}(z) \left(  f_{\phi^*}(z) \sum_{x \in \D} \sum_{n = 1}^{N} q(z, n, x)  -  \sum_{x \in \D} \sum_{n = 1}^{N} x_n q(z, n, x) \right) dz
+    % \\&= \frac{1}{|\D|} \sum_{n = 1}^{N} \frac{1}{\det{S_n}} \int_{\R^{r_n}} f_{\varphi} (U_n z) \left( f_{\phi^*}(U_n z) \sum_{x \in \D} \Normal{S_n^{-1} z; V_n^T A x, \sigma^2 \Id_{r_n}} - \sum_{x \in \D} x_n \Normal{S_n^{-1} z; V_n^T A x, \sigma^2 \Id_{r_n}} \right) dy
+    % \\&=\frac{1}{|\D|} \int_{\R^{P}}  f_{\varphi} (v)  \left( f_{\phi^*}(v)  \sum_{x \in \D}  \sum_{n = 1}^N \sum_{z \in U_n^{-}(v)} \frac{\Normal{S_n^{-1} z; V_n^T A x, \sigma^2 \Id_{r_n}}}{\det{S_n}}  - \sum_{x \in \D}  \sum_{n = 1}^N  \sum_{z \in U_n^{-}(v)} \frac{x_n \Normal{S_n^{-1} z; V_n^T A x, \sigma^2 \Id_{r_n}}}{\det{S_n}} \right) d \H^{r_n}(v)
+    \\&= 0 
+\end{align*}
+
+% \subsubsection{Group equivariant estimator}
+% Consider a general group of transformations $G$. 
+% We define 
+% \begin{equation}
+%     \M = \left\{ \phi \circ A^+, \phi : \R^N \to \R^N \mbox{ s.t } \phi(T_g x) = T_g \phi(x) \right\},
+% \end{equation}
+% the set of group equivariant constraint. \textbf{The function $\phi$ are group equivariant but the composition $\phi \circ A^+$ might be not}. 
+
+% \subsubsection{Local and group equivariant estimator}
+
+% \section{Inverse problem: estimator with generalized group of transformations}
+% \subsubsection{Preliminaries on equivariance}
+% The below definitions are taken from \cite{Celledoni_2021_equivariant_neural_networks}. 
+% \begin{definition}[Group] A \emph{group}, to be denoted $G$, is a set equipped with an associative operator $\cdot : G \times G \to G$, which satisfies the following conditions:
+%     \begin{enumerate}
+%         \item[] If $g_1, g_2 \in G$ then $g_2 \cdot g_1 \in G$
+%         \item[] If $g_1, g_2, g_3 \in G$ then $(g_1 \cdot g_2) \cdot g_3 = g_1 \cdot (g_2 \cdot g_3)$
+%         \item[] There exists $e \in G$ such that $e \cdot g = g \cdot e = g$ for all $g \in G$.
+%         \item[] If $g \in G$ there exists $g^{-1} \in G$ such that $g^{-1} \cdot g = g \cdot g^{-1} = e$.
+%     \end{enumerate}    
+% \end{definition}
+% \begin{definition}[Group action]
+%     Given a group $G$ and a set $\X \subset \R^N$, we say that $G$ acts on $\X$ if there exists a function $T: G \times \X \to \X$ (we denote by $T_g(x)$ for $g \in G$ and $x \in \X$) that satisfies:
+%     \begin{equation*}
+%         T_{g_1} \circ T_{g_2} = T_{g_1 \cdot g_2} \qquad \mbox{and} \qquad T_{e} = \mathrm{id}
+%     \end{equation*} 
+% \end{definition}
+% \begin{example}
+%     The Euclidean group $E(N)$ is the group generated by translations, rotations and reflections in $\R^N$. For which the group action can be represented by a translation $T_g$, an orthogonal matrix $R_g$ that rotates or reflects coordinates. 
+% \end{example}
+
+% \begin{definition}[Equivariance estimator]
+% Given a general group $G$. A function $\phi: \Y \to \X$ and group actions $\Tx, \Ty$ of $G$ on $\X, \Y$, $\phi$ is called \emph{equivariant} if it satisfies
+% \begin{equation*}
+%     \phi(\Ty_g(y)) = \Tx_g \phi(y) \qquad \mbox{for all } x \in \X \mbox{ and for all } g \in G.
+% \end{equation*}
+% \end{definition}
+% \textbf{Question}: how to define the group actions $\Tx$ and $\Ty$?
+% Given a linear operator $A: \X \to \Y$ and a group action $\Tx$ of $G$ acting on $\X$, we can for example define the following group action on $\Y$ \cite{beckmann2024equivariantneuralnetworksindirect}:
+% \begin{align*}
+%     \Ty_g : \Y & \to \Im{A} \subset \Y \\ 
+%                y      & \mapsto T_g^{\Y}(y) = A T_g^{\X}(A^+y) 
+% \end{align*}
+% \begin{proposition}[From \cite{Celledoni_2021_equivariant_neural_networks}]
+%     A linear function $\phi: \Y \to \X$ is equivariant if and only if it is defined by a convolution.
+% \end{proposition}
+
+% \begin{proposition}
+%     If the group $G$ is finite, the following properties hold true:
+%     \begin{enumerate}
+%         \item[] \textbf{Invariance}: for any function $\phi: \X \to \R$, the function $\bar{\phi}(y) = \sum_{g} \phi(\Tx_g y)$ is in variant. (And similarly for function defined in $\Y$).  
+%         \item[] \textbf{Equivariance}: for any function $\phi: \Y \to \X$, the function $\bar{\phi}(y) = \sum_{g} \left( \Tx_g \right)^{-1} \phi (\Ty_g y)$ is equivariant. This is called \textbf{Reynolds averaging}.
+%     \end{enumerate} 
+% \end{proposition}
+
+% \subsubsection{Group equivariant estimator}
+% Consider a general group $G$ with its actions $\Tx$ and $\Ty$ on $\X$ and $\Y$, respectively (where $\X = \R^N$ and $\Y = \R^M$). 
+% We define 
+% \begin{equation}
+%     \mathcal{M} = \left\{ \phi: \Y \to \X \mbox{ s.t } \phi(\Ty_g y) = \Tx_g \phi(y) \right\}
+% \end{equation}
+% the set of group equivariant estimators.
+% \begin{proposition}[Group equivariant estimator]
+%     \textbf{If $\Tx, \Ty$ are orthogonal isometry}, the group equivariant estimator is given by 
+%     \begin{equation}
+%         \phi^{*}(y) = \frac{\sum_{x \in \D} \sum_{g \in G} \Tx_g x \Normal{y; \Ty_g A x, \sigma^2 \Id}}{ \sum_{x \in \D} \sum_{g \in G} \Normal{y; \Ty_g A x, \sigma^2 \Id}}
+%     \end{equation}
+% \end{proposition}
+% Inserting this estimator into the optimality \cref{eq:optimality_condition}, for any $\varphi \in \M$:
+% \begin{align*}
+%     &\E{\inner{\varphi(\y), \phi^*(\y) - \x}}  \\
+%     &=  \frac{1}{|\D|} \int_{\R^M} \inner{\varphi(y), \phi^*(y) \sum_{x \in \D} \Normal{y; A x, \sigma^2 \Id_N} - \sum_{x \in \D} x \Normal{y; A x, \sigma^2 \Id_N}} dy
+%     \\&= \frac{1}{|\D| |G|} \int_{\R^M} \inner{\varphi(y), \phi^*(y) \sum_{x \in \D, g \in G} \Normal{\Ty_g y; \Ty_g A x, \sigma^2 \Id_N} - \sum_{x \in \D, g \in G} x \Normal{\Ty_g y; \Ty_g A x, \sigma^2 \Id_N}} dy
+%     \\&= \frac{1}{|\D| |G|} \sum_{g \in G} \int_{\R^M} \inner{ (\Tx_g)^{-1} \varphi(\Ty_g y), (\Tx_g)^{-1} \phi^*(\Ty_g y) \sum_{x \in \D} \Normal{\Ty_g y; \Ty_g A x, \sigma^2 \Id_N} - \sum_{x \in \D} x \Normal{\Ty_g y; \Ty_g A x, \sigma^2 \Id_N}} dy
+%     \\&= \frac{1}{|\D| |G|} \sum_{g \in G} \int_{\R^M} \inner{(\Tx_g)^{-1} \varphi(y), (\Tx_g)^{-1} \phi^*(y) \sum_{x \in \D} \Normal{y; \Ty_g A x, \sigma^2 \Id_N} - \sum_{x \in \D} x \Normal{y; \Ty_g A x, \sigma^2 \Id_N}} dy
+%     \\&= \frac{1}{|\D| |G|} \sum_{g \in G} \int_{\R^M} \inner{(\Tx_g)^{-T}(\Tx_g)^{-1} \varphi(y),  \phi^*(y) \sum_{x \in \D} \Normal{y; \Ty_g A x, \sigma^2 \Id_N} - \sum_{x \in \D} \Tx_g x \Normal{y; \Ty_g A x, \sigma^2 \Id_N}} dy
+%     \\&= \frac{1}{|\D| |G|} \int_{\R^M} \inner{\varphi(y),  \phi^*(y) \sum_{x \in \D} \sum_{g \in G} \Normal{y; \Ty_g A x, \sigma^2 \Id_N} - \sum_{x \in \D} \sum_{g \in G} \Tx_g x \Normal{y; \Ty_g A x, \sigma^2 \Id_N}} dy
+%     \\&= 0
+% \end{align*}
+
+% {
+%     \color{blue}
+%     \textbf{Note:} this requires the transformations in the image domain $\Tx$ and in the measurement domain $\Ty$ are \textbf{linear orthogonal transformations}. This should be defined properly for each operator $A$. 
+% }
+
+\section{Conclusion}
+The primary aim of this work was to understand the behavior of neural networks, particularly CNNs, in inverse problems through the lens of MMSE estimation under architectural constraints such as locality and translation equivariance. By extending the analytical framework introduced by Ganguli et al. (2024) \cite{kamb2024analytictheorycreativityconvolutional} in the denoising setting, we sought to uncover how these structural priors alone influence the learned estimators, without requiring full access to training dynamics or data distributions.
+
+Our main result demonstrates that, even in the context of linear inverse problems $y=Ax+b$, imposing only local and equivariant structure on the estimator suffices to recover surprisingly accurate approximations to the MMSE solution. These insights are consistent with earlier observations in the denoising case (where $A=I$), but here they are extended to a significantly broader setting. In doing so, our findings align with and build upon recent theoretical studies that investigate the inductive biases of neural architectures, but differ by providing closed-form analytical characterizations rather than empirical or asymptotic analyses.
+
+Nonetheless, this work has limitations. First, the current analysis focuses on linear operators $A$ and does not yet address nonlinear forward models. Second while preliminary results are promising, a full validation on realistic datasets and comparison with trained networks remains ongoing.
+
+Despite these limitations, the implications are substantial. A better understanding of how architectural constraints shape learned solutions can inform the design of more efficient, interpretable, and theoretically grounded neural networks—especially in domains such as medical imaging, geophysics, or astronomy, where inverse problems are ubiquitous and data is limited.
+
+Looking forward, future studies will aim to relax the current assumptions, extend the analysis to nonlinear inverse problems, and quantify the performance gap between constrained analytical estimators and fully trained neural networks. The long-term goal is to develop a unified theoretical framework that bridges modern deep learning practices with classical statistical estimation theory, opening new directions in both theoretical research and applied machine learning.
+\section{Appendix}
+
+\subsection{Proof of \cref{prop:fokker} \label{sec:proof_focker}}
+
+% \begin{proof}
+% Let's start with a reminder of Itô's formula. 
+% \begin{theorem}[Formule d'Itô \cite{Oksendal2003}]
+% Soit \( X(t) \) un processus d’Itô de dimension \( n \) vérifiant  
+% \[
+% dX(t) = u(t, X(t)) dt + v(t, X(t)) dB(t),
+% \]
+% où :
+% \begin{itemize}
+%     \item[] \( X(t) \in \mathbb{R}^n \) est le processus d’état,
+%     \item[] \( u(t, X(t)) \in \mathbb{R}^n \) est le terme de dérive,
+%     \item[] \( v(t, X(t)) \in \mathbb{R}^{n \times m} \) est la matrice de diffusion,
+%     \item[] \( B(t) \in \mathbb{R}^m \) est un mouvement brownien standard de dimension \( m \).
+% \end{itemize}
+
+% Soit \( g: [0, \infty) \times \mathbb{R}^n \to \mathbb{R}^p \) une fonction deux fois continûment différentiable.  
+% On définit le processus transformé :
+% \[
+% Y(t) = g(t, X(t)),
+% \]
+% où \( Y(t) \in \mathbb{R}^p \).  
+% Alors, \( Y(t) \) satisfait l’équation d’Itô :
+% \[
+% dY_k = \frac{\partial g_k}{\partial t} dt 
+% + \sum\limits_{i=1}^{n} \frac{\partial g_k}{\partial x_i} u_i dt 
+% + \sum\limits_{i=1}^{n} \sum\limits_{j=1}^{m} \frac{\partial g_k}{\partial x_i} v_{ij} dB_j
+% + \frac{1}{2} \sum\limits_{i,j=1}^{n} \sum\limits_{r=1}^{m} v_{ir} v_{jr} \frac{\partial^2 g_k}{\partial x_i \partial x_j} dt.
+% \]
+% \end{theorem}
+% \vspace{3em}
+
+
+
+% Soit une fonction test $F: \mathbb{R}^N \rightarrow \mathbb{R}$, de classe $C^{\infty}$, à support compact. En utilisant la formule d'Ito, on obtient
+% %     \[dF(x_t) = \sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} dx_t^i + \frac{1}{2} \sum\limits_{i=1}^N \sum\limits_{j=1}^N \frac{\partial^2 F(x_t)}{\partial x_i^2}d\langle x^i,x^j\rangle_t\]
+% % En utilisant l'équation \cref{eq:SDE} et en notant que 
+% %  on obtient:
+% \begin{align*}
+%     dF(x_t) &= \sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} (f^i_t(x_t)dt + \mathcal{G}_tdW^i_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2 dt \\
+%     &= \left(\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2\right)dt + \sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i}  \mathcal{G}_t^2dW^i_t
+% \end{align*}
+
+% The $dW_t^i$ term disappears when taking the expectation (because $\E{dW_t^i} = 0$ ), so :
+% \[\E{dF(x_t)} = \E{\left(\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2\right)dt}\]
+
+% Ou encore, en utilisant la linéarité de l'opérateur espérance, on peut sortir la dérivée, l'équation ci-dessus s'écrit :
+% \[ d\E{F(x_t)} = \E{\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2}dt\]
+
+% Ainsi,
+% \begin{align}
+%     \frac{d\E{F(x_t)}}{dt} &= \E{\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2}\mathcal{G}_t^2} \nonumber \\
+%     &=\E{\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t)} + \E{\frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2} \nonumber\\
+%     &=\E{ \nabla\ F(x_t) \cdot f_t(x_t)} + \frac{1}{2}\E{\nabla^2 F(x_t) \mathcal{G}_t^2} \label{eq:EsperanceEgality}
+% \end{align}
+
+% $F$ est continue, donc mesurable, supposons que $x \rightarrow \frac{\partial\pi_t(x)}{\partial t}$ existe, $x \rightarrow F(x)\frac{\partial\pi_t(x)}{\partial t}$ est intégrable en $\R^N$ car F est à support compact. D'après la règle de Leibniz, le premier terme à droite s'écrit :
+% \[\frac{d\mathbb{E}[F(x_t)]}{dt} = \frac{d (\int_{\mathbb{R^N}} F(x) \pi_t(x) dx)} {dt} = \int_{\mathbb{R^N}}F(x)\frac{\partial\pi_t(x)}{\partial t} dx\]
+% \vspace{2em}
+
+% Nous allons rappeler la première identité de Green (Green's first identity) qui est fort utile dans la suite.
+
+% \begin{theorem}[Première identité de Green]
+% Soit $\Omega \subset \R^n$, on se donne une fonction $u : \Omega \rightarrow \R$, $u \in C^2$ et une autre fonction $v : \Omega \rightarrow \R$, $v \in C^1$, alors :
+% \begin{equation}\label{eq:GreenId}
+% \int_\Omega (v(x)\nabla^2 u(x) + \nabla u(x) \cdot \nabla v(x)) dx = \int_{\partial\Omega} v \nabla u \cdot n dS
+% \end{equation}
+% Avec n le vecteur normal unitaire à la frontière $\partial\Omega$ et $dS$ la mesure de frontière sur $\partial\Omega$.
+% \end{theorem}
+% \vspace{3em}
+
+% Supposons qu'il existe une fonction $v_t$ telle que $\nabla_{x} v_t = f_t \pi_t$.
+
+% On utilise la première identité de Green sur le premier terme à gauche en remarquant que l'intégrale sur le bord s'annule car F est à support compact, on obtient :
+% \begin{align*}
+%     \E{\nabla\ F(x_t)\cdot f_t(x_t)}  &=\int_{\mathbb{R^N}} \nabla\ F(x)\cdot \big(f_t(x) \pi_t(x) \bigr)dx \\
+%     &= - \int_{\mathbb{R}^N}F(x) (\nabla \cdot f_t(x)\pi_t(x))dx
+% \end{align*}
+
+% De la même manière, en appliquant l'intégration par parties deux fois sur le deuxième terme à droite, on obtient :
+% \begin{align*}
+%     \E{\nabla^2 F(x_t) \mathcal{G}_t^2} &= \int_{\mathbb{R}^N } \nabla^2 F(x) \mathcal{G}_t^2 \pi_t(x)dx\\
+%     &= -\int_{\R^N}\nabla F(x) \cdot\nabla(\mathcal{G}_t^2\pi_t(x)) dx\\
+%     &= \int_{\mathbb{R}^N } F(x) \nabla^2(\mathcal{G}_t^2 \pi_t(x)) dx
+% \end{align*}
+
+% Injectons les résultats précédents dans l'équation \cref{eq:EsperanceEgality} :
+% \[\int_{\mathbb{R^N}}F(x)\frac{\partial\pi_t(x)}{\partial t} dx = - \int_{\mathbb{R}^N}F(x) (\nabla \cdot f_t(x)\pi_t(x))dx + \frac{1}{2}\int_{\mathbb{R}^N } F(x) \nabla^2(\mathcal{G}_t^2 \pi_t(x)) dx\]
+
+% Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e. ensemble des fonctions infiniment dérivables à support compact), la théorie des distributions nous dit : 
+% \[\frac{\partial\pi_t(x)}{\partial t} = -\nabla \cdot (f_t(x)\pi_t(x)) + \frac{1}{2}\nabla^2(\mathcal{G}_t^2 \pi_t(x)) \quad \] 
+% \end{proof}
+
+Let us begin with a reminder of Itô's formula.
+\begin{theorem}[Itô's Formula \cite{Oksendal2003}]
+Let \( X(t) \) be an Itô process in \( \mathbb{R}^n \) satisfying  
 \[
 dX(t) = u(t, X(t)) dt + v(t, X(t)) dB(t),
 \]
-où :
+where:
 \begin{itemize}
-    \item \( X(t) \in \mathbb{R}^n \) est le processus d’état,
-    \item \( u(t, X(t)) \in \mathbb{R}^n \) est le terme de dérive,
-    \item \( v(t, X(t)) \in \mathbb{R}^{n \times m} \) est la matrice de diffusion,
-    \item \( B(t) \in \mathbb{R}^m \) est un mouvement brownien standard de dimension \( m \).
+    \item[] \( X(t) \in \mathbb{R}^n \) is the state process,
+    \item[] \( u(t, X(t)) \in \mathbb{R}^n \) is the drift term,
+    \item[] \( v(t, X(t)) \in \mathbb{R}^{n \times m} \) is the diffusion matrix,
+    \item[] \( B(t) \in \mathbb{R}^m \) is an \( m \)-dimensional standard Brownian motion.
 \end{itemize}
-
-Soit \( g: [0, \infty) \times \mathbb{R}^n \to \mathbb{R}^p \) une fonction deux fois continûment différentiable.  
-On définit le processus transformé :
+Let \( g: [0, \infty) \times \mathbb{R}^n \to \mathbb{R}^p \) be a function that is twice continuously differentiable.  
+Define the transformed process:
 \[
 Y(t) = g(t, X(t)),
 \]
-où \( Y(t) \in \mathbb{R}^p \).  
-Alors, \( Y(t) \) satisfait l’équation d’Itô :
+where \( Y(t) \in \mathbb{R}^p \).  
+Then \( Y(t) \) satisfies the Itô equation:
 \[
 dY_k = \frac{\partial g_k}{\partial t} dt 
 + \sum\limits_{i=1}^{n} \frac{\partial g_k}{\partial x_i} u_i dt 
@@ -973,219 +1433,210 @@ dY_k = \frac{\partial g_k}{\partial t} dt
 + \frac{1}{2} \sum\limits_{i,j=1}^{n} \sum\limits_{r=1}^{m} v_{ir} v_{jr} \frac{\partial^2 g_k}{\partial x_i \partial x_j} dt.
 \]
 \end{theorem}
-\vspace{3em}
-
-
-
-Soit une fonction test $F: \mathbb{R}^N \rightarrow \mathbb{R}$, de classe $C^{\infty}$, à support compact. En utilisant la formule d'Ito, on obtient
-%     \[dF(x_t) = \sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} dx_t^i + \frac{1}{2} \sum\limits_{i=1}^N \sum\limits_{j=1}^N \frac{\partial^2 F(x_t)}{\partial x_i^2}d\langle x^i,x^j\rangle_t\]
-% En utilisant l'équation \eqref{eq:SDE} et en notant que 
-%  on obtient:
+Let \( F: \mathbb{R}^N \rightarrow \mathbb{R} \) be a smooth test function with compact support. Using Itô’s formula, we obtain
 \begin{align*}
-    dF(x_t) &= \sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} (f^i_t(x_t)dt + \mathcal{G}_tdW^i_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2 dt \\
-    &= \left(\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2\right)dt + \sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i}  \mathcal{G}_t^2dW^i_t
+    dF(x_t) &= \sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} (f^i_t(x_t)dt + \mathcal{G}_t dW^i_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2 dt \\
+    &= \left(\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2\right)dt + \sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i}  \mathcal{G}_t dW^i_t
 \end{align*}
-
-Le terme $dW_t^i$ disparaît en prenant l'espérance  (car $\mathbb{E}[dW_t^i] = 0$ ), donc :
-\[\E{dF(x_t)} = \E{\left(\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2\right)dt}\]
-
-Ou encore, en utilisant la linéarité de l'opérateur espérance, on peut sortir la dérivée, l'équation ci-dessus s'écrit :
-\[ d\E{F(x_t)} = \E{\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2}dt\]
-
-Ainsi,
+The \( dW_t^i \) term vanishes when taking the expectation (since \( \mathbb{E}[dW_t^i] = 0 \)), so:
+\[
+\mathbb{E}[dF(x_t)] = \mathbb{E}\left[\left(\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2\right)dt\right]
+\]
+Or, using the linearity of expectation to factor out the derivative:
+\[
+d\mathbb{E}[F(x_t)] = \mathbb{E}\left[\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2\right]dt
+\]
+Thus,
 \begin{align}
-    \frac{d\E{F(x_t)}}{dt} &= \E{\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2}\mathcal{G}_t^2} \nonumber \\
-    &=\E{\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t)} + \E{\frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2} \nonumber\\
-    &=\E{ \nabla\ F(x_t) \cdot f_t(x_t)} + \frac{1}{2}\E{\nabla^2 F(x_t) \mathcal{G}_t^2} \label{eq:EsperanceEgality}
+    \frac{d\mathbb{E}[F(x_t)]}{dt} &= \mathbb{E}\left[\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t) + \frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2}\mathcal{G}_t^2\right] \nonumber \\
+    &= \mathbb{E}\left[\sum\limits_{i=1}^N \frac{\partial F(x_t)}{\partial x_i} f^i_t(x_t)\right] + \mathbb{E}\left[\frac{1}{2} \sum\limits_{i=1}^N  \frac{\partial^2 F(x_t)}{\partial x_i^2} \mathcal{G}_t^2\right] \nonumber\\
+    &= \mathbb{E}[ \nabla F(x_t) \cdot f_t(x_t)] + \frac{1}{2}\mathbb{E}[\nabla^2 F(x_t) \mathcal{G}_t^2] \label{eq:EsperanceEgality}
 \end{align}
-
-$F$ est continue, donc mesurable, supposons que $x \rightarrow \frac{\partial\pi_t(x)}{\partial t}$ existe, $x \rightarrow F(x)\frac{\partial\pi_t(x)}{\partial t}$ est intégrable en $\R^N$ car F est à support compact. D'après la règle de Leibniz, le premier terme à droite s'écrit :
-\[\frac{d\mathbb{E}[F(x_t)]}{dt} = \frac{d (\int_{\mathbb{R^N}} F(x) \pi_t(x) dx)} {dt} = \int_{\mathbb{R^N}}F(x)\frac{\partial\pi_t(x)}{\partial t} dx\]
+Since \( F \) is continuous, it is measurable. Suppose that \( x \mapsto \frac{\partial\pi_t(x)}{\partial t} \) exists. Then \( x \mapsto F(x)\frac{\partial\pi_t(x)}{\partial t} \) is integrable on \( \mathbb{R}^N \) because \( F \) has compact support. By Leibniz's rule, the first term on the right becomes:
+\[
+\frac{d\mathbb{E}[F(x_t)]}{dt} = \frac{d}{dt} \left(\int_{\mathbb{R}^N} F(x) \pi_t(x) dx\right) = \int_{\mathbb{R}^N}F(x)\frac{\partial\pi_t(x)}{\partial t} dx
+\]
 \vspace{2em}
-
-Nous allons rappeler la première identité de Green (Green's first identity) qui est fort utile dans la suite.
-
-\begin{theorem}[Première identité de Green]
-Soit $\Omega \subset \R^n$, on se donne une fonction $u : \Omega \rightarrow \R$, $u \in C^2$ et une autre fonction $v : \Omega \rightarrow \R$, $v \in C^1$, alors :
+We now recall Green’s first identity
+\begin{theorem}[Green’s First Identity]
+Let \( \Omega \subset \mathbb{R}^n \), and suppose \( u : \Omega \rightarrow \mathbb{R} \), \( u \in C^2 \), and \( v : \Omega \rightarrow \mathbb{R} \), \( v \in C^1 \), then:
 \begin{equation}\label{eq:GreenId}
 \int_\Omega (v(x)\nabla^2 u(x) + \nabla u(x) \cdot \nabla v(x)) dx = \int_{\partial\Omega} v \nabla u \cdot n dS
 \end{equation}
-Avec n le vecteur normal unitaire à la frontière $\partial\Omega$ et $dS$ la mesure de frontière sur $\partial\Omega$.
+where \( n \) is the outward unit normal vector on the boundary \( \partial\Omega \), and \( dS \) is the surface measure on \( \partial\Omega \).
 \end{theorem}
-\vspace{3em}
-
-Supposons qu'il existe une fonction $v_t$ telle que $\nabla_{x} v_t = f_t \pi_t$.
-
-On utilise la première identité de Green sur le premier terme à gauche en remarquant que l'intégrale sur le bord s'annule car F est à support compact, on obtient :
+Suppose there exists a function \( v_t \) such that \( \nabla_x v_t = f_t \pi_t \).
+Using Green’s first identity on the first term on the left and noting that the boundary integral vanishes because \( F \) has compact support, we obtain:
 \begin{align*}
-    \E{\nabla\ F(x_t)\cdot f_t(x_t)}  &=\int_{\mathbb{R^N}} \nabla\ F(x)\cdot \big(f_t(x) \pi_t(x) \bigr)dx \\
-    &= - \int_{\mathbb{R}^N}F(x) (\nabla \cdot f_t(x)\pi_t(x))dx
+    \mathbb{E}[\nabla F(x_t)\cdot f_t(x_t)] &=\int_{\mathbb{R}^N} \nabla F(x)\cdot (f_t(x) \pi_t(x)) dx \\
+    &= - \int_{\mathbb{R}^N}F(x) (\nabla \cdot (f_t(x)\pi_t(x))) dx
+\end{align*}
+Similarly, applying integration by parts twice on the second term on the right yields:
+\begin{align*}
+    \mathbb{E}[\nabla^2 F(x_t) \mathcal{G}_t^2] &= \int_{\mathbb{R}^N } \nabla^2 F(x) \mathcal{G}_t^2 \pi_t(x) dx \\
+    &= -\int_{\mathbb{R}^N} \nabla F(x) \cdot \nabla(\mathcal{G}_t^2\pi_t(x)) dx \\
+    &= \int_{\mathbb{R}^N} F(x) \nabla^2(\mathcal{G}_t^2 \pi_t(x)) dx
+\end{align*}
+Substituting the results into equation \cref{eq:EsperanceEgality}:
+\[
+\int_{\mathbb{R}^N}F(x)\frac{\partial\pi_t(x)}{\partial t} dx = - \int_{\mathbb{R}^N}F(x) (\nabla \cdot (f_t(x)\pi_t(x))) dx + \frac{1}{2}\int_{\mathbb{R}^N } F(x) \nabla^2(\mathcal{G}_t^2 \pi_t(x)) dx
+\]
+This relation holds for all test functions \( F \in C_c^{\infty} \) (i.e., smooth functions with compact support), so by distribution theory:
+\[
+\frac{\partial\pi_t(x)}{\partial t} = -\nabla \cdot (f_t(x)\pi_t(x)) + \frac{1}{2}\nabla^2(\mathcal{G}_t^2 \pi_t(x))
+\]
+
+
+\subsection{Proof of \cref{prop:solution_processus_direct}} \label{sec:proof_solution_processus_direct}
+According to equation \cref{eq:OU}:
+\begin{equation*}
+dx_t^i = -\gamma_t x_t^i dt + \sqrt{2\gamma_t} dW_t^i, \quad \forall i=1,2,\dots,N
+\end{equation*}
+Let $\mu_t = \exp\left(\int_0^t \gamma_s ds\right)$, $\forall t \geq 0$.
+Define a stochastic process $Y_t$ by $Y_t \coloneqq f(t, x_t^i) = \mu_t x_t^i$.
+Using Itô's formula, we obtain:
+\begin{equation*}
+dY_t = \frac{\partial f(t, x_t^i)}{\partial t} dt + \frac{\partial f(t, x_t^i)}{\partial x} dx_t + \frac{1}{2} \frac{\partial^2 f(t, x_t^i)}{\partial x^2} d\langle x, x \rangle_t
+\end{equation*}
+In particular:
+\begin{itemize}
+    \item[] $\frac{\partial f(t, x_t^i)}{\partial t} = \gamma_t \mu_t x_t^i$
+    \item[] $\frac{\partial f(t, x_t^i)}{\partial x} = \mu_t$
+    \item[] $\frac{\partial^2 f(t, x_t^i)}{\partial x^2} = 0$
+\end{itemize}
+Thus,
+\begin{align*}
+dY_t &= \gamma_t \mu_t x_t^i dt + \mu_t dx_t^i \\
+&= \gamma_t \mu_t x_t^i dt + \mu_t \left(-\gamma_t x_t^i dt + \sqrt{2\gamma_t} dW_t^i\right) \\
+&= \mu_t \sqrt{2\gamma_t} dW_t^i
+\end{align*}
+Integrating both sides, we get:
+\begin{equation*}
+Y_t = Y_0 + \int_0^t \mu_s \sqrt{2\gamma_s} dW_s^i
+\end{equation*}
+Substituting $Y_t = \mu_t x_t^i$ and dividing both sides by $\mu_t$ to isolate $x_t^i$, we obtain:
+\begin{align*}
+x_t^i &= \frac{1}{\mu_t} x_0^i + \frac{1}{\mu_t} \int_0^t \mu_s \sqrt{2\gamma_s} dW_s^i \\
+&= \sqrt{\bar{\alpha}_t} x_0^i + \frac{1}{\mu_t} \int_0^t \mu_s \sqrt{2\gamma_s} dW_s^i
+\end{align*}
+Let $Z_t = \int_0^t \mu_s \sqrt{2\gamma_s} dW_s^i$. Notice that $Z_t$ is an Itô integral with respect to a Brownian motion. We can express this integral as:
+\begin{equation*}
+Z_t = \int_0^t \mu_s \sqrt{2\gamma_s} dW_s^i = \lim_{h \to 0} \sum_{j=1}^n \mu_{t_j} \sqrt{2\gamma_{t_j}} (W_{t_j}^i - W_{t_{j-1}}^i)
+\end{equation*}
+where $t_0 = 0 < t_1 < \dots < t_{n-1} < t_n = t$ is a partition of the interval $[0, t]$, and $h \coloneqq \max_{j=1,2,\dots,n} |t_j - t_{j-1}|$.
+\\Since the increments of a Brownian motion are centered, independent Gaussian random variables, $Z_t$ is a centered Gaussian random variable with variance $\int_0^t (\mu_s \sqrt{2\gamma_s})^2 ds$. Let us compute this variance:
+\begin{align*}
+\int_0^t (\mu_s \sqrt{2\gamma_s})^2 ds &= \int_0^t \exp\left(2 \int_0^s \gamma_x dx\right) 2 \gamma_s ds \\
+&= \int_0^t \exp\left(2 \int_0^s \gamma_x dx\right) d\left(2 \int_0^s \gamma_x dx\right) \\
+&= \exp\left(2 \int_0^t \gamma_x dx\right) - 1
+\end{align*}
+Thus, $Z_t$ is a Gaussian random variable such that:
+\begin{equation*}
+Z_t \sim \mathcal{N}\left(0, \exp\left(2 \int_0^t \gamma_x dx\right) - 1\right)
+\end{equation*}
+Consequently,
+\begin{equation*}
+\frac{1}{\mu_t} Z_t \sim \mathcal{N}\left(0, 1 - \exp\left(-2 \int_0^t \gamma_x dx\right)\right)
+\end{equation*}
+Hence:
+\begin{equation*}
+\frac{1}{\mu_t} Z_t \sim \mathcal{N}\left(0, 1 - \bar{\alpha}_t\right)
+\end{equation*}
+Substituting this result into the expression for $x_t^i$, we obtain:
+\begin{equation*}
+x_t^i = \sqrt{\bar{\alpha}_t} x_0^i + \sqrt{1 - \bar{\alpha}_t} \eta^i
+\end{equation*}
+where $\eta^i \sim \sqrt{1 - \bar{\alpha}_t} \mathcal{N}(0, 1)$.
+\\We obtain $x_t$ by combining the expressions for its components:
+\begin{equation*}
+x_t = \sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \eta
+\end{equation*}
+where $\eta$ is defined such that each component of $\eta$ follows a standard normal distribution. Thus, the expectation of $\eta$ is $0_{\mathbb{R}^N}$. It remains to determine its covariance matrix.
+\\Notice that each component $\eta^i$ of $\eta$ depends only on $W_t^i$, and each $W_t^i$ is independent of the other components of $W_t$. Therefore, the components of $\eta$ are independent of each other. Hence, $\eta$ is an isotropic Gaussian vector, as its components are independent and identically distributed, i.e.,
+\begin{equation*}
+\eta \sim \mathcal{N}(0_{\mathbb{R}^N}, I_N)
+\end{equation*}
+
+
+% \subsection{Proof of \cref{prop:quelques_resultats_sur_la_densite}} \label{sec:proof_quelques_resultates_sur_la_densite}
+\subsection{Density functions under linear transformation and sum of independent variables}
+\begin{proposition}\label{prop:quelques_resultats_sur_la_densite}
+    Let X and Y be two independent random variables in $\R^n$, $f_X$ and $f_Y$ are the density functions of $X$ and $Y$ respectively. We obtain the following properties:
+\begin{enumerate}[label=(\roman*)]
+    \item[] Let $\alpha \in \R_+^*$, and $U = \alpha X$, then the density function of $U$ is given by $\forall x\in \R^n$, $f_U(x) = \frac{1}{\alpha^n} f_X(\frac{x}{\alpha})$.
+    \item[] Let $Z = X+Y$, The density of $Z$ is the convolution of the the density funciton of $X$ and the density function of $Y$, i.e. $f_Z(x) = (f_X * f_Y)(x)$
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+    (i) The cumulative distribution function of $U$ is given by:
+\begin{align*}
+F_U(x) &= \mathbb{P}(U_1 \leq x_1, U_2 \leq x_2, \dots, U_n \leq x_n) \\
+&= \mathbb{P}\left(X_1 \leq \frac{x_1}{\alpha}, X_2 \leq \frac{x_2}{\alpha}, \dots, X_n \leq \frac{x_n}{\alpha}\right) \\
+&= F_X\left(\frac{x}{\alpha}\right)
+\end{align*}
+To obtain the probability density function $f_U$ of $U$, we differentiate the above equation:
+\begin{align*}
+f_U(x) &= \frac{\partial^n F_U}{\partial x_1 \partial x_2 \dots \partial x_n}(x) \\
+&= \frac{\partial^n F_X}{\partial x_1 \partial x_2 \dots \partial x_n}\left(\frac{x}{\alpha}\right) \left(\frac{1}{\alpha}\right)^n \\
+&= \left(\frac{1}{\alpha}\right)^n f_X\left(\frac{x}{\alpha}\right)
 \end{align*}
 
-De la même manière, en appliquant l'intégration par parties deux fois sur le deuxième terme à droite, on obtient :
+(ii) The cumulative distribution function of $\mathbf{Z}$ is given by:
+\begin{equation*}
+F_Z(\mathbf{z}) = \mathbb{P}(\mathbf{Z} \leq \mathbf{z}) = \mathbb{P}(\mathbf{X} + \mathbf{Y} \leq \mathbf{z}),
+\end{equation*}
+where the inequality is understood component-wise, i.e., $Z_i \leq z_i$ for all $i = 1, 2, \dots, n$.
+\\Since $\mathbf{X}$ and $\mathbf{Y}$ are independent, we can express this probability as an integral:
+\begin{equation*}
+F_Z(\mathbf{z}) = \int_{\mathbb{R}^n} \mathbb{P}(\mathbf{X} \leq \mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
+\end{equation*}
+By the definition of the cumulative distribution function of $\mathbf{X}$, we have:
+\begin{equation*}
+F_X(\mathbf{z} - \mathbf{y}) = \mathbb{P}(\mathbf{X} \leq \mathbf{z} - \mathbf{y}),
+\end{equation*}
+Thus:
+\begin{equation*}
+F_Z(\mathbf{z}) = \int_{\mathbb{R}^n} F_X(\mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
+\end{equation*}
+To obtain the density $f_Z(\mathbf{z})$, we differentiate both sides with respect to $\mathbf{z}$:
+\begin{equation*}
+f_Z(\mathbf{z}) = \frac{\partial^n}{\partial z_1 \dots \partial z_n} \int_{\mathbb{R}^n} F_X(\mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
+\end{equation*}
+Since $\frac{\partial^n}{\partial z_1 \dots \partial z_n} F_X \equiv f_X$ exists, applying Leibniz's rule (differentiation under the integral sign), we get:
+\begin{equation*}
+f_Z(\mathbf{z}) = \int_{\mathbb{R}^n} \frac{\partial^n}{\partial z_1 \dots \partial z_n} F_X(\mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
+\end{equation*}
+The derivative of the cumulative distribution function $F_X$ is the density $f_X$, so:
+\begin{equation*}
+f_X(\mathbf{z} - \mathbf{y}) = \frac{\partial^n}{\partial z_1 \dots \partial z_n} F_X(\mathbf{z} - \mathbf{y}).
+\end{equation*}
+Thus, we obtain:
+\begin{equation*}
+f_Z(\mathbf{z}) = \int_{\mathbb{R}^n} f_X(\mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
+\end{equation*}
+\end{proof}
+
+
+\subsection{Proof of \cref{prop:distribution_a_etap_t}} \label{sec:proof_distribution_a_etap_t}
+We begin by recalling the forward process:
+\begin{equation*}
+x_t = \sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \eta \quad \text{with } \eta \sim \mathcal{N}(0_{\mathbb{R}^N}, I_N)
+\end{equation*}
+Let $X = \sqrt{\bar{\alpha}_t} x_0$ and $Y = \sqrt{1 - \bar{\alpha}_t} \eta$. Since $x_0$ and $\eta$ are independent, $X$ and $Y$ are also independent. Using result (i) from \cref{prop:quelques_resultats_sur_la_densite}, we obtain the density function of $X$:
+\begin{equation*}
+f_X(x) = \frac{1}{(\sqrt{\bar{\alpha}_t})^N} \pi_0\left(\frac{x}{\sqrt{\bar{\alpha}_t}}\right) \quad \forall x \in \mathbb{R}^N
+\end{equation*}
+The density function of $Y$ is $g$, which corresponds to a normal distribution $\mathcal{N}(0_{\mathbb{R}^N}, (1 - \bar{\alpha}_t) I_N)$.
+\\According to result (ii) from \cref{prop:quelques_resultats_sur_la_densite}, the density function $\pi_t$ of $x_t$ is given by:
 \begin{align*}
-    \E{\nabla^2 F(x_t) \mathcal{G}_t^2} &= \int_{\mathbb{R}^N } \nabla^2 F(x) \mathcal{G}_t^2 \pi_t(x)dx\\
-    &= -\int_{\R^N}\nabla F(x) \cdot\nabla(\mathcal{G}_t^2\pi_t(x)) dx\\
-    &= \int_{\mathbb{R}^N } F(x) \nabla^2(\mathcal{G}_t^2 \pi_t(x)) dx
+\pi_t(x) &= (f_X * g)(x) \quad \forall x \in \mathbb{R}^N \\
+&= \int_{\mathbb{R}^N} \frac{1}{(\sqrt{\bar{\alpha}_t})^N} \pi_0\left(\frac{z}{\sqrt{\bar{\alpha}_t}}\right) \mathcal{G}_t(x - z) \, dz
 \end{align*}
-
-Injectons les résultats précédents dans l'équation \eqref{eq:EsperanceEgality} :
-\[\int_{\mathbb{R^N}}F(x)\frac{\partial\pi_t(x)}{\partial t} dx = - \int_{\mathbb{R}^N}F(x) (\nabla \cdot f_t(x)\pi_t(x))dx + \frac{1}{2}\int_{\mathbb{R}^N } F(x) \nabla^2(\mathcal{G}_t^2 \pi_t(x)) dx\]
-
-Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e ensemble des fonctions infiniment dérivables à support compact), la théorie des distributions nous dit : 
-\[\frac{\partial\pi_t(x)}{\partial t} = -\nabla \cdot (f_t(x)\pi_t(x)) + \frac{1}{2}\nabla^2(\mathcal{G}_t^2 \pi_t(x)) \quad \] 
-\end{proof}
-
-\section{Proof of \cref{prop:solution_processus_direct}} \label{sec:proof_solution_processus_direct}
-
-\begin{proof}
-    D'après l'équation \eqref{eq:OU}:
-    \[dx_t^i = -\gamma_t x_t^i dt + \sqrt{2\gamma_t}dW_t^i, \quad \forall i=1,2,\dots,N\] 
-    
-    Posons $\mu_t = \exp{\left(\int_0^t \gamma_s ds\right)}, \quad \forall t \geq 0$.
-    
-    Soit $Y_t$ un processus stochastique défini par $Y_t \coloneqq f(t,x_t^i)= \mu_t x_t^i$.
-    
-    En utilisant la formule d'Ito, on obtient:
-    \[dY_t = \frac{\partial f(t,x_t^i)}{\partial t} dt + \frac{\partial f(t,x_t^i)}{\partial x} dx_t + \frac{1}{2}\frac{\partial^2f(t,x_t^i)}{\partial x^2}d\langle x,x \rangle_t\]
-
-    En particulier:
-    \begin{itemize}
-        \item $\frac{\partial f(t,x_t^i)}{\partial t} = \gamma_t \mu_t x_t^i$
-        \item $\frac{\partial f(t,x_t^i)}{\partial x} = \mu_t$
-        \item $\frac{\partial^2f(t,x_t^i)}{\partial x^2}=0$
-    \end{itemize}
-
-    Ainsi,
-    \begin{align*}
-        dY_t &= \gamma_t \mu_t x_t^i dt + \mu_t dx_t^i\\
-        &= \gamma_t \mu_t x_t^i dt + \mu_t (-\gamma_t x_t^i dt + \sqrt{2\gamma_t}dW_t^i)\\
-        &= \mu_t\sqrt{2\gamma_t}dW_t^i
-    \end{align*}
-    
-    On passe à l'intégrale pour 2 côtés :
-    \[Y_t = Y_0 + \int_0^t \mu_s\sqrt{2\gamma_s}dW_s^i\]
-
-    Remplaçons $Y_t$ par $\mu_t x_t^i$, puis divisons les 2 côtés par $\mu_t$ pour faire apparaitre $x_t^i$, on obtient:
-    \begin{align*}
-        x_t^i &= \frac{1}{\mu_t}x_0^i + \frac{1}{\mu_t} \int_0^t \mu_s\sqrt{2\gamma_s}dW_s^i \\
-        &= \sqrt{\bar{\alpha_t}}x_0^i + \frac{1}{\mu_t} \int_0^t \mu_s\sqrt{2\gamma_s}dW_s^i
-    \end{align*}
-
-    Notons $Z_t = \int_0^t\mu_s\sqrt{2\gamma_s}dW_s^i$. On remarque que $Z_t$ est une intégrale d'Itô par rapport à un mouvement brownien. On peut réécrire cette intégrale sous forme :
-    \[Z_t=\int_0^t\mu_s\sqrt{2\gamma_s}dW_s^i = \lim\limits_{h\rightarrow 0} \sum\limits_{j=1}^{n} \mu_{t_j}\sqrt{2\gamma_{t_j}}(W^i_{t_j}-W^i_{t_{j-1}})\]
-    Avec $t_0=0 < t_1<\dots<t_{n-1} < t_{n} = t$ une sous-division de l'intervalle $[0,t]$ et $h \coloneqq max_{j = 1,2,\dots,n} |t_j - t_{j-1}|$
-
-    Comme les incréments d'un mouvement brownien sont les variables gaussiennes centrées et indépendantes l'une de l'autre, $Z_t$ est une variable gaussienne centrée dont la variance vaut $\int_0^t(\mu_s\sqrt{2\gamma_s})^2 ds $. On va calculer cette variance :
-    \begin{align*}
-        \int_0^t(\mu_s\sqrt{2\gamma_s})^2ds &= \int_0^t \exp\left(2 \int_0^s \gamma_xdx\right) 2 \gamma_s ds \\ 
-        &=\int_0^t \exp\left(2 \int_0^s \gamma_xdx\right) d\left(2 \int_0^s \gamma_xdx\right)\\
-        &= \exp\left(2 \int_0^t \gamma_xdx\right) -1
-    \end{align*}
-    
-    Alors, $Z_t$ représente une variable gaussienne telle que  $Z_t \sim \mathcal{N}\left(0, \exp\left(2 \int_0^t \gamma_xdx\right) -1\right) $.
-    
-    Par conséquent, 
-    \[\frac{1}{\mu_t}Z_t \sim \mathcal{N}\left(0, 1-\exp\left(-2 \int_0^t \gamma_xdx\right)\right)\]
-    
-    D'où :
-    \[\frac{1}{\mu_t}Z_t \sim \mathcal{N}\left(0, 1-\bar{\alpha_t}\right)\]
-
-    On injecte ce résultat dans l'équation de $x_t^i$, on obtient :
-    \[x_t^i = \sqrt{\bar{\alpha_t}}x_0^i + \sqrt{1-\bar \alpha_t}\,\eta^i\]
-    avec $\eta^i \sim \sqrt{1-\bar{\alpha_t}}\,\mathcal{N}\left(0, 1\right)$
-
-    On obtient $x_t$ en rassemblant les expressions de ses composantes. 
-    \[x_t = \sqrt{\bar{\alpha_t}}x_0 + \sqrt{1-\bar{\alpha_t}}\eta_t \quad \] 
-    Avec $\eta$ est définie telle que chaque composante de $\eta$ a une distribution normale centrée réduite. L'espérance de $\eta$ est donc $0_{\R^N}$. Il nous reste à chercher sa matrice de covariance.
-
-    On remarque  que chaque composante $\eta^i$ de $\eta$ ne dépend que de $W_t^i$, de plus, $W_t^i$ est à son tour indépendante de l'autre composante de $W_t$. On peut donc conclure que les composantes de $\eta$ sont indépendantes l'une de l'autre. $\eta$ est donc un vecteur gaussien isotrope car ses composantes sont des variables indépendamment et identiquement distribuées i.e
-    \[\eta \sim \mathcal{N}(0_{\R^N},I_N)\]
-\end{proof}
-
-
-\section{Proof of \cref{prop:quelques_resultats_sur_la_densite}} \label{sec:proof_quelques_resultates_sur_la_densite}
-\begin{proof}\
-    (i) La fonction de répartition de $U$ s'écrit :
-    \begin{align*}
-        F_U(x) &= \mathbb{P}(U_1 \leq x_1;U_2 \leq x_2;\dots;U_n \leq x_n) \\
-        &=\mathbb{P}\left(X_1 \leq \frac{x_1}{ \alpha};X_2 \leq \frac{x_2}{\alpha};\dots;X_n \leq \frac{x_n}{ \alpha}\right) \\
-        &= F_X\left(\frac{x}{\alpha}\right)
-    \end{align*}
-
-    Pour avoir la fonction de répartition $f_U$ de $U$, on passe l'équation ci-dessus à la dérivée :
-    \begin{align*}
-        f_U(x) &= \frac{\partial^nF_U}{\partial z_1 \partial z_2 \dots\partial z_1}(x) \\
-        &= \frac{\partial^nF_X}{\partial z_1 \partial z_2 \dots\partial z_1}\left(\frac{x}{ \alpha}\right) \left(\frac{1}{ \alpha}\right)^n \\
-        &=\left(\frac{1}{ \alpha}\right)^n f_X\left(\frac{x}{\alpha}\right)
-    \end{align*}
-
-    (ii)La fonction de répartition de \( \mathbf{Z} \) est donnée par :
-    \[
-    F_Z(\mathbf{z}) = \mathbb{P}(\mathbf{Z} \leq \mathbf{z}) = \mathbb{P}(\mathbf{X} + \mathbf{Y} \leq \mathbf{z}),
-    \]
-    où l'inégalité est comprise composante par composante, c'est-à-dire \( Z_i \leq z_i \) pour tout \( i = 1,2, \dots, n \).
-    
-    Comme \( \mathbf{X} \) et \( \mathbf{Y} \) sont indépendants, nous pouvons exprimer cette probabilité sous forme intégrale :
-    \[
-    F_Z(\mathbf{z}) = \int_{\mathbb{R}^n} \mathbb{P}(\mathbf{X} \leq \mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
-    \]
-    
-    Or, par définition de la fonction de répartition de \( \mathbf{X} \), on a :
-    \[
-    F_X(\mathbf{z} - \mathbf{y}) = \mathbb{P}(\mathbf{X} \leq \mathbf{z} - \mathbf{y}),
-    \]
-    
-    d'où :
-    \[
-    F_Z(\mathbf{z}) = \int_{\mathbb{R}^n} F_X(\mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
-    \]
-    
-    Pour obtenir la densité \( f_Z(\mathbf{z}) \), nous dérivons des deux côtés par rapport à \( \mathbf{z} \) :
-    \[
-    f_Z(\mathbf{z}) = \frac{\partial^n}{\partial z_1 \dots \partial z_n} \int_{\mathbb{R}^n} F_X(\mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
-    \]
-    
-    Comme $\frac{\partial^n}{\partial z_1 \dots \partial z_n} F_X \equiv f_X$ existe, en appliquant la règle de Leibniz (différentiation sous le signe intégral), on obtient :
-    \[
-    f_Z(\mathbf{z}) = \int_{\mathbb{R}^n} \frac{\partial^n}{\partial z_1 \dots \partial z_n} F_X(\mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
-    \]
-    
-    Or, la dérivée de la fonction de répartition \( F_X \) est la densité \( f_X \), donc :
-    \[
-    f_X(\mathbf{z} - \mathbf{y}) = \frac{\partial^n}{\partial z_1 \dots \partial z_n} F_X(\mathbf{z} - \mathbf{y}).
-    \]
-    
-    Ainsi, on obtient :
-    \[
-    f_Z(\mathbf{z}) = \int_{\mathbb{R}^n} f_X(\mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
-    \]
-\end{proof}
-
-\section{Proof of \cref{prop:distribution_a_etap_t}} \label{sec:proof_distribution_a_etap_t}
-\begin{proof}
-    On commence par rappeler le processus direct:
-    \begin{align*}
-    x_t &= \sqrt{\bar \alpha_t}x_0 + \sqrt{1-\bar \alpha_t} \eta \quad \text{avec } \eta \sim \mathcal{N}(0_{\R^N},I_N)\\
-    \end{align*}
-
-    Posons $X = \sqrt{\bar \alpha_t}x_0$ et $Y = \sqrt{1-\bar \alpha_t} \eta$. Comme $x_0$ et $\eta$ sont indépendantes, $X$ et $Y$ le sont. En utilisant le résultat (i) de \cref{prop:quelques_resultats_sur_la_densite}, on obtient la fonction de densité de $X$ :
-    \[f_X(x) = \frac{1}{\sqrt{\bar{\alpha_t}}^N} \pi_0\left(\frac{x}{\sqrt{\bar{\alpha_t}}}\right) \quad\forall x \in \R^N\]
-
-    La fonction de densité de $Y$ est $g$ qui est celle d'une loi normale $\mathcal{N}\left(0_{\R^N}, (1-\bar \alpha _t\,)I_N\right)$.
-
-    D'après le résultat (ii) de la  \cref{prop:quelques_resultats_sur_la_densite}, la fonction de densité $\pi_t$ de $x_t$ est donnée par :
-    \begin{align*}
-        \pi_t(x) &= (f_X*g)(x) \quad \forall x\in \R^N \\
-        &= \int_{\R_N} \frac{1}{\sqrt{\bar{\alpha_t}}^N} \pi_0\left(\frac{z}{\sqrt{\bar{\alpha_t}}}\right) \mathcal{G}_t(x -z) dz\\
-    \end{align*}
-
-    On remarque $\frac{1}{\sqrt{\bar{\alpha_t}}^n} dz = d\left(\frac{z}{\sqrt{\bar{\alpha_t}}}\right)$. En faisant une changement de variable $\omega = \frac{\omega}{\sqrt{\bar{\alpha_t}}}$, la distribution de $x_t$ s'écrit :
-    \begin{align*}
-        \pi_t(x) &= (f_X*g)(x) \quad \forall x\in \R^N \\
-        &= \int_{\R_N}  \pi_0(\omega) \mathcal{G}_t(x -\sqrt{\bar{\alpha_t}}\,\omega) d\omega\\
-    \end{align*}
-\end{proof}
+We observe that $\frac{1}{(\sqrt{\bar{\alpha}_t})^N} dz = d\left(\frac{z}{\sqrt{\bar{\alpha}_t}}\right)$. By making the change of variable $\omega = \frac{z}{\sqrt{\bar{\alpha}_t}}$, the distribution of $x_t$ becomes:
+\begin{align*}
+\pi_t(x) &= (f_X * g)(x) \quad \forall x \in \mathbb{R}^N \\
+&= \int_{\mathbb{R}^N} \pi_0(\omega) \mathcal{G}_t(x - \sqrt{\bar{\alpha}_t} \omega) \, d\omega
+\end{align*}
 
 % \section{Proof of \cref{prop:score_a_esperance_conditionnelle}}\label{sec:proof_score_a_esperance_conditionnelle}
 % \begin{proof}
@@ -1238,62 +1689,59 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
     
 % \end{proof}
 
-\section{Proof of \cref{prop:Groupe_unitaire}}\label{sec:proof_groupe_unitaire}
-\begin{proof}
-    Démontrons les propriétés une par une.
+% \subsection{Proof of \cref{prop:Groupe_unitaire}}\label{sec:proof_groupe_unitaire}
+% \begin{proof}
+% We prove the properties one by one.
 
-    \begin{enumerate}[label=(\roman*)]
-        \item Soit $x \in X$, on a :
-        \begin{equation*}
-            \langle Ux, U y \rangle = \langle x, U^\dagger U y \rangle
-        \end{equation*}
-        
-        Ou encore, par définition $\langle Ux, U y \rangle= \langle x, y \rangle $.
+% \begin{enumerate}[label=(\roman*)]
+%     \item[] Let $x \in X$. We have:
+%     \begin{equation*}
+%     \langle Ux, Uy \rangle = \langle x, U^\dagger Uy \rangle
+%     \end{equation*}
+%     By definition, $\langle Ux, Uy \rangle = \langle x, y \rangle$.Thus,
+%     \begin{equation*}
+%     \langle x, y \rangle = \langle x, U^\dagger Uy \rangle
+%     \end{equation*}
+%     This implies $U^\dagger U = e$. By the uniqueness of the inverse transformation of $U$, we deduce:
+%     \begin{equation*}
+%     U^{-1} = U^\dagger
+%     \end{equation*}
 
-        Ainsi,
-        \begin{equation*}
-            \langle x, y \rangle = \langle x, U^\dagger U y \rangle
-        \end{equation*}
+%     \item[] Let $x \in X$. Since $U$ is unitary, we have:
+%     \begin{equation*}
+%     \|Ux\|^2 = \langle Ux, Ux \rangle = \langle x, U^\dagger Ux \rangle = \langle x, x \rangle = \|x\|^2
+%     \end{equation*}
+%     Taking the square root, we obtain:
+%     \begin{equation*}
+%     \|Ux\| = \|x\|
+%     \end{equation*}
 
-        Ce qui entraîne $U^\dagger U = e$. Par unicité de la transformation inverse de $U$, on déduit :
-        \[
-        U^{-1} = U^\dagger.
-        \]
-        \item Soit \( x \in X \). Comme \( U \) est unitaire, on a :
-        \[
-        \|Ux\|^2 = \langle Ux, Ux \rangle = \langle x, U^\dagger U x \rangle = \langle x, x \rangle = \|x\|^2.
-        \]
-        En prenant la racine carrée, on obtient :
-        \[
-        \|Ux\| = \|x\|.
-        \]
-
-        \item Soit \( f \in C^1(X, \R) \) et \( x \in X \). On veut montrer que :
-        \[
-        \nabla_x f(U^{-1}x) = U \, \nabla f(U^{-1}x).
-        \]
-        Par définition du gradient, pour tout vecteur \( h \in X \), on a :
-        \[
-        \langle \nabla_x f(U^{-1}x), h \rangle = D_x f(U^{-1}x) \cdot h,
-        \]
-        où \( D_x f(U^{-1}x) \) est la dérivée directionnelle de \( f \) en \( U^{-1}x \) dans la direction \( h \). En utilisant la règle de dérivation en chaîne, on obtient :
-        \[
-        D_x f(U^{-1}x) \cdot h = D f(U^{-1}x) \cdot (U^{-1} h) = \langle \nabla f(U^{-1}x), U^{-1} h \rangle.
-        \]
-        Comme \( U \) est unitaire, \( U^{-1} = U^\dagger \), donc :
-        \[
-        \langle \nabla f(U^{-1}x), U^{-1} h \rangle = \langle U \nabla f(U^{-1}x), h \rangle.
-        \]
-        Ainsi, on a :
-        \[
-        \langle \nabla_x f(U^{-1}x), h \rangle = \langle U \nabla f(U^{-1}x), h \rangle.
-        \]
-        Comme cette égalité est vraie pour tout \( h \in X \), on en déduit que :
-        \[
-        \nabla_x f(U^{-1}x) = U \, \nabla f(U^{-1}x).
-        \]
-    \end{enumerate}
-\end{proof}
+%     \item[] Let $f \in C^1(X, \mathbb{R})$ and $x \in X$. We aim to show that:
+%     \begin{equation*}
+%     \nabla_x f(U^{-1}x) = U \nabla f(U^{-1}x)
+%     \end{equation*}
+%     By the definition of the gradient, for any vector $h \in X$, we have:
+%     \begin{equation*}
+%     \langle \nabla_x f(U^{-1}x), h \rangle = D_x f(U^{-1}x) \cdot h
+%     \end{equation*}
+%     where $D_x f(U^{-1}x)$ is the directional derivative of $f$ at $U^{-1}x$ in the direction $h$. Using the chain rule, we obtain:
+%     \begin{equation*}
+%     D_x f(U^{-1}x) \cdot h = D f(U^{-1}x) \cdot (U^{-1} h) = \langle \nabla f(U^{-1}x), U^{-1} h \rangle
+%     \end{equation*}
+%     Since $U$ is unitary, $U^{-1} = U^\dagger$, so:
+%     \begin{equation*}
+%     \langle \nabla f(U^{-1}x), U^{-1} h \rangle = \langle U \nabla f(U^{-1}x), h \rangle
+%     \end{equation*}
+%     Thus, we have:
+%     \begin{equation*}
+%     \langle \nabla_x f(U^{-1}x), h \rangle = \langle U \nabla f(U^{-1}x), h \rangle
+%     \end{equation*}
+%     Since this equality holds for all $h \in X$, we conclude that:
+%     \begin{equation*}
+%     \nabla_x f(U^{-1}x) = U \nabla f(U^{-1}x)
+%     \end{equation*}
+% \end{enumerate}
+% \end{proof}
 
 % \section{Proof of \cref{theo:equivariant_modele}}\label{sec:proof_equivariant_modele}
 % \begin{proof}
@@ -1413,55 +1861,222 @@ Cette relation est vraie pour toute fonction de test $F \in C_c^{\infty}$ (i.e e
 % \end{align*}
 % \end{proof}
 
-\section{Proof of \cref{theo:formule_de_Tweedie}}\label{sec:proof_formule_de_Tweedie}
-\begin{proof}
-Par le point (ii) de la proposition \cref{prop:quelques_resultats_sur_la_densite}, on obtient la distribution de $Y$:
-\[ p_Y(y) = \int_{\mathbb{R}^n} f_X(x) \varphi_B(y - x) dx = (f_X * \varphi_B)(y) \]
+\subsection{Proof of \cref{theo:formule_de_Tweedie}}\label{sec:proof_formule_de_Tweedie}
+By part (ii) of \cref{prop:quelques_resultats_sur_la_densite}, we obtain the distribution of $Y$:
+\begin{equation*}
+p_Y(y) = \int_{\mathbb{R}^n} f_X(x) \varphi_B(y - x) \, dx = (f_X * \varphi_B)(y)
+\end{equation*}
 
-En différenciant sous le signe intégral :
+Differentiating under the integral sign:
 \begin{align*}
-\nabla p_Y(y) &= \int_{\mathbb{R}^n} f_X(x) \nabla_y \varphi_B(y - x) dx \\
-&= -\frac{1}{\sigma^2} \int_{\mathbb{R}^n} (y - x) f_X(x) \varphi_B(y - x) dx \\
-&= -\frac{1}{\sigma^2} y \int_{\mathbb{R}^n} f_X(x) \varphi_B(y - x) dx + \frac{1}{\sigma^2} \int_{\mathbb{R}^n} x f_X(x) \varphi_B(y - x) dx \\
-&= -\frac{1}{\sigma^2} y \cdot p_Y(y) + \frac{p_Y(y)}{\sigma^2} \int_{\mathbb{R}^n} \frac{x f_X(x) \varphi_B(y - x)}{p_Y(y)} dx
+\nabla p_Y(y) &= \int_{\mathbb{R}^n} f_X(x) \nabla_y \varphi_B(y - x) \, dx \\
+&= -\frac{1}{\sigma^2} \int_{\mathbb{R}^n} (y - x) f_X(x) \varphi_B(y - x) \, dx \\
+&= -\frac{1}{\sigma^2} y \int_{\mathbb{R}^n} f_X(x) \varphi_B(y - x) \, dx + \frac{1}{\sigma^2} \int_{\mathbb{R}^n} x f_X(x) \varphi_B(y - x) \, dx \\
+&= -\frac{1}{\sigma^2} y \cdot p_Y(y) + \frac{p_Y(y)}{\sigma^2} \int_{\mathbb{R}^n} \frac{x f_X(x) \varphi_B(y - x)}{p_Y(y)} \, dx
 \end{align*}
 
-On remarque que :
+We observe that:
 \begin{align*}
 \frac{f_X(x) \varphi_B(y - x)}{p_Y(y)} &= \frac{f_{X,B}(x, y - x)}{p_Y(y)} = \frac{f_{X,Y}(x, y)}{p_Y(y)} \\
 &= f_{X|Y=y}(x)
 \end{align*}
 
-Avec $f_{X,B}$ la densité jointe de $X$ et $B$, $f_{X|Y=y}$ la densité de $X$ sachant $Y = y$.
+where $f_{X,B}$ is the joint density of $X$ and $B$, and $f_{X|Y=y}$ is the conditional density of $X$ given $Y = y$.
 
-D'où :
-\[ \nabla p_Y(y) = -\frac{1}{\sigma^2} y \cdot p_Y(y) + \frac{p_Y(y)}{\sigma^2} \mathbb{E}[X | Y = y] \]
+Thus:
+\begin{equation*}
+\nabla p_Y(y) = -\frac{1}{\sigma^2} y \cdot p_Y(y) + \frac{p_Y(y)}{\sigma^2} \mathbb{E}[X | Y = y]
+\end{equation*}
 
-En notant que $\nabla \log p_Y(y) = \frac{\nabla p_Y(y)}{p_Y(y)}$, on déduit :
-\[ \mathbb{E}[X | Y = y] = y + \sigma^2 \nabla \log p_Y(y) \]
-\end{proof}
-\section{Proof of \cref{propr:normal_on_subspace}}\label{sec:proof_normal_on_subspace}
-\begin{proof}
-    Consider the isometry $\psi:\R^{N - K} \to  \mathcal{V}$, via orthogonal parameterization $V \in \R^{N \times (N - K)}$:
+Noting that $\nabla \log p_Y(y) = \frac{\nabla p_Y(y)}{p_Y(y)}$, we deduce:
+\begin{equation*}
+\mathbb{E}[X | Y = y] = y + \sigma^2 \nabla \log p_Y(y)
+\end{equation*}
+% \section{Proof of \cref{propr:normal_on_subspace}}\label{sec:proof_normal_on_subspace}
+%     Consider the isometry $\psi:\R^{N - K} \to  \mathcal{V}$, via orthogonal parameterization $V \in \R^{N \times (N - K)}$:
+%     \begin{equation*}
+%         \mathcal{V} = \psi(\R^{N-K}) = \left\{ v_0 + V u: u \in \R^{N - K} \right\}
+%     \end{equation*}
+%     Since $\psi$ is an affine isometry, we have $\det{J_{x} J_{x}^T} = 1$ and therefore we can relate the Hausdorff measure with the Lebesgue measure: 
+%     \begin{align*}
+%         \int_{\mathcal{V}} \Normal{w; \mu, \sigma^2 \Id_{N}} d \mathcal{H}^{N - K}(w)
+%         &=  \int_{\R^{N - K}} \Normal{\psi(u); \mu, \sigma^2 \Id_N} d u  \\
+%         &= \frac{1}{(2\pi\sigma^2)^{N/2}} \int_{\R^{N-K}} \exp \left( -\frac{\norm{v_0 + V u - \mu}^2}{2} \right) du \\
+%         &= \frac{1}{(2\pi \sigma^2)^{P/2}} \exp \left( -\frac{\norm{(\Id - V V^T)(\mu - v_0)}^2}{2\sigma^2} \right)\\
+%     \end{align*}
+%     The last equality is from the fact that: 
+%     \begin{align*}
+%         \norm{v_0+ V u - \mu}^2 &= \norm{v_0 - \mu}^2 + \norm{V u}^2 + 2 \inner{v_0 - \mu, V u} \\ 
+%         &= \norm{v_0 - \mu}^2 + \norm{u}^2 + 2 \inner{V^T(v_0 - \mu), u} \\
+%         &= \norm{v_0 - \mu}^2 + \norm{u + V^T(v_0 - \mu)}^2 - \norm{V^T(v_0 - \mu)}^2 \\
+%         &= \norm{(\Id_N - V V^T)(v_0 - \mu)}^2 + \norm{u + V^T(v_0 - \mu)}^2
+%     \end{align*}
+
+\subsection{Co-area and area formula, change of variable}
+\begin{theorem}[Area formula -- Theorem 3.9 in \cite{evans2018measure}]
+    \label{theorem:area}
+    Let $g: \R^n \to \R$ be a measurable function and $v: \R^n \to \R^m$ be Lipschitz, with $n \leqslant m$. We have: 
     \begin{equation*}
-        \mathcal{V} = \psi(\R^{N-K}) = \left\{ v_0 + V u: u \in \R^{N - K} \right\}
+        \int_{\R^n} g(w) \sqrt{\det{J_v(w)^T J_v(w)}} dw = \int_{\R^m} \left[ \sum_{w \in v^{-1}(z)} g(w) \right] d\H^{n}(z),
     \end{equation*}
-    Since $\psi$ is an affine isometry, we have $\det{J_{x} J_{x}^T} = 1$ and therefore we can relate the Hausdorff measure with the Lebesgue measure: 
+    where $\H^{n}$ is the $n$ dimensional Hausdorff measure in $\R^m$. 
+\end{theorem}
+
+\begin{theorem}[Integration over level sets -- Theorem 3.11 in \cite{evans2018measure}]
+    \label{theorem:coarea}
+    Let $g: \R^n \to \R$ be a measurable function and $v: \R^n \to \R^m$ be Lipschitz, with $n \geqslant m$. We have: 
+    \begin{equation*}
+        \int_{\R^n} g(w) \sqrt{\det{J_v(w) J_v^T(w)}} dw = \int_{\R^m} \left[ \int_{v^{-1}(z)} g(w) d\H^{n - m}(w) \right] dz,
+    \end{equation*}
+    where $\H^{n - m}$ is the $(n - m)$ dimensional Hausdorff measure in $\R^m$. 
+\end{theorem}
+
+\subsection{Integration on subspace}
+The quantity of interest in this analysis has the following form 
+\begin{equation*}
+    I \eqdef \int_{\R^n} f(B y) \Normal{y; \mu, \sigma^2 \Id_n} dy ,
+\end{equation*}
+where $B: \R^n \to \R^m$  is a linear operator with  $n \geqslant m$ and $f:\R^m \to \R$.
+\subsubsection*{Using SVD and Co-area, Area formula}
+Consider the truncated SVD of the linear transformation $B \in \R^{m \times n}$ of rank $r$ as 
+\begin{equation*}
+    B = U_r \Sigma_r V_r^T \qquad \mbox{where} \qquad U_r \in \R^{m \times r}, \Sigma_r \in \R^{r \times r}, V_r^T \in \R^{r \times n}.
+\end{equation*}
+The idea is to apply the co-area \cref{theorem:coarea} and area formula \cref{theorem:area} to do change of variables, through $V_r^T, \Sigma_r$ and $U_r$, respectively.
+Firstly, we have the following properties:
+\begin{itemize}
+    \item[] $V_r^T V_r = U_r^T U_r = \Id_r$
+    \item[] $\Sigma_r$ is diagonal and invertible (with positive singular values on the diagonal).
+\end{itemize}
+
+Applying the co-area formula in \cref{theorem:coarea}, we can change the integration domain through $V_r^T$ with $\det{V_r^T V_r} = 1$: 
+\begin{align*}
+    I &= \int_{\R^n} f(B y) \Normal{y; \mu, \sigma^2 \Id_n} dy 
+    \\&= \int_{\R^n} f(U_r \Sigma_r V_r^T y) \Normal{y; \mu, \sigma^2 \Id_n} dy 
+    \\&= \int_{\R^r} \left[ \int_{V_r^{-T}(z)} f(U_r \Sigma_R V_r^T w) \Normal{w; \mu, \sigma^2 \Id_n} d\H^{n - r}(w)\right] dz
+    \\&= \int_{\R^r} \left[ f(U_r \Sigma_r z) \int_{V_r^{-T}(z)} \Normal{V_r^T w; V_r^T \mu, \sigma^2 \Id_r} \Normal{\bar{V}_r^T w; \bar{V}_r^T \mu, \sigma^2 \Id_{n-r}} d \H^{n - r}(w)\right] dz
+    \\&= \int_{\R^r} \left[ f(U_r \Sigma_r z) \Normal{z; V_r^T \mu, \sigma^2 \Id_r} \int_{\R^{n - r}}  \Normal{\bar{V}_r^T w; \bar{V}_r^T \mu, \sigma^2 \Id_{n-r}} dw \right] dz
+    \\&= \int_{\R^r}f(U_r \Sigma_r z) \Normal{z; V_r^T \mu, \sigma^2 \Id_r} dz
+\end{align*}
+Now since $\Sigma_r \in \R^{r \times r}$ is invertible, we can do a change of variable $u = \Sigma_r z$: 
+\begin{align*}
+    I &= \int_{\R^r}f(U_r \Sigma_r z) \Normal{z; V_r^T \mu, \sigma^2 \Id_r} dz
+    \\&= \frac{1}{\det{\Sigma_r}} \int_{\R^r}f(U_r z) \Normal{\Sigma_r^{-1} z; V_r^T \mu, \sigma^2 \Id_r} dz
+\end{align*}
+The last step is to re-project onto the image of $B$, by applying the area formula in \cref{theorem:area} with $\det{U_r^T U_r} = 1$: 
+\begin{align*}
+    I &= \frac{1}{\det{\Sigma_r}} \int_{\R^r} f(U_r z) \Normal{\Sigma_r^{-1} z; V_r^T \mu, \sigma^2 \Id_r} dz
+    \\&=  \frac{1}{\det{\Sigma_r}} \int_{\R^{m}} \sum_{z \in U_r^{-1}(v) } f(U_r z) \Normal{\Sigma_r^{-1} z; V_r^T \mu, \sigma^2 \Id_r} d \H^{r}(v)
+    \\&=  \frac{1}{\det{\Sigma_r}} \int_{\R^{m}} f(v) \sum_{z \in U_r^{-1}(v) } \Normal{\Sigma_r^{-1} z; V_r^T \mu, \sigma^2 \Id_r} d \H^{r}(v)
+\end{align*}
+In summary, we have 
+    \begin{align}\label{eq:key_equation}
+        \int_{\R^n} f(B y) \Normal{y; \mu, \sigma^2 \Id_n} dy 
+        &= \frac{1}{\det{\Sigma_r}} \int_{\R^r}f(U_r z) \Normal{\Sigma_r^{-1} z; V_r^T \mu, \sigma^2 \Id_r} dz
+        \\&= \frac{1}{\det{\Sigma_r}} \int_{\R^{m}} f(v) \sum_{z \in U_r^{-1}(v) } \Normal{\Sigma_r^{-1} z; V_r^T \mu, \sigma^2 \Id_r} d \H^{r}(v)
+    \end{align}
+
+\subsubsection*{Gaussian}
+\begin{proposition}[Normal integration on subspace]\label{prop:normal_on_subspace}
+    Let $P \in \R^{n \times p}$ with orthonormal columns. For any $\mu \in \R^n$ and $\sigma > 0$, we have:
+    \begin{equation*}
+        \int_{\R^{p}} \Normal{P w + v_0; \mu, \sigma^2 \Id_{n}} dw = \frac{1}{(2 \pi \sigma^2)^{(n - p) / 2}} \exp \left( -\frac{\norm{(\Id - P P^T)(\mu - v_0)}^2}{2\sigma^2} \right)
+    \end{equation*}
+\end{proposition}
+\begin{proof}
     \begin{align*}
-        \int_{\mathcal{V}} \Normal{w; \mu, \sigma^2 \Id_{N}} d \mathcal{H}^{N - K}(w)
-        &=  \int_{\R^{N - K}} \Normal{\psi(u); \mu, \sigma^2 \Id_N} d u  \\
-        &= \frac{1}{(2\pi\sigma^2)^{N/2}} \int_{\R^{N-K}} \exp \left( -\frac{\norm{v_0 + V u - \mu}^2}{2} \right) du \\
-        &= \frac{1}{(2\pi \sigma^2)^{P/2}} \exp \left( -\frac{\norm{(\Id - V V^T)(\mu - v_0)}^2}{2\sigma^2} \right)\\
+        \int_{\R^{p}} \Normal{P w + v_0; \mu, \sigma^2 \Id_N} d w
+        &= \frac{1}{(2\pi\sigma^2)^{n/2}} \int_{\R^{p}} \exp \left( -\frac{\norm{v_0 + P w - \mu}^2}{2 \sigma^2} \right) dw \\
+        &= \frac{1}{(2\pi \sigma^2)^{(n - p)/2}} \int_{\R^{p}} \frac{1}{(2 \pi \sigma)^{p/2}} \exp \left( -\frac{\norm{v_0 + P w - \mu}^2}{2\sigma^2} \right) dw\\
+        &= \frac{1}{(2\pi \sigma^2)^{(n - p)/2}} \exp \left( -\frac{\norm{(\Id_n - P P^T)(\mu - v_0)}^2}{2\sigma^2} \right)
     \end{align*}
     The last equality is from the fact that: 
     \begin{align*}
-        \norm{v_0+ V u - \mu}^2 &= \norm{v_0 - \mu}^2 + \norm{V u}^2 + 2 \inner{v_0 - \mu, V u} \\ 
-        &= \norm{v_0 - \mu}^2 + \norm{u}^2 + 2 \inner{V^T(v_0 - \mu), u} \\
-        &= \norm{v_0 - \mu}^2 + \norm{u + V^T(v_0 - \mu)}^2 - \norm{V^T(v_0 - \mu)}^2 \\
-        &= \norm{(\Id_N - V V^T)(v_0 - \mu)}^2 + \norm{u + V^T(v_0 - \mu)}^2
+        \norm{v_0 + P w - \mu}^2 &= \norm{v_0 - \mu}^2 + \norm{P w}^2 + 2 \inner{v_0 - \mu, P w} \\ 
+        &= \norm{v_0 - \mu}^2 + \norm{w}^2 + 2 \inner{P^T(v_0 - \mu), w} \\
+        &= \norm{v_0 - \mu}^2 + \norm{w + P^T(v_0 - \mu)}^2 - \norm{P^T(v_0 - \mu)}^2 \\
+        &= \norm{(\Id_n - P P^T)(v_0 - \mu)}^2 + \norm{w + P^T(v_0 - \mu)}^2
+    \end{align*}
+    and 
+    \begin{align*}
+        \frac{1}{(2 \pi \sigma)^{p/2}} \exp \left( -\frac{\norm{v_0 + P w - \mu}^2}{2\sigma^2} \right) &= \frac{1}{(2 \pi \sigma)^{p/2}} \exp \left( -\frac{ \norm{(\Id_n - P P^T)(v_0 - \mu)}^2 + \norm{w + P^T(v_0 - \mu)}^2}{2\sigma^2} \right) \\
+        &= \exp \left( -\frac{\norm{(\Id_n - P P^T)(\mu - v_0)}^2}{2\sigma^2} \right) \Normal{w; P^T(\mu - v_0), \sigma^2 \Id_p} 
     \end{align*}
 \end{proof}
 
+\subsection{Remainder on linear algebra}
+    Consider a linear operator $A: \R^N \to \R^M$.
+    \paragraph{Pseudo-inverse.} We can define the Moore-Penrose pseudo inverse $A^+:\R^M \to \R^N$ with the following properties:
+    \begin{itemize}
+        \item[] $(A^+)^+ = A$ (see the SVD)
+        \item[] $A^+ A$ is the projection to $\mathrm{Im}(A^T)$, or equivalently $\Id - A A^+$ is the projection to $\ker{A^T}$
+        \item[] $A A^+$ is the projection to $\mathrm{Im}(A)$, or equivalently $\Id - A^+ A$ is the projection to $\ker{A}$
+    \end{itemize}
+    Given a vector $b \in \R^M$, the linear system $Ax = b$ has solution if and only if $b \in \mathrm{Im}(A)$. In this case, all solution are given by 
+    \begin{equation*}
+        x = A^+b + \ker{A} = A^+b + \left( \Id - A^+ A \right) z 
+    \end{equation*}
+    for any $z \in \R^N$.
+
+% \section{Intégration avec un changement de variable non injectif}
+% \begin{proposition}[Integration with a degenerate linear transform]
+% Soit \( A : \mathbb{R}^N \to \mathbb{R}^M \) une application linéaire de rang $R$ et de valeurs singulières $\sigma_1, \hdots, \sigma_R$. On considère l'intégrale :
+% \[
+% I = \int_{\mathbb{R}^N} f(Ax) \cdot \frac{1}{(2\pi\sigma^2)^{N/2}} \exp\left( -\frac{\|x - \mu\|^2}{2\sigma^2} \right) dx,
+% \]
+% où \( \mu \in \mathbb{R}^N \) et \( \sigma > 0 \).
+% Alors : 
+% \begin{align*}
+%     I &= \frac{1}{(2\pi\sigma^2)^{(N-R)/2} \left(\prod_{r=1}^R \sigma_r\right)}
+% \int_{\operatorname{Im}(A)} f(y) \cdot \exp\left( -\frac{\|A^{+} y - \mu_{K^\perp}\|^2}{2\sigma^2} \right) dy \\
+% & = \frac{1}{(2\pi\sigma^2)^{(N-R)/2} \left(\prod_{r=1}^R \sigma_r\right)}
+% \int_{z\in \R^{R}} f(U_Rz) \cdot \exp\left( -\frac{\|A^{+} U_Rz - \mu_{K^\perp}\|^2}{2\sigma^2} \right) dz.
+% \end{align*}
+% où $U_R=[u_1,\hdots, u_R]$ une base orthogonale de l'image de $A$ (sous-matrice de $A=U\Sigma V^T)$.
+% \end{proposition}
+      
+% \begin{proof}    
+% Posons \( K = \ker{A} \), et considérons la décomposition orthogonale :
+% \[
+% \mathbb{R}^N = K \oplus K^\perp.
+% \]
+% On écrit alors \( x = x_K + x_{K^\perp} \) et \( \mu = \mu_K + \mu_{K^\perp} \), avec les composantes respectives dans \( K \) et \( K^\perp \).
+
+% Grâce à l'orthogonalité de cette décomposition, on a :
+% \[
+% \|x - \mu\|^2 = \|x_K - \mu_K\|^2 + \|x_{K^\perp} - \mu_{K^\perp}\|^2.
+% \]
+
+% L'intégrale se factorise donc :
+% \[
+% \left( \int_K \frac{1}{(2\pi\sigma^2)^{\dim K/2}} \exp\left( -\frac{\|x_K - \mu_K\|^2}{2\sigma^2} \right) dx_K \right)
+% \cdot
+% \left( \int_{K^\perp} f(Ax_{K^\perp}) \cdot \frac{1}{(2\pi\sigma^2)^{\dim K^\perp/2}} \exp\left( -\frac{\|x_{K^\perp} - \mu_{K^\perp}\|^2}{2\sigma^2} \right) dx_{K^\perp} \right).
+% \]
+
+% Le premier facteur est l'intégrale d'une densité gaussienne de moyenne \( \mu_K \), donc il vaut 1. Il reste :
+
+% \[
+% \int_{K^\perp} f(Ax_{K^\perp}) \cdot \frac{1}{(2\pi\sigma^2)^{R/2}} \exp\left( -\frac{\|x_{K^\perp} - \mu_{K^\perp}\|^2}{2\sigma^2} \right) dx_{K^\perp},
+% \]
+% où \( R= \operatorname{rank}(A) = \dim(K^\perp) \).
+
+% Puisque \( A|_{K^\perp} : K^\perp \to \operatorname{Im}(A) \) est un isomorphisme, on peut effectuer le changement de variable \( y = A x_{K^\perp} \). Le jacobien du changement est alors :
+% \[
+% \left| \det{A|_{K^\perp}} \right| = \prod_{r=1}^{R} \sigma_R,
+% \]
+% où \( \sigma_1, \dots, \sigma_R \) sont les valeurs singulières non nulles de \( A \).
+
+% On obtient donc :
+% \[
+% \int_{K^\perp} f(Ax_{K^\perp}) \cdot \ldots dx_{K^\perp}
+% =
+% \frac{1}{(2\pi\sigma^2)^{(N-R)/2} \left(\prod_{r=1}^R \sigma_r\right)}
+% \int_{\operatorname{Im}(A)} f(y) \cdot \exp\left( -\frac{\|A^{+} y - \mu_{K^\perp}\|^2}{2\sigma^2} \right) dy.
+% \]
+% \end{proof}
+
+
 \bibliographystyle{plain}
-\bibliography{bibliography} 
+\bibliography{../codes/bibliography} 
 \end{document}
