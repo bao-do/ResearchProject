@@ -54,18 +54,19 @@
 \newcommand{\todo}[1]{\textcolor{red}{\textbf{TODO:} #1}}
 
 
-\title{An Analysis of Locality and Equivariant on Diffusion Model and MMSE Denoiser}
+\title{Locality and Translation Equivariance for Diffusion Models and Inverse Problems}
 \author{Quoc-Bao DO}
 \date{Fevrier 2024}
 
-\setlength{\parskip}{1em} % Pour choisir l'espace entre paragraphes
 
 \begin{document}
 
 \maketitle
 
 
-% \tableofcontents
+\newpage
+\tableofcontents
+\newpage
 
 \section*{Abstract}
 Diffusion model is a type of generative model used in machine learning, particularly for task like text generation, image and video generation,… Mason Kamb et Surya Ganguli + 2024 provides the first analytic, interpretable and predictive theory of creativity in convolutional diffusion models. Nevertheless, the lack of detailed justification can make it difficult for readers to fully grasp the theoretical foundations of the work. To address this gap, our research provides rigorous and complete mathematical proofs for the key results in the mentioned paper. We also introduce the analytic expression for denoisers constrainted under locality or/and equivariance. We rigorously verified assumptions, introduced optimality conditions from which analytic expressions for score function approximators are derived in Mason Kamb et Surya Ganguli + 2024. We constructed/reconstructed the proofs for the paper’s key results by standard and advanced mathematical techniques including functional analysis, mesure theory and probability theory. As a result, we establish a more robust mathematical formulation of the theory introduced by Mason Kamb et Surya Ganguli + 2024. This framework can be used to assess the performance of convolutional neural networks and predict their outputs under local and/or equivariant constraints.
@@ -185,7 +186,7 @@ The direct process given by the equation \eqref{eq:OU} is selected due to the fa
 
 
 In particular, we implicitly choose $\gamma_t$ so that $\bar \alpha_t \rightarrow 0$ when t tends towards $\infty$, the distribution tends to reduced-centered normal distribution and no longer depends on the initial  distribution $\pi_0$ of $\phi_0$. The time-dependent parameter $\bar \alpha_t$ is called the “noise schedule”, as it controls the speed of convergence $\pi_t$. In practice, $\bar \alpha_t \rightarrow 0$ when t tends towards a certain finite time T. In this way, we can sample $\phi_T$ a centered reduced normal distribution, then recover $\phi_0$ thanks to the inverse process we'll see next.
-\section{Flot Calculation} \label{sec:calcul_numerique}
+\section{Flow Calculation} \label{sec:calcul_numerique}
 \subsection{Calculation of the $\pi_t$ distribution}
 
 The fundamental premise of the diffusion model hinges on the reversal of the direct process, thereby facilitating the sampling of the target distribution, denoted by $p_0$, through the inverse process. The latter requires knowledge of the score function $s_t = -d/dlog(p_t)$. The initial step in this process is the calculation of the probability distribution of the random variable $\phi_t$, denoted by $\pi_t$.
