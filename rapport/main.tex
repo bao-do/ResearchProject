@@ -194,13 +194,10 @@ Consider a time-dependent stochastic differential equation (Itô), given as foll
     \end{equation}
     with 
     \begin{itemize}
-        \item[] $x \in \mathbb{R}^N$
-        
-        \item[] $f_t : \mathbb{R}^N \rightarrow \mathbb{R}^N$ is in $C^1$ and is linearly increasing, i.e., $\exists\, C > 0$ such that $\|f_t(x)\| \leq C(1 + \|x\|)$, where $\|\cdot\|$ denotes the $L^2$ norm, i.e., $\forall n \in \mathbb{N}^*, \forall x \in \mathbb{R}^n,\ \|x\| = \sqrt{\sum\limits_{i=1}^n x_i^2}$.
-        
-        \item[] $\mathcal{G}_t : \mathbb{R} \rightarrow \mathbb{R}$ is in $C^2$
-        
-        \item[] $W_t$ is a standard Wiener process in $\mathbb{R}^N$, with
+        \item $x \in \mathbb{R}^N$
+        \item $f_t \in C^1(\R^N,\R^N)$ and satisfies $\exists\, C > 0$ such that $\|f_t(x)\| \leq C(1 + \|x\|)$, where $\|\cdot\|$ denotes the $L^2$ norm, i.e., $\forall n \in \mathbb{N}^*, \forall x \in \mathbb{R}^n,\ \|x\| = \sqrt{\sum\limits_{i=1}^n x_i^2}$.
+        \item $g_t$ is a $C^2$ function of $t$.
+        \item $W_t$ is a standard Wiener process in $\mathbb{R}^N$, with
         \begin{equation*}
             \langle W^i, W^j \rangle_t =
             \begin{cases}
@@ -227,8 +224,8 @@ Consider a time-dependent stochastic differential equation (Itô), given as foll
 % In general, the forward process is usually constructed so that as $t \rightarrow \infty$ (or $t \rightarrow T$ for some finite time $T$), the distribution $\pi_t$ converges to a known and well-defined distribution $\pi_{\infty}$, often chosen as the normal distribution.
 In the context of diffusion models, and more specifically implicit diffusion models for denoising (DDIMs), the objective is to identify a deterministic, time-dependent vector field $v_t$ that exhibits the same flow of probability distributions as the preceding stochastic equation. This reformulation enables the diffusion process to be inverted deterministically:
 \begin{itemize}
-    \item[] We begin by sampling $x_T \sim \pi_t$
-    \item[] Then we evolve the sample backwards in time, from $t=T$ to $t = 0$, by solving the following ODE:
+    \item We begin by sampling $x_T \sim \pi_t$
+    \item Then we evolve the sample backwards in time, from $t=T$ to $t = 0$, by solving the following ODE:
     \begin{equation}
         \frac{dx_t}{dt} = v_t(x_t)
     \end{equation}
@@ -245,19 +242,19 @@ Our goal is to identify the deterministic, time-dependent $v_t$ function so that
 \[\frac{d\pi_t(x)}{dt} =\nabla \cdot([f_t(x)-\frac{1}{2}g_t^2\nabla \log\pi_t(x)]\pi_t(x))\]
 Thus,
 \[v_t(x) =f_t(x)-\frac{1}{2}g_t^2\nabla \log\pi_t(x) \]
-We denote $s_t(x) \equiv \nabla \log\pi_t(x)$, $s_t$ is called a score function. Determining this function plays an important role in recovering the initial image $x_0$.
+We denote $s_t(x) \equiv \nabla \log\pi_t(x)$, $s_t$ is called a \emph{score function}. Determining this function plays an important role in recovering the initial image $x_0$.
 \subsubsection{Flow calculation}\label{sec:calcul_numerique}
-In practice, the most common choice of forward process for a DDIM is an inhomogeneous Ornstein-Uhlenbeck process. If a positive $(\gamma_t)$ sequence is chosen, it takes the following form:
+In practice, the most common choice of forward process for a DDIM is an inhomogeneous Ornstein-Uhlenbeck process. If a positive sequence $(\gamma_t)$  is chosen, it takes the following form:
 \begin{equation}\label{eq:OU}
     dx_t = -\gamma_tx_t \,dt + \sqrt{2\gamma_t}\,dW_t
 \end{equation}
-By identifying in this case $f_t(x) = -\gamma_tx_t$ et $ \mathcal{G}_t = \sqrt{2\gamma_t}$, we deduce the expression for $v_t$ :
+By identifying in this case $f_t(x) = -\gamma_tx_t$ and $g_t = \sqrt{2\gamma_t}$, we deduce the expression for $v_t$ :
 \begin{equation}\label{eq:backward}
     \frac{dx_t}{dt} = v_t(x_t) = -\gamma_t(x_t+\nabla \log \pi_t(x_t)) = -\gamma_t(x_t+s_t(x))
 \end{equation}
 % In this particular instance, it can be demonstrated that $f_t (x_t) = -\gamma_t x_t,  \text{ and } \mathcal{G}_t = \sqrt{2\gamma_t}$. Through these relationships, the expression for $v_t$ can be deduced:
 % The expression $v_t (x_t)$ above defines a deterministic vector field, thereby enabling the diffusion process to be reversed by progressively eliminating the noise added during the direct phase. This field integrates the current position, denoted by the symbol $x_t$, and the score field, denoted by the symbol $s_t$, with the score field weighted by a factor $\gamma_t$. The integration of these two fields indicates the direction of maximum probability. In this manner, the quantity $v_t(x_t)$ functions as a guide for the evolution of $x_t$ in a continuous and reversible manner, thereby ensuring that the initially noisy sample $x_T$ is gradually transformed into the original domain data. This ordinary differential equation (ODE) reformulation is imperative for DDIM models, as it facilitates accelerated and optimized generation by circumventing the stochastic simulation of the inverse process.
-The forward process given by the equation \Cref{eq:OU} is selected due to the fact that, for any $t \geq 0$, the solution $x_t$ is distributed according to a known distribution, as indicated by the following proposition:
+The forward process given by \Cref{eq:OU} is chosen due to the fact that, for any $t \geq 0$, the solution $x_t$ is distributed according to a known distribution, as indicated by the following proposition:
 \begin{proposition}\label{prop:solution_processus_direct}
     The solution $x_t$ of \Cref{eq:OU} is given by
     \begin{equation}\label{eq:solforphi}
@@ -287,38 +284,13 @@ In particular, we implicitly choose $\gamma_t$ so that $\bar \alpha_t \rightarro
 % \end{proof}
 
 
-<<<<<<< HEAD
-In particular, we implicitly choose $\gamma_t$ so that $\bar \alpha_t \rightarrow 0$ when t tends towards $\infty$, the distribution tends to reduced-centered normal distribution and no longer depends on the initial  distribution $\pi_0$ of $\phi_0$. The time-dependent parameter $\bar \alpha_t$ is called the “noise schedule”, as it controls the speed of convergence $\pi_t$. In practice, $\bar \alpha_t \rightarrow 0$ when t tends towards a certain finite time T. In this way, we can sample $\phi_T$ a centered reduced normal distribution, then recover $\phi_0$ thanks to the inverse process we'll see next.
-\section{Flow Calculation} \label{sec:calcul_numerique}
-\subsection{Calculation of the $\pi_t$ distribution}
-
-The fundamental premise of the diffusion model hinges on the reversal of the direct process, thereby facilitating the sampling of the target distribution, denoted by $p_0$, through the inverse process. The latter requires knowledge of the score function $s_t = -d/dlog(p_t)$. The initial step in this process is the calculation of the probability distribution of the random variable $\phi_t$, denoted by $\pi_t$.
-
-The following two results are essentially useful for calculating the analytical expression of $\pi_t$.
-\begin{proposition}\label{prop:quelques_resultats_sur_la_densite}
-    Let X and Y be two independent random variables in $\R^n$, $f_X$ and $f_Y$ are the density functions of $X$ and $Y$ respectively. We obtain the following properties:
-    \vspace{-10pt}
-\begin{enumerate}[label=(\roman*)]
-    \item Let $\alpha \in \R_+^*$, and $U = \alpha X$, then the density fonction of $U$ is given by $\forall x\in \R^n$, $f_U(x) = \frac{1}{\alpha^n} f_X(\frac{x}{\alpha})$.
-    \item Let $Z = X+Y$, The density of $Z$ is the convolution of the the density funciton of $X$ and the density function of $Y$, i.e $f_Z(x) = (f_X * f_Y)(x)$
-\end{enumerate}
-\end{proposition}
-
-\begin{proof}
-The proof of these results is detailed in appendix \cref{sec:proof_quelques_resultates_sur_la_densite}.
-\end{proof}
-
-
-The objective is to express the density of the target state, denoted by the symbol $\pi_t$, in terms of the transformations undergone by the probe state, denoted by the symbol $\phi_t$, during the direct process. Two classical results on the densities of random variables are employed: firstly, the linear transformation of a random variable, which enables the deduction of the effect of a scaling factor on the density; and secondly, the convolution of densities, which facilitates the calculation of the density of the sum of two independent random variables. By employing the aforementioned properties, it is possible to express the probability of the occurrence of the phenomenon under consideration, denoted here by $\pi_t$, as an integral of the initial density $\pi_0$, convolved with a normal distribution of covariance \((1 - \bar{\alpha}_t) I_N\). This reflects the progressive diffusion of the initial distribution under the effect of Gaussian noise. To be more precise, the distribution of the random variable $t$ is given by the following proposition.
-=======
 % The objective is to express the density of the target state, denoted by the symbol $\pi_t$, in terms of the transformations undergone by the probe state, denoted by the symbol $x_t$, during the forward process. Two above results on the densities of random variables are employed: firstly, the linear transformation of a random variable, which enables the deduction of the effect of a scaling factor on the density; and secondly, the convolution of densities, which facilitates the calculation of the density of the sum of two independent random variables. By employing the aforementioned properties, it is possible to express the probability of the occurrence of the phenomenon under consideration, denoted here by $\pi_t$, as an integral of the initial density $\pi_0$, convolved with a normal distribution of covariance \((1 - \bar{\alpha}_t) I_N\). This reflects the progressive diffusion of the initial distribution under the effect of Gaussian noise. To be more precise, the distribution of the random variable $t$ is given by the following proposition.
->>>>>>> eba5aa1d4eec3fbdd7613c8f6f109429a685e34d
 \begin{proposition}\label{prop:distribution_a_etap_t}
     Let the forward process presented by \Cref{eq:solforphi}, under the assumption of the existence of the $\pi_t$ distribution of $x_t$, The distribution $\pi_t$ is given by:    
     \begin{equation}\label{eq:distribution_pi_t}
         \pi_t(x) = \int_{\R^N} \pi_0(z)\, \mathcal{G}_t(x - \sqrt{\bar \alpha_t}\,z) dz
     \end{equation}
-    with $\mathcal{G}_t$ the density function of a normal distribution$\mathcal{N}\left(0_{\R^N}, (1- \bar\alpha _t \,)I_N\right)$
+    with $\mathcal{G}_t$ the density function of a normal distribution $\mathcal{N}\left(0_{\R^N}, (1- \bar\alpha _t \,)I_N\right)$
 \end{proposition}
 
 \begin{proof}
@@ -509,7 +481,7 @@ $f^* \in \mathcal{M}$ is a minimiser of $J$ if $J(f^*+\epsilon h) \geq J(f^*)$ f
     J(f^*+\epsilon h) &= \E{\|(f^*+\epsilon h)(t,x)-s_t(x)\|^2}\\
     & = J(f^*)+\epsilon^2\E{\|h(t,x)\|^2}+2\epsilon\E{\langle h(t,x),f*(t,x) - s_t(x) \rangle}
 \end{align*}
-therefore, the optimal condition follows
+therefore, the optimality condition follows
 \begin{equation}\label{eq:optimal_condition_score_function}
     \E{\langle h(t,x),f*(t,x) - s_t(x) \rangle} = 0 \text{ for all } x \in \mathcal{M}
 \end{equation}
@@ -518,10 +490,10 @@ therefore, the optimal condition follows
 \begin{definition}[Group of transformation]
     A \textbf{group of transformations} is a set \( G \) of applications of a set \( X \) into itself, with a composition operation of transformations that satisfies the following axioms:
     \begin{itemize}[topsep=-5pt]
-    \item[] \textbf{Fermeture} : \( \forall U, V \in G, \quad U \circ V \in G \).
-    \item[] \textbf{Associativité} : \( (U \circ V) \circ W = U \circ (V \circ W) \).
-    \item[] \textbf{Identité} : \( \exists e \in G \) so that \( e \circ U = U \circ e = U \).
-    \item[] \textbf{Inverses} : \( \forall U \in G, \quad \exists \,U^{-1} \in G \text{ tel que } U \circ U^{-1} = U^{-1} \circ U = e \).
+    \item[] \textbf{Closedness} : \( \forall U, V \in G, \quad U \circ V \in G \).
+    \item[] \textbf{Associativity} : \( (U \circ V) \circ W = U \circ (V \circ W) \).
+    \item[] \textbf{Identity} : \( \exists e \in G \) so that \( e \circ U = U \circ e = U \).
+    \item[] \textbf{Inverse} : \( \forall U \in G, \quad \exists \,U^{-1} \in G \text{ tel que } U \circ U^{-1} = U^{-1} \circ U = e \).
 \end{itemize}
 \end{definition}
 
@@ -1123,7 +1095,10 @@ We obtain the analytic formula for the ELS machine
 \end{proof}
 
 \section{Analytical solutions for MMSE inverse problems}
-In this section, we extend the analytical framework developed for MMSE denoising to the more general setting of inverse problems, where the observation model takes the form $y=Ax+b$. Unlike the denoising case where $A=I$, the presence of a general forward operator $A$ introduces new challenges related to the ill-posedness and instability of the inversion. Our goal is to characterize the MMSE estimator $\hat{x}(y)$ under architectural constraints such as locality and translation equivariance, as typically imposed by convolutional neural networks (CNNs). This project constitutes an ongoing research effort aimed to derive analytical formulas for the MMSE estimator under these constraints, with the long-term objective of publishing the results. While the work is still in progress and some of the findings remain confidential, we already have preliminary results that offer valuable insights into the behavior of constrained neural estimators in inverse problem settings.
+In this section, we extend the analytical framework developed for MMSE denoising to the more general setting of inverse problems, where the observation model takes the form $y=Ax+b$. Unlike the denoising case where $A=I$, the presence of a general forward operator $A$ introduces new challenges related to the ill-posedness and instability of the inversion. Our goal is to characterize the MMSE estimator $\hat{x}(y)$ under architectural constraints such as locality and translation equivariance, as typically imposed by convolutional neural networks (CNNs). This project constitutes an ongoing research effort aimed to derive analytical formulas for the MMSE estimator under these constraints, with the mid-term objective of publishing the results. We target ICLR 2026 with a deadline for submission on September 2025. While the work is still in progress and some of the findings remain confidential, we already have preliminary results that offer valuable insights into the behavior of constrained neural estimators in inverse problem settings.
+
+Note that this work is still ongoing, explaining the rather poor presentation below. I decided to focus on deriving new theoretical results rather than polishing the presentation. 
+
 \subsection{Notations}
 \begin{itemize}
     \item[]  $\x, \y, \beps$ are random vectors 
@@ -1355,13 +1330,15 @@ Inserting this estimator into the optimality \Cref{eq:optimality_condition}, for
 \section{Conclusion}
 The primary aim of this work was to understand the behavior of CNNs, in inverse problems by analyzing MMSE estimator under architectural constraints such as locality and translation equivariance. By extending the analytical framework introduced by Ganguli et al. (2024) \cite{kamb2024analytictheorycreativityconvolutional} in the denoising setting, we sought to uncover how these structural priors alone influence the learned estimators, without requiring full access to training dynamics or data distributions.
 
-Our main result demonstrates that, even in the context of linear inverse problems $y=Ax+b$, imposing only local and equivariant structure on the estimator suffices to recover surprisingly accurate approximations to the MMSE solution. These insights are consistent with earlier observations in the denoising case (where $A=I$) \cite{kamb2024analytictheorycreativityconvolutional}, but here they are extended to a significantly broader setting. In doing so, our findings align with and build upon recent theoretical studies that investigate the inductive biases of neural architectures, but differ by providing closed-form analytical characterizations rather than empirical or asymptotic analyses.
+Our main result demonstrates that, in the context of linear inverse problems $y=Ax+b$, imposing local and translation equivariance on the estimator yields non trivial analytical expression. 
+Analyzing this expression will provide us some insights on what type of image can be recovered when solving inverse problems with neural networks. 
+Certifying and understanding the solution of neural networks in the context of inverse problems is a critical issue. Imagine for instance a solver for a magnetic imaging reconstruction. 
+Diagnosing a brain tumor while it is not there (or vice versa) could have dramatic consequences. 
 
-Nonetheless, this work has limitations. First, the current analysis focuses on linear operators $A$ and does not address nonlinear forward models. Second, while preliminary results are promising, a full validation on realistic datasets and comparison with trained networks remains ongoing.
+Our findings align with and build upon recent theoretical studies that investigate the inductive biases of neural architectures, but differ by providing closed-form analytical characterizations rather than empirical or asymptotic analyses.
 
-Despite these limitations, the implications are substantial. A better understanding of how architectural constraints shape learned solutions can inform the design of more efficient, interpretable, and theoretically grounded neural networks—especially in domains such as medical imaging, geophysics, or astronomy, where inverse problems are ubiquitous and data is limited.
+Nonetheless, this analysis still requires some work. First, a validation on realistic datasets and comparison with trained networks remains to be done. Second, a deeper analysis of the analytical formulas, with some simple examples will help to get insight on these otherwise hard to read equations. I hope that my summer internship will enable me addressing these issues and to publish a nice paper!
 
-Looking forward, future studies should aim to relax the current assumptions, extend the analysis to nonlinear inverse problems, and quantify the performance gap between constrained analytical estimators and fully trained neural networks. The long-term goal is to develop a unified theoretical framework that bridges modern deep learning practices with classical statistical estimation theory, opening new directions in both theoretical research and applied machine learning.
 \section{Appendix}
 
 \subsection{Proof of \Cref{prop:fokker} \label{sec:proof_focker}}
