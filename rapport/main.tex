@@ -93,32 +93,30 @@
 \newcommand{\todo}[1]{\textcolor{red}{\textbf{TODO:} #1}}
 
 
-\title{An Analysis of Locality and Equivariant on Diffusion Model and MMSE Denoiser}
+\title{Locality and Translation Equivariance for Diffusion Models and Inverse Problems}
 \author{Quoc-Bao DO \\
 4th Year Student, Department of Applied Mathematics, INSA Toulouse, France \\
 Tutor: Pierre Weiss \\
 Researcher, Integrative Biology Center, Toulouse, France}
 \date{Fevrier 2024}
 
-
-% \setlength{\parskip}{1em} % Pour choisir l'espace entre paragraphes
-
 \begin{document}
 
 \maketitle
 
 
-\tableofcontents
-
 \newpage
+\tableofcontents
+\newpage
+
 \section*{Abstract}
-Convolutional Neural Networks (CNNs) have achieved remarkable success in image processing tasks such as face generation, inpainting and super-resolution. Despite their empirical effectiveness, one major limitation remains: the lack of a clear analytical understanding of how these models work. This project aims to explain the internal mechanisms of CNNs by seeking to describe analytically the solutions of these models. We focus on two key areas: diffusion-based generative models and inverse problems in image processing. Our approach is inspired by the work of Ganguli et al. (2024), which provides some of the first analytical interpretations of convolutional neural networks by exploiting the locality and equivariance properties of these models. By using standard and advanced mathematical techniques, including functional analysis, measure theory, and probability, we obtain the analytical solution for the MMSE (minimum mean squared error) denoiser and the analytical solution for the MMSE inverse problem. Our work can be used to assess the performance of convolutional neural networks and predict their outputs. Future study will provide a full validation on realistic datasets and comparison with trained networks.
+Convolutional Neural Networks (CNNs) have achieved remarkable success in image processing tasks such as face generation, inpainting and super-resolution. Despite their empirical effectiveness, one major limitation remains: the lack of a clear analytical understanding of how these models work. This project aims to explain the internal mechanisms of CNNs by seeking to describe analytically the solutions of these models. We focus on two key areas: diffusion-based generative models and inverse problems in image processing. Our approach is inspired by the work of Ganguli et al. (2024), which provides some of the first analytical interpretations of convolutional neural networks by exploiting the locality and equivariance properties of these models. By using mathematical techniques including functional analysis, measure theory, and probability, we obtain the analytical solution for the MMSE (minimum mean squared error) denoiser and the analytical solution for the MMSE for linear inverse problems. Our work can be used to assess the performance of convolutional neural networks and predict their outputs. Future study will provide a full validation on realistic datasets and comparison with trained networks.
 
 \textbf{Keywords}: Convolutional network model, locality, equivariance, MMSE denoiser, inverse problem.
 
 \section{Introduction}
 
-In recent years, Convolutional Neural Networks (CNNs) have played a pivotal role in the domain of image processing. These methods have application in a variety of tasks, including face generation, image inpainting, and super-resolution, where they frequently yield results that surpass the efficacy of conventional techniques. Despite the efficacy of CNNs in practice, the underlying mechanisms and principles that govern their function has yet to be fully explained. This absence of understanding poses a significant challenge, particularly in the context of finding reliable and explainable models.
+In recent years, Convolutional Neural Networks (CNNs) have played a pivotal role in the domain of image processing. These methods have applications in a variety of tasks, including face generation, image inpainting, and super-resolution, where they frequently yield results that surpass the efficacy of conventional techniques. Despite the efficacy of CNNs in practice, the underlying mechanisms and principles that govern their function has yet to be fully explained. This absence of understanding poses a significant challenge, particularly in the context of finding reliable and explainable models.
 
 Ganguli et al. (2024) \cite{kamb2024analytictheorycreativityconvolutional} provided one of the first mathematical explanations of CNNs. Their paper demonstrated that specific properties inherent to CNNs, such as locality and equivariance are sufficient to predict the behavior of these models, as shown in \Cref{fig:introduction_im}.
 \begin{figure}[h] % 'h' means 'here'
@@ -128,38 +126,49 @@ Ganguli et al. (2024) \cite{kamb2024analytictheorycreativityconvolutional} provi
     \label{fig:introduction_im}
 \end{figure}
 
-Our objective is to enhance comprehension of CNNs through by using mathematical tools to elucidate their analytical solutions. The present study focuses on two key areas: diffusion-based generative models for image generation, inverse problems for recovery of original images from noisy measure.
+Our objective is to understand the mathematics involved in \cite{kamb2024analytictheorycreativityconvolutional} and to adapt them to address the resolution of inverse problems as well. The present study focuses on two key areas: diffusion-based generative models for image generation, inverse problems for recovery of original images from noisy measurements.
 
-The paper is structured as follows. Section 2 introduces the core concepts underlying convolutional neural networks (CNNs), score-based diffusion models, and inverse problems, along with the empirical risk minimization framework. Section 3 analyzes analytical solutions for MMSE denoising  without any constraints and with different constraints: ideal, equivariance, localily, and locality and equivariance. Section 4 presents preliminary research findings on MMSE inverse problems under  equivariance and/or locality constraints. Finally, Section 5 concludes with a discussion of implications and future research directions.
+The paper is structured as follows. Section 2 introduces the core concepts underlying convolutional neural networks (CNNs), score-based diffusion models, and inverse problems, along with the empirical risk minimization framework. Section 3 analyzes analytical solutions for MMSE denoising  under different scenarios: no constraints, equivariance to a group of transforms, locality, and a mix between locality and equivariance. Section 4 presents preliminary research findings on MMSE inverse problems under  equivariance and/or locality constraints. Finally, Section 5 concludes with a discussion of implications and future research directions.
 
 \section{Premilinairy}
 \subsection{Convolutional neural network (CNN)}
-Convolutional Neural Networks (CNNs) are a class of neural architectures based the principles of locality, translation equivariance, and hierarchical composition. CNNs are particularly well-suited for analyzing spatially structured data, such as images, physical fields, or spatiotemporal patterns, due to their ability to exploit the intrinsic structure and symmetries of such data. The composition of multiple convolutional layers forms a hierarchical representation: early layers extract primitive features (e.g., edges, gradients), which are then recombined by deeper layers into more complex and semantically meaningful structures. 
-\subsubsection{Network Structure and Hierarchical Representation}
-\begin{figure}[h] % 'h' means 'here'
-    \centering
-    \includegraphics[width=0.5\textwidth]{../images/CNN_illustration.png} % Change width and filename
-    \caption{An exemple of convolutional neural network}
-    \label{fig:CNN_illustration}
-\end{figure}
-CNNs process input data as multidimensional grids and extract features through the application of convolutional filters, also referred to as kernels, as shown in \Cref{fig:CNN_illustration}. These filters are small, learnable matrices that slide across the input domain to compute local dot products. Each application of a kernel results in a response that highlights the presence of a particular pattern or structure within a localized region. The composition of multiple convolutional layers forms a hierarchical representation: early layers extract primitive features (e.g., edges, gradients), which are then recombined by deeper layers into more complex and semantically meaningful structures. This hierarchical organization reflects how many natural and physical systems are structured and enables efficient learning across different spatial scales.
-
-\subsubsection{Translation Equivariance}
-The convolution operation inherently satisfies translation equivariance. This means that when an input is shifted, the output feature map shifts by the same amount, preserving spatial relationships. 
-The property of translation equivariance can be mathematically proved: given an input $x$, a filter $k$, we denote $y$ the convolution of $x$ and $k$:
+Convolutional Neural Networks (CNNs) are a class of neural architectures defined as a succession of convolutions followed by nonlinear activation functions. 
+In their simplest form, they can be written as:
 \begin{equation*}
-    y[m,n] = (x*k)[m,n] = \sum_{i,j} x[m-i,n-j]*k[i,j]
+    N(x)  = \sigma\left( A_D \cdot \sigma \left( A_{D-1} \cdot \sigma \left( \hdots \sigma\left( A_1 \cdot x \right)\right)\right)\right),
 \end{equation*}
-Let denote $z$ the shifted version of $x$ obtained by shifting $\delta_h$ pixels to the left and $\delta_v$ pixels to the bottom, i.e. $z[i,j] = x[i+\delta_h,j+\delta_v]$ the convolution of $z$ and $k$ follows:
-\begin{align*}
-    (z*k)[m,n] &= \sum_{i,j} z[m-i,n-j]*k[i,j]\\
-    &= \sum_{i,j} x[m-i+\delta_h,n-j+\delta_v]*k[i,j]\\
-    &= (x*k)[m+\delta_h,n+\delta_v]
-\end{align*} 
-\subsubsection{Locality}
-CNNs incorporate the principle of locality by using filters (kernels) of finite spatial extent. This means each computation depends only on a bounded region of the input, reflecting the assumption that meaningful patterns and interactions are primarily local.
-\subsection{Diffusion Model}
-Diffusion models generate data by learning to reverse a gradual noising process. In the forward process, clean data is progressively corrupted by adding noise in multiple steps until it becomes indistinguishable from random noise. In the reverse process, a neural network is trained to denoise the data step by step, effectively learning how to reconstruct the original samples. The two process are illustrated by \Cref{fig:Diffusion_model}. In practice, this two-stage approach are highly effective for generating high-quality images, audio, and other complex data.
+where $\sigma: \R^N\to \R^N$ is a pointwise activation function (e.g. ReLU,  Sigmoid), $D\in \N$ denotes the depth of the network and $A_d : \R^{N\times w_d}\to \R^{N\times w_{d+1}}$ is a linear convolutional layer, that takes as an input a set of $w_d$ signals and outputs a set of $w_{d+1}$ signals with $w_1=w_{D+1} = 1$. Each operator $A_d$ is parameterized by convolution filters that constitute the weights of the networks. 
+They are optimized for a particular task during the training phase. 
+The layer $A_d$ takes the form:
+\begin{equation}
+    [A_d \cdot \{z_1,\hdots, z_{w_d}\}]_{j} = \sum_{i=1}^{w_d} h_{d,j,i} * z_i, 
+\end{equation}
+where $h_{d,j,i}$ are the convolution filters (the weights of the network) and $*$ denotes a discrete convolution. Throughout the paper we will assume that periodic boundary conditions are used. 
+
+This specific structure induces two constraints on the network: locality and translation equivariance. 
+By construction, if $x_\tau$ is a shifted version of $x$, $N(x_\tau)$ is nothing but $N(x)_{\tau}$, that is a shifted version of $N(x)$. 
+This is the definition of translation equivariance.
+Second, the locality is related to the fact that the convolution filters $h_{d,j,i}$ have a finite extent to reduce the number of parameters. 
+Hence the value $N(x)$ at a certain location $t$ only depends on a patch of $x$ centered at $t$. 
+
+CNNs are particularly well-suited for analyzing spatially structured data, such as images, physical fields, or spatiotemporal patterns, due to their ability to exploit the intrinsic structure and symmetries of such data. 
+
+% \subsubsection{Translation Equivariance}
+% The convolution operation inherently satisfies translation equivariance. This means that when an input is shifted, the output feature map shifts by the same amount, preserving spatial relationships. 
+% The property of translation equivariance can be mathematically proved: given an input $x$, a filter $k$, we denote $y$ the convolution of $x$ and $k$:
+% \begin{equation*}
+%     y[m,n] = (x*k)[m,n] = \sum_{i,j} x[m-i,n-j]*k[i,j]
+% \end{equation*}
+% Let denote $z$ the shifted version of $x$ obtained by shifting $\delta_h$ pixels to the left and $\delta_v$ pixels to the bottom, i.e. $z[i,j] = x[i+\delta_h,j+\delta_v]$ the convolution of $z$ and $k$ follows:
+% \begin{align*}
+%     (z*k)[m,n] &= \sum_{i,j} z[m-i,n-j]*k[i,j]\\
+%     &= \sum_{i,j} x[m-i+\delta_h,n-j+\delta_v]*k[i,j]\\
+%     &= (x*k)[m+\delta_h,n+\delta_v]
+% \end{align*} 
+% \subsubsection{Locality}
+% CNNs incorporate the principle of locality by using filters (kernels) of finite spatial extent. This means each computation depends only on a bounded region of the input, reflecting the assumption that meaningful patterns and interactions are primarily local.
+\subsection{Diffusion Models}
+Diffusion models generate data by learning to reverse a gradual noising process. In the forward process, clean data is progressively corrupted by adding noise in multiple steps until it becomes indistinguishable from random noise. In the reverse process, a neural network is trained to denoise the data step by step, effectively learning how to reconstruct the original samples. The two processes are illustrated by \Cref{fig:Diffusion_model}. In practice, this two-stage approach is highly effective for generating high-quality images, audio, and other complex data.
 \begin{figure}[h] % 'h' means 'here'
     \centering
     \includegraphics[width=0.5\textwidth]{../images/Diffusion_model.png} % Change width and filename
@@ -185,13 +194,10 @@ Consider a time-dependent stochastic differential equation (Itô), given as foll
     \end{equation}
     with 
     \begin{itemize}
-        \item[] $x \in \mathbb{R}^N$
-        
-        \item[] $f_t : \mathbb{R}^N \rightarrow \mathbb{R}^N$ is in $C^1$ and is linearly increasing, i.e., $\exists\, C > 0$ such that $\|f_t(x)\| \leq C(1 + \|x\|)$, where $\|\cdot\|$ denotes the $L^2$ norm, i.e., $\forall n \in \mathbb{N}^*, \forall x \in \mathbb{R}^n,\ \|x\| = \sqrt{\sum\limits_{i=1}^n x_i^2}$.
-        
-        \item[] $\mathcal{G}_t : \mathbb{R} \rightarrow \mathbb{R}$ is in $C^2$
-        
-        \item[] $W_t$ is a standard Wiener process in $\mathbb{R}^N$, with
+        \item $x \in \mathbb{R}^N$
+        \item $f_t \in C^1(\R^N,\R^N)$ and satisfies $\exists\, C > 0$ such that $\|f_t(x)\| \leq C(1 + \|x\|)$, where $\|\cdot\|$ denotes the $L^2$ norm, i.e., $\forall n \in \mathbb{N}^*, \forall x \in \mathbb{R}^n,\ \|x\| = \sqrt{\sum\limits_{i=1}^n x_i^2}$.
+        \item $g_t$ is a $C^2$ function of $t$.
+        \item $W_t$ is a standard Wiener process in $\mathbb{R}^N$, with
         \begin{equation*}
             \langle W^i, W^j \rangle_t =
             \begin{cases}
@@ -218,8 +224,8 @@ Consider a time-dependent stochastic differential equation (Itô), given as foll
 % In general, the forward process is usually constructed so that as $t \rightarrow \infty$ (or $t \rightarrow T$ for some finite time $T$), the distribution $\pi_t$ converges to a known and well-defined distribution $\pi_{\infty}$, often chosen as the normal distribution.
 In the context of diffusion models, and more specifically implicit diffusion models for denoising (DDIMs), the objective is to identify a deterministic, time-dependent vector field $v_t$ that exhibits the same flow of probability distributions as the preceding stochastic equation. This reformulation enables the diffusion process to be inverted deterministically:
 \begin{itemize}
-    \item[] We begin by sampling $x_T \sim \pi_t$
-    \item[] Then we evolve the sample backwards in time, from $t=T$ to $t = 0$, by solving the following ODE:
+    \item We begin by sampling $x_T \sim \pi_t$
+    \item Then we evolve the sample backwards in time, from $t=T$ to $t = 0$, by solving the following ODE:
     \begin{equation}
         \frac{dx_t}{dt} = v_t(x_t)
     \end{equation}
@@ -236,19 +242,19 @@ Our goal is to identify the deterministic, time-dependent $v_t$ function so that
 \[\frac{d\pi_t(x)}{dt} =\nabla \cdot([f_t(x)-\frac{1}{2}g_t^2\nabla \log\pi_t(x)]\pi_t(x))\]
 Thus,
 \[v_t(x) =f_t(x)-\frac{1}{2}g_t^2\nabla \log\pi_t(x) \]
-We denote $s_t(x) \equiv \nabla \log\pi_t(x)$, $s_t$ is called a score function. Determining this function plays an important role in recovering the initial image $x_0$.
+We denote $s_t(x) \equiv \nabla \log\pi_t(x)$, $s_t$ is called a \emph{score function}. Determining this function plays an important role in recovering the initial image $x_0$.
 \subsubsection{Flow calculation}\label{sec:calcul_numerique}
-In practice, the most common choice of forward process for a DDIM is an inhomogeneous Ornstein-Uhlenbeck process. If a positive $(\gamma_t)$ sequence is chosen, it takes the following form:
+In practice, the most common choice of forward process for a DDIM is an inhomogeneous Ornstein-Uhlenbeck process. If a positive sequence $(\gamma_t)$  is chosen, it takes the following form:
 \begin{equation}\label{eq:OU}
     dx_t = -\gamma_tx_t \,dt + \sqrt{2\gamma_t}\,dW_t
 \end{equation}
-By identifying in this case $f_t(x) = -\gamma_tx_t$ et $ \mathcal{G}_t = \sqrt{2\gamma_t}$, we deduce the expression for $v_t$ :
+By identifying in this case $f_t(x) = -\gamma_tx_t$ and $g_t = \sqrt{2\gamma_t}$, we deduce the expression for $v_t$ :
 \begin{equation}\label{eq:backward}
     \frac{dx_t}{dt} = v_t(x_t) = -\gamma_t(x_t+\nabla \log \pi_t(x_t)) = -\gamma_t(x_t+s_t(x))
 \end{equation}
 % In this particular instance, it can be demonstrated that $f_t (x_t) = -\gamma_t x_t,  \text{ and } \mathcal{G}_t = \sqrt{2\gamma_t}$. Through these relationships, the expression for $v_t$ can be deduced:
 % The expression $v_t (x_t)$ above defines a deterministic vector field, thereby enabling the diffusion process to be reversed by progressively eliminating the noise added during the direct phase. This field integrates the current position, denoted by the symbol $x_t$, and the score field, denoted by the symbol $s_t$, with the score field weighted by a factor $\gamma_t$. The integration of these two fields indicates the direction of maximum probability. In this manner, the quantity $v_t(x_t)$ functions as a guide for the evolution of $x_t$ in a continuous and reversible manner, thereby ensuring that the initially noisy sample $x_T$ is gradually transformed into the original domain data. This ordinary differential equation (ODE) reformulation is imperative for DDIM models, as it facilitates accelerated and optimized generation by circumventing the stochastic simulation of the inverse process.
-The forward process given by the equation \Cref{eq:OU} is selected due to the fact that, for any $t \geq 0$, the solution $x_t$ is distributed according to a known distribution, as indicated by the following proposition:
+The forward process given by \Cref{eq:OU} is chosen due to the fact that, for any $t \geq 0$, the solution $x_t$ is distributed according to a known distribution, as indicated by the following proposition:
 \begin{proposition}\label{prop:solution_processus_direct}
     The solution $x_t$ of \Cref{eq:OU} is given by
     \begin{equation}\label{eq:solforphi}
@@ -284,7 +290,7 @@ In particular, we implicitly choose $\gamma_t$ so that $\bar \alpha_t \rightarro
     \begin{equation}\label{eq:distribution_pi_t}
         \pi_t(x) = \int_{\R^N} \pi_0(z)\, \mathcal{G}_t(x - \sqrt{\bar \alpha_t}\,z) dz
     \end{equation}
-    with $\mathcal{G}_t$ the density function of a normal distribution$\mathcal{N}\left(0_{\R^N}, (1- \bar\alpha _t \,)I_N\right)$
+    with $\mathcal{G}_t$ the density function of a normal distribution $\mathcal{N}\left(0_{\R^N}, (1- \bar\alpha _t \,)I_N\right)$
 \end{proposition}
 
 \begin{proof}
@@ -475,7 +481,7 @@ $f^* \in \mathcal{M}$ is a minimiser of $J$ if $J(f^*+\epsilon h) \geq J(f^*)$ f
     J(f^*+\epsilon h) &= \E{\|(f^*+\epsilon h)(t,x)-s_t(x)\|^2}\\
     & = J(f^*)+\epsilon^2\E{\|h(t,x)\|^2}+2\epsilon\E{\langle h(t,x),f*(t,x) - s_t(x) \rangle}
 \end{align*}
-therefore, the optimal condition follows
+therefore, the optimality condition follows
 \begin{equation}\label{eq:optimal_condition_score_function}
     \E{\langle h(t,x),f*(t,x) - s_t(x) \rangle} = 0 \text{ for all } x \in \mathcal{M}
 \end{equation}
@@ -484,10 +490,10 @@ therefore, the optimal condition follows
 \begin{definition}[Group of transformation]
     A \textbf{group of transformations} is a set \( G \) of applications of a set \( X \) into itself, with a composition operation of transformations that satisfies the following axioms:
     \begin{itemize}[topsep=-5pt]
-    \item[] \textbf{Fermeture} : \( \forall U, V \in G, \quad U \circ V \in G \).
-    \item[] \textbf{Associativité} : \( (U \circ V) \circ W = U \circ (V \circ W) \).
-    \item[] \textbf{Identité} : \( \exists e \in G \) so that \( e \circ U = U \circ e = U \).
-    \item[] \textbf{Inverses} : \( \forall U \in G, \quad \exists \,U^{-1} \in G \text{ tel que } U \circ U^{-1} = U^{-1} \circ U = e \).
+    \item[] \textbf{Closedness} : \( \forall U, V \in G, \quad U \circ V \in G \).
+    \item[] \textbf{Associativity} : \( (U \circ V) \circ W = U \circ (V \circ W) \).
+    \item[] \textbf{Identity} : \( \exists e \in G \) so that \( e \circ U = U \circ e = U \).
+    \item[] \textbf{Inverse} : \( \forall U \in G, \quad \exists \,U^{-1} \in G \text{ tel que } U \circ U^{-1} = U^{-1} \circ U = e \).
 \end{itemize}
 \end{definition}
 
@@ -1089,7 +1095,10 @@ We obtain the analytic formula for the ELS machine
 \end{proof}
 
 \section{Analytical solutions for MMSE inverse problems}
-In this section, we extend the analytical framework developed for MMSE denoising to the more general setting of inverse problems, where the observation model takes the form $y=Ax+b$. Unlike the denoising case where $A=I$, the presence of a general forward operator $A$ introduces new challenges related to the ill-posedness and instability of the inversion. Our goal is to characterize the MMSE estimator $\hat{x}(y)$ under architectural constraints such as locality and translation equivariance, as typically imposed by convolutional neural networks (CNNs). This project constitutes an ongoing research effort aimed to derive analytical formulas for the MMSE estimator under these constraints, with the long-term objective of publishing the results. While the work is still in progress and some of the findings remain confidential, we already have preliminary results that offer valuable insights into the behavior of constrained neural estimators in inverse problem settings.
+In this section, we extend the analytical framework developed for MMSE denoising to the more general setting of inverse problems, where the observation model takes the form $y=Ax+b$. Unlike the denoising case where $A=I$, the presence of a general forward operator $A$ introduces new challenges related to the ill-posedness and instability of the inversion. Our goal is to characterize the MMSE estimator $\hat{x}(y)$ under architectural constraints such as locality and translation equivariance, as typically imposed by convolutional neural networks (CNNs). This project constitutes an ongoing research effort aimed to derive analytical formulas for the MMSE estimator under these constraints, with the mid-term objective of publishing the results. We target ICLR 2026 with a deadline for submission on September 2025. While the work is still in progress and some of the findings remain confidential, we already have preliminary results that offer valuable insights into the behavior of constrained neural estimators in inverse problem settings.
+
+Note that this work is still ongoing, explaining the rather poor presentation below. I decided to focus on deriving new theoretical results rather than polishing the presentation. 
+
 \subsection{Notations}
 \begin{itemize}
     \item[]  $\x, \y, \beps$ are random vectors 
@@ -1321,13 +1330,15 @@ Inserting this estimator into the optimality \Cref{eq:optimality_condition}, for
 \section{Conclusion}
 The primary aim of this work was to understand the behavior of CNNs, in inverse problems by analyzing MMSE estimator under architectural constraints such as locality and translation equivariance. By extending the analytical framework introduced by Ganguli et al. (2024) \cite{kamb2024analytictheorycreativityconvolutional} in the denoising setting, we sought to uncover how these structural priors alone influence the learned estimators, without requiring full access to training dynamics or data distributions.
 
-Our main result demonstrates that, even in the context of linear inverse problems $y=Ax+b$, imposing only local and equivariant structure on the estimator suffices to recover surprisingly accurate approximations to the MMSE solution. These insights are consistent with earlier observations in the denoising case (where $A=I$) \cite{kamb2024analytictheorycreativityconvolutional}, but here they are extended to a significantly broader setting. In doing so, our findings align with and build upon recent theoretical studies that investigate the inductive biases of neural architectures, but differ by providing closed-form analytical characterizations rather than empirical or asymptotic analyses.
+Our main result demonstrates that, in the context of linear inverse problems $y=Ax+b$, imposing local and translation equivariance on the estimator yields non trivial analytical expression. 
+Analyzing this expression will provide us some insights on what type of image can be recovered when solving inverse problems with neural networks. 
+Certifying and understanding the solution of neural networks in the context of inverse problems is a critical issue. Imagine for instance a solver for a magnetic imaging reconstruction. 
+Diagnosing a brain tumor while it is not there (or vice versa) could have dramatic consequences. 
 
-Nonetheless, this work has limitations. First, the current analysis focuses on linear operators $A$ and does not address nonlinear forward models. Second, while preliminary results are promising, a full validation on realistic datasets and comparison with trained networks remains ongoing.
+Our findings align with and build upon recent theoretical studies that investigate the inductive biases of neural architectures, but differ by providing closed-form analytical characterizations rather than empirical or asymptotic analyses.
 
-Despite these limitations, the implications are substantial. A better understanding of how architectural constraints shape learned solutions can inform the design of more efficient, interpretable, and theoretically grounded neural networks—especially in domains such as medical imaging, geophysics, or astronomy, where inverse problems are ubiquitous and data is limited.
+Nonetheless, this analysis still requires some work. First, a validation on realistic datasets and comparison with trained networks remains to be done. Second, a deeper analysis of the analytical formulas, with some simple examples will help to get insight on these otherwise hard to read equations. I hope that my summer internship will enable me addressing these issues and to publish a nice paper!
 
-Looking forward, future studies should aim to relax the current assumptions, extend the analysis to nonlinear inverse problems, and quantify the performance gap between constrained analytical estimators and fully trained neural networks. The long-term goal is to develop a unified theoretical framework that bridges modern deep learning practices with classical statistical estimation theory, opening new directions in both theoretical research and applied machine learning.
 \section{Appendix}
 
 \subsection{Proof of \Cref{prop:fokker} \label{sec:proof_focker}}
