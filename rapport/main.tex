@@ -1,96 +1,102 @@
 \documentclass[a4paper,10pt]{article}
+\input{template.tex}
+\input{notation.tex}
 
-\usepackage{geometry}
-\usepackage{graphicx} % Required for inserting images
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{amsthm}
-\usepackage{mathtools}
-\usepackage{enumitem}
-\usepackage{bbm}
-\usepackage{xcolor}
-\usepackage{hyperref}
-\usepackage{cleveref} % Pour pouvoir utiliser cref
-
-\theoremstyle{definition} % Style pour les définitions
-\newtheorem{definition}{Definition}[section]
-
-\theoremstyle{definition} % Style pour les propositions et lemmes
-\newtheorem{proposition}[definition]{Proposition}
-\newtheorem{lemma}[definition]{Lemma}
-
-\theoremstyle{definition} % Style pour les remarques
-\newtheorem{theorem}[definition]{Theorem}
-
-\theoremstyle{definition} % Style pour les remarques
-\newtheorem{remark}[definition]{Remark}
-
-\newtheorem{example}{Example}[section]
-
-\DeclareMathOperator*{\argmin}{argmin}
-\DeclareMathOperator*{\argmax}{argmax}
+% \usepackage{natbib}
+% \usepackage{geometry}
+% \usepackage{graphicx} % Required for inserting images
+% \usepackage{amsmath}
+% \usepackage{amssymb}
+% \usepackage{amsthm}
+% \usepackage{mathtools}
+% \usepackage{enumitem}
+% \usepackage{bbm}
+% \usepackage{xcolor}
+% \usepackage{hyperref}
+% \usepackage{cleveref} % Pour pouvoir utiliser cref
 
 
-% Real
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\Z}{\mathbb{Z}}
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\C}{\mathbb{C}}
+% \bibliographystyle{abbrvnat}
 
-% Expectation, probability, Gaussian, Covariance and Variance
-\newcommand{\E}[1]{\mathbb{E} \left[ {#1} \right] }
-\newcommand{\EE}[2]{\mathbb{E}_{#2} \left[ {#1} \right] }
-\newcommand{\Ec}[2]{\mathbb{E}_{{#2}} \left[ {#1} \right] }
+% \theoremstyle{definition} % Style pour les définitions
+% \newtheorem{definition}{Definition}[section]
 
-\newcommand{\Pro}[1]{\mathbb{P}\left( {#1} \right) }
-\newcommand{\Normal}[1]{\mathcal{N}\left( {#1} \right)}
-\newcommand{\Cov}[1]{\mathrm{Cov}\left( {#1} \right)}
-\newcommand{\Var}[1]{\mathrm{Var}\left( {#1} \right)}
+% \theoremstyle{definition} % Style pour les propositions et lemmes
+% \newtheorem{proposition}[definition]{Proposition}
+% \newtheorem{lemma}[definition]{Lemma}
 
-% Linear algebra
-\renewcommand{\ker}[1]{\mathrm{ker}\left( {#1} \right)}
-\newcommand{\rank}[1]{\mathrm{rank}\left( {#1} \right)}
-\newcommand{\supp}[1]{\mathrm{supp}\left( {#1} \right)}
-\newcommand{\Id}{\mathrm{I}}
-\newcommand{\trace}[1]{\mathrm{tr}\left( #1 \right)}
-\newcommand{\diag}[1]{\mathrm{diag}\left( #1 \right)}
-\newcommand{\diam}[1]{\mathrm{diam}\left( #1 \right)}
-\newcommand{\norm}[1]{\left\| #1 \right \|}
-\newcommand{\inner}[1]{\left\langle #1 \right\rangle}
+% \theoremstyle{definition} % Style pour les remarques
+% \newtheorem{theorem}[definition]{Theorem}
 
-% bold symbol
-\newcommand{\bs}[1]{\boldsymbol{#1}}
+% \theoremstyle{definition} % Style pour les remarques
+% \newtheorem{remark}[definition]{Remark}
 
-% Manifold
-\newcommand{\M}{\mathcal{M}}
-\newcommand{\x}{\boldsymbol{x}}
-\newcommand{\z}{\boldsymbol{z}}
-\renewcommand{\i}{\boldsymbol{i}}
-\newcommand{\w}{\boldsymbol{w}}
-\newcommand{\beps}{\boldsymbol{\epsilon}}
-\newcommand{\eps}{\epsilon}
-\newcommand{\A}{\boldsymbol{A}}
-\newcommand{\y}{\boldsymbol{y}}
-\newcommand{\n}{\boldsymbol{n}}
-\newcommand{\0}{\boldsymbol{0}}
-\renewcommand{\Im}[1]{\mathrm{Im} \left( {#1}  \right)}
+% \newtheorem{example}{Example}[section]
+
+% \DeclareMathOperator*{\argmin}{argmin}
+% \DeclareMathOperator*{\argmax}{argmax}
 
 
-\newcommand{\X}{\mathcal{X}}
-\newcommand{\Y}{\mathcal{Y}}
-\renewcommand{\H}{\mathcal{H}}
-\newcommand{\D}{\mathcal{D}}
-\renewcommand{\det}[1]{\mathrm{det}\left( #1 \right)}
-\newcommand{\Tx}{T^{\X}}
-\newcommand{\Ty}{T^{\Y}}
+% % Real
+% \newcommand{\R}{\mathbb{R}}
+% \newcommand{\Z}{\mathbb{Z}}
+% \newcommand{\N}{\mathbb{N}}
+% \newcommand{\C}{\mathbb{C}}
+
+% % Expectation, probability, Gaussian, Covariance and Variance
+% \newcommand{\E}[1]{\mathbb{E} \left[ {#1} \right] }
+% \newcommand{\EE}[2]{\mathbb{E}_{#2} \left[ {#1} \right] }
+% \newcommand{\Ec}[2]{\mathbb{E}_{{#2}} \left[ {#1} \right] }
+
+% \newcommand{\Pro}[1]{\mathbb{P}\left( {#1} \right) }
+% \newcommand{\Normal}[1]{\mathcal{N}\left( {#1} \right)}
+% \newcommand{\Cov}[1]{\mathrm{Cov}\left( {#1} \right)}
+% \newcommand{\Var}[1]{\mathrm{Var}\left( {#1} \right)}
+
+% % Linear algebra
+% \renewcommand{\ker}[1]{\mathrm{ker}\left( {#1} \right)}
+% \newcommand{\rank}[1]{\mathrm{rank}\left( {#1} \right)}
+% \newcommand{\supp}[1]{\mathrm{supp}\left( {#1} \right)}
+% \newcommand{\Id}{\mathrm{I}}
+% \newcommand{\trace}[1]{\mathrm{tr}\left( #1 \right)}
+% \newcommand{\diag}[1]{\mathrm{diag}\left( #1 \right)}
+% \newcommand{\diam}[1]{\mathrm{diam}\left( #1 \right)}
+% \newcommand{\norm}[1]{\left\| #1 \right \|}
+% \newcommand{\inner}[1]{\left\langle #1 \right\rangle}
+
+% % bold symbol
+% \newcommand{\bs}[1]{\boldsymbol{#1}}
+
+% % Manifold
+% \newcommand{\M}{\mathcal{M}}
+% \newcommand{\x}{\boldsymbol{x}}
+% \newcommand{\z}{\boldsymbol{z}}
+% \renewcommand{\i}{\boldsymbol{i}}
+% \newcommand{\w}{\boldsymbol{w}}
+% \newcommand{\beps}{\boldsymbol{\epsilon}}
+% \newcommand{\eps}{\epsilon}
+% \newcommand{\A}{\boldsymbol{A}}
+% \newcommand{\y}{\boldsymbol{y}}
+% \newcommand{\n}{\boldsymbol{n}}
+% \newcommand{\0}{\boldsymbol{0}}
+% \renewcommand{\Im}[1]{\mathrm{Im} \left( {#1}  \right)}
+
+
+% \newcommand{\X}{\mathcal{X}}
+% \newcommand{\Y}{\mathcal{Y}}
+% \renewcommand{\H}{\mathcal{H}}
+% \newcommand{\D}{\mathcal{D}}
+% \renewcommand{\det}[1]{\mathrm{det}\left( #1 \right)}
+% \newcommand{\Tx}{T^{\X}}
+% \newcommand{\Ty}{T^{\Y}}
 
 
 
-\newcommand{\eqdef}{\stackrel{\mathrm{def}}{=}}
+% \newcommand{\eqdef}{\stackrel{\mathrm{def}}{=}}
 
 
 
-\newcommand{\todo}[1]{\textcolor{red}{\textbf{TODO:} #1}}
+% \newcommand{\todo}[1]{\textcolor{red}{\textbf{TODO:} #1}}
 
 
 \title{Locality and Translation Equivariance for Diffusion Models and Inverse Problems}
@@ -99,6 +105,9 @@
 Tutor: Pierre Weiss \\
 Researcher, Integrative Biology Center, Toulouse, France}
 \date{Fevrier 2024}
+
+
+% \setlength{\parskip}{1em} % Pour choisir l'espace entre paragraphes
 
 \begin{document}
 
@@ -119,7 +128,7 @@ Convolutional Neural Networks (CNNs) have achieved remarkable success in image p
 In recent years, Convolutional Neural Networks (CNNs) have played a pivotal role in the domain of image processing. These methods have applications in a variety of tasks, including face generation, image inpainting, and super-resolution, where they frequently yield results that surpass the efficacy of conventional techniques. Despite the efficacy of CNNs in practice, the underlying mechanisms and principles that govern their function has yet to be fully explained. This absence of understanding poses a significant challenge, particularly in the context of finding reliable and explainable models.
 
 Ganguli et al. (2024) \cite{kamb2024analytictheorycreativityconvolutional} provided one of the first mathematical explanations of CNNs. Their paper demonstrated that specific properties inherent to CNNs, such as locality and equivariance are sufficient to predict the behavior of these models, as shown in \Cref{fig:introduction_im}.
-\begin{figure}[h] % 'h' means 'here'
+\begin{figure}[ht] % 'h' means 'here'
     \centering
     \includegraphics[width=0.5\textwidth]{../images/introduction_Ganguli.png} % Change width and filename
     \caption{Predicted images by analytic theory (left columns) and the output of convolutional diffusion model (right columns) (Source:\cite{kamb2024analytictheorycreativityconvolutional})}
@@ -169,24 +178,24 @@ CNNs are particularly well-suited for analyzing spatially structured data, such 
 % CNNs incorporate the principle of locality by using filters (kernels) of finite spatial extent. This means each computation depends only on a bounded region of the input, reflecting the assumption that meaningful patterns and interactions are primarily local.
 \subsection{Diffusion Models}
 Diffusion models generate data by learning to reverse a gradual noising process. In the forward process, clean data is progressively corrupted by adding noise in multiple steps until it becomes indistinguishable from random noise. In the reverse process, a neural network is trained to denoise the data step by step, effectively learning how to reconstruct the original samples. The two processes are illustrated by \Cref{fig:Diffusion_model}. In practice, this two-stage approach is highly effective for generating high-quality images, audio, and other complex data.
-\begin{figure}[h] % 'h' means 'here'
+\begin{figure}[ht] % 'h' means 'here'
     \centering
     \includegraphics[width=0.5\textwidth]{../images/Diffusion_model.png} % Change width and filename
-    \caption{Ilustration of forward and reverse process \cite{slideshare2025}}
+    \caption{Illustration of forward and reverse process \cite{slideshare2025}}
     \label{fig:Diffusion_model}
 \end{figure}
 
 \subsubsection{Notation conventions}
 The notation used throughout the remainder of this work is as follows:
 \begin{itemize}
-    \item[] $\D$ represent the training set
-    \item[] $x_0\in\R^N$ represent an example from the training set. For images of size L pixels by L pixels by C channels, we have $N=L\times L \times C$.
-    \item[] For image data, $x[n]$ and $x_0[n]$ represent the pixel values of the images $x$ and $x_0$ at pixel location $n$; both are elements of $\R^C$.
-    \item[] For a square image patch $b$ with an odd-dimension side length, the value $b[0] \in \R^C$ indicates the pixel at the center of the patch.
+    \item $\D$ represents the training set
+    \item $x_0\in\R^N$ represents an example from the training set. For images of size L pixels by L pixels by C channels, we have $N=L\times L \times C$.
+    \item For image data, $x[n]$ and $x_0[n]$ represent the pixel values of the images $x$ and $x_0$ at pixel location $n$; both are elements of $\R^C$.
+    \item For a square image patch $b$ with an odd-dimension side length, the value $b[0] \in \R^C$ indicates the pixel at the center of the patch.
 \end{itemize}
 \subsubsection{Stochastic differential equations (SDE) and probability flows}
 
-An important part of probalistic modeling is to generate samples from a data distribution whose precise shape is unknown or too complex to allow direct sampling. Diffusion models offer a solution to this problem by learning a time-inhomogeneous differential equation, which gradually transforms samples from a simple Gaussian distribution into samples corresponding to the more complex target distribution.
+An important part of probabilistic modeling is to generate samples from a data distribution whose precise shape is unknown or too complex to allow direct sampling. Diffusion models offer a solution to this problem by learning a time-inhomogeneous differential equation, which gradually transforms samples from a simple Gaussian distribution into samples corresponding to the more complex target distribution.
 
 Consider a time-dependent stochastic differential equation (Itô), given as follows:
     \begin{equation}\label{eq:SDE}
@@ -347,7 +356,7 @@ The above result is extremely useful, allowing us to numerically approximate the
 \[
 \mathbb{E}[x_0 | x_t] = \argmin_{f \in \mathbb{L}^2(\mathbb{R}^N)} \mathbb{E}\left[ \| x_0 - f(x_t) \|^2 \right], \quad t \in [0,T]
 \]
-Therefore, learning the score function is equivalent to finding an MMMSE estimator of $x_0$. Theoretically, the learned function is found by minimizing the above MSE regression on $L_2(\R^N)$. However, in the context of convolutional diffusion models, the learned function is constrained to be local and translation equivariant due to the architectural nature of convolutional neural networks, motivating us to analytically describe the behavior of CNN outputs.
+Therefore, learning the score function is equivalent to finding an MMSE estimator of $x_0$. Theoretically, the learned function is found by minimizing the above MSE regression on $L_2(\R^N)$. However, in the context of convolutional diffusion models, the learned function is constrained to be local and translation equivariant due to the architectural nature of convolutional neural networks, motivating us to analytically describe the behavior of CNN outputs.
 
 % Ainsi, la fonction de score $s_t = \frac{-1}{(\alpha_t)^{N/2} \sqrt{1-\bar{\alpha}_t}} \mathbb{E}\left[ \eta - f(x_t) \right]$ est définie comme :
 % \[
@@ -547,7 +556,7 @@ therefore, the optimality condition follows
 % L'équivariance dans les modèles de diffusion garantit que le processus génératif respecte les symétries naturelles des données, ce qui est essentiel pour de nombreuses applications. En intégrant ces symétries dans l'architecture du modèle, on préserve la cohérence structurelle des échantillons générés, tout en réduisant la redondance dans l'apprentissage et en améliorant la généralisation. Cela permet également une optimisation plus stable et évite l’introduction de dépendances arbitraires qui pourraient nuire à la performance du modèle. On va étudier dans cette section comment un modèle de diffusion apprend la fonction de score sous la contrainte d'équivariance.
 The admissible set of function $\mathcal{M}$ is defined by
 \begin{equation*}
-    \mathcal{M} = \{f:[0,T]\times \R^N \rightarrow \R^N \text{ such that } f(t,T_g x) = T_g f(t,x), \quad \forall g\in G,\forall x\in \R^N \}
+    \mathcal{M} = \{f:[0,T]\times \R^N \rightarrow \R^N \text{ such that } f(t,T_g x) = T_g f(t,x), \quad \forall T_    g\in G,\forall x\in \R^N \}
 \end{equation*}
 
 
@@ -591,12 +600,16 @@ Thus
 In the image case, $G$ corresponds to every possible spatial translation, which is indeed a group of unitary transformations. We also note that $G(\mathcal{D})$ is finite, since $\mathcal{D}$ contains a finite number of images and each image has a finite number of pixels. Consequently, integrals over $G$ in the above expression convert to sums over $G(\varphi)$ 
 \begin{align*}
         f^*(t,x) &= -\frac{1}{1-\bar \alpha_t} \sum\limits_{x_0  \in \mathcal{D}} \sum\limits_{x_0' \in G(x_0)} (x - \sqrt{\bar \alpha_t} x_0') \frac{\mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N) }{\sum\limits_{x_0  \in \mathcal{D}} \sum\limits_{x_0'\in G(\varphi)} \mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N)}\\
-        &= -\frac{1}{1-\bar \alpha_t}  \sum\limits_{x_0' \in G(\mathcal{D})} (x - \sqrt{\bar \alpha_t} x_0') \frac{\mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N) }{ \sum\limits_{x_0'\in G(\mathcal{D})} \mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N)}
+        &= -\frac{1}{1-\bar \alpha_t}  \,\frac{\sum\limits_{x_0' \in G(\mathcal{D})} (x - \sqrt{\bar \alpha_t} x_0') \mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N) }{ \sum\limits_{x_0'\in G(\mathcal{D})} \mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N)}
 \end{align*}
 
-\begin{align*}
-        f^*(t,x) &= -\frac{1}{1-\bar \alpha_t}  \,\frac{\sum\limits_{x_0' \in G(\mathcal{D})} (x - \sqrt{\bar \alpha_t} x_0') \mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N) }{ \sum\limits_{x_0'\in G(\mathcal{D})} \mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N)}
-\end{align*}
+% \begin{align*}
+%         f^*(t,x) &= -\frac{1}{1-\bar \alpha_t}  \,\frac{\sum\limits_{x_0' \in G(\mathcal{D})} (x - \sqrt{\bar \alpha_t} x_0') \mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N) }{ \sum\limits_{x_0'\in G(\mathcal{D})} \mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N)}
+% \end{align*}
+
+% \begin{align*}
+%         f^*(t,x) &= -\frac{1}{1-\bar \alpha_t}  \,\frac{\sum\limits_{x_0' \in G(\mathcal{D})} (x - \sqrt{\bar \alpha_t} x_0') \mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N) }{ \sum\limits_{x_0'\in G(\mathcal{D})} \mathcal{N}(x;\sqrt{\bar \alpha_t} x_0', (1-\bar \alpha_t) I_N)}
+% \end{align*}
 % \begin{definition}
 % Soit \( G \) un groupe particulier de transformations agissant sur les données \( x \). On dit qu'un modèle \( M_t \) est \( G \)-équivariant si, pour tout \( U \in G \), notre modèle satisfait
 % \vspace{-5pt}
@@ -624,7 +637,7 @@ In the image case, $G$ corresponds to every possible spatial translation, which 
 In this section, we study the behavior of the score function estimator under the locality constraint.
 The admissible set of functions is the set of functions that act locally, i.e. 
 \begin{equation*}
-    \mathcal{M} = {f:[0,T]\times\R^N \rightarrow \R^N \text{ such that } \forall n, \exists v_{f,n} : \R^P \rightarrow \R, f_n(t,x)=v_{f,n}(t,\Sigma_n x, \forall x\in \R^N)}
+    \mathcal{M} = {f:[0,T]\times\R^N \rightarrow \R^N \text{ such that } \forall n, \exists v_{f,n} : \R^P \rightarrow \R, f_n(t,x)=v_{f,n}(t,\Sigma_n x), \forall x\in \R^N}
 \end{equation*}
 Where $\Sigma_n \in \R^{P\times N}$ is a selection matrix, which take $P$ pixels centered at $n$ (with e.g., circular boundary condition). The function $f = (f_1,f_2,\dots,f_N)$ have the output $f_n(x)$ depending only on $\Sigma_n x$, a small patch centered at n with the aciton $v_{f,n}$.
 
@@ -1030,7 +1043,7 @@ We obtain the analytic formula for the ELS machine
         x_0^* = \arg \min_{x_0 \in P_{\Omega}} \|x_0 - \Sigma_n \tilde{x}\|^2.
     \]
 \end{definition}
-\begin{figure}[h] % 'h' means 'here'
+\begin{figure}[ht] % 'h' means 'here'
     \centering
     \includegraphics[width=0.9\textwidth]{../images/locally_consistent_point.png} % Change width and filename
 \caption{
@@ -1193,7 +1206,8 @@ where $\Sigma_n : \R^N \to \R^P$ ($P$ is the patch size) is the selection matrix
     \end{align*}
     where $\Sigma_n A^+ = U_n S_n V_n^T$ is the truncated SVD. 
 \end{proposition}
-Inserting this estimator into the optimality \Cref{eq:optimality_condition}, for any $\varphi \in \M$:
+\begin{proof}
+ Inserting this estimator into the optimality \Cref{eq:optimality_condition}, for any $\varphi \in \M$:
 \begin{align*}
     &\E{\inner{\varphi(A^+ \y), \phi^*(A^+  \y) - \x}}  \\
     &=  \frac{1}{|\D|} \int_{\R^M} \inner{\varphi(A^+  y), \phi^*(A^+  y) \sum_{x \in \D} \Normal{y; A x, \sigma^2 \Id_M} - \sum_{x \in \D} x \Normal{y; A x, \sigma^2 \Id_M}} dy \\
@@ -1202,8 +1216,8 @@ Inserting this estimator into the optimality \Cref{eq:optimality_condition}, for
     \\&= \frac{1}{|\D|} \sum_{n = 1}^{N} \frac{1}{\det{S_n}} \int_{\R^{r_n}} f_{\varphi, n} (U_{n}  z)  \Big(   f_{\phi^*, n}(U_{n}  z) \sum_{x \in \D} \Normal{S_{n}^{-1} z; V_{n}^T A x, \sigma^2 \Id_{r_n}} \\
     &\hspace{9cm} - \sum_{x \in \D} x_n \Normal{S_{n}^{-1} z; V_{n}^T A x, \sigma^2 \Id_{r_n}} \Big) dz
     \\&= 0
-\end{align*}
-
+\end{align*}   
+\end{proof}
 \subsection{Local and translation equivariant estimator}
 We define
 \begin{equation}
@@ -1223,9 +1237,13 @@ Translation property: the translation is defined as $T_g : (x_1, \dots, x_N) \in
         q(z, n, x) &= \int_{v_n^{-1}(z)} \Normal{w; A x, \sigma^2 \Id} d \H^{M - P}(w) 
         \\&= \frac{1}{(2\pi \sigma^2)^{P/2}} \exp \left( -\frac{\norm{(\Id_M - V_n V_n^T)A x - (\Sigma_n A^+)^+ z}^2}{2\sigma^2} \right)
     \end{align*}
+
+    \begin{align*}
+        q(z, n, x) &= \frac{1}{(2\pi \sigma^2)^{P/2}} \exp \left( -\frac{\norm{(\Id_M - V_n V_n^T)A x - (\Sigma_n A^+)^+ z}^2}{2\sigma^2} \right)
+    \end{align*}
     with $v_n: w \in \R^M \mapsto \Sigma_n A^+ w \in \R^P$ and $V_n$ is an orthogonal basis of $\ker{\Sigma_n A^+}$.
 \end{proposition}
-
+\begin{proof}
 Inserting this estimator into the optimality \Cref{eq:optimality_condition}, for any $\varphi \in \M$:
 \begin{align*}
     &\E{\inner{\varphi(A^+ \y), \phi^*(A^+  \y) - \x}}  \\
@@ -1241,6 +1259,7 @@ Inserting this estimator into the optimality \Cref{eq:optimality_condition}, for
     % \\&=\frac{1}{|\D|} \int_{\R^{P}}  f_{\varphi} (v)  \left( f_{\phi^*}(v)  \sum_{x \in \D}  \sum_{n = 1}^N \sum_{z \in U_n^{-}(v)} \frac{\Normal{S_n^{-1} z; V_n^T A x, \sigma^2 \Id_{r_n}}}{\det{S_n}}  - \sum_{x \in \D}  \sum_{n = 1}^N  \sum_{z \in U_n^{-}(v)} \frac{x_n \Normal{S_n^{-1} z; V_n^T A x, \sigma^2 \Id_{r_n}}}{\det{S_n}} \right) d \H^{r_n}(v)
     \\&= 0 
 \end{align*}
+\end{proof}
 
 % \subsubsection{Group equivariant estimator}
 % Consider a general group of transformations $G$. 
@@ -1610,38 +1629,38 @@ f_U(x) &= \frac{\partial^n F_U}{\partial x_1 \partial x_2 \dots \partial x_n}(x)
 &= \left(\frac{1}{\alpha}\right)^n f_X\left(\frac{x}{\alpha}\right)
 \end{align*}
 
-(ii) The cumulative distribution function of $\mathbf{Z}$ is given by:
+(ii) The cumulative distribution function of $Z$ is given by:
 \begin{equation*}
-F_Z(\mathbf{z}) = \mathbb{P}(\mathbf{Z} \leq \mathbf{z}) = \mathbb{P}(\mathbf{X} + \mathbf{Y} \leq \mathbf{z}),
+F_Z(z) = \mathbb{P}(Z \leq z) = \mathbb{P}(X + Y \leq z),
 \end{equation*}
 where the inequality is understood component-wise, i.e., $Z_i \leq z_i$ for all $i = 1, 2, \dots, n$.
-\\Since $\mathbf{X}$ and $\mathbf{Y}$ are independent, we can express this probability as an integral:
+\\Since $X$ and $Y$ are independent, we can express this probability as an integral:
 \begin{equation*}
-F_Z(\mathbf{z}) = \int_{\mathbb{R}^n} \mathbb{P}(\mathbf{X} \leq \mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
+F_Z(z) = \int_{\mathbb{R}^n} \mathbb{P}(X \leq z - y) f_Y(y) \, dy.
 \end{equation*}
-By the definition of the cumulative distribution function of $\mathbf{X}$, we have:
+By the definition of the cumulative distribution function of $X$, we have:
 \begin{equation*}
-F_X(\mathbf{z} - \mathbf{y}) = \mathbb{P}(\mathbf{X} \leq \mathbf{z} - \mathbf{y}),
+F_X(z - y) = \mathbb{P}(X \leq z - y),
 \end{equation*}
 Thus:
 \begin{equation*}
-F_Z(\mathbf{z}) = \int_{\mathbb{R}^n} F_X(\mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
+F_Z(z) = \int_{\mathbb{R}^n} F_X(z - y) f_Y(y) \, dy.
 \end{equation*}
-To obtain the density $f_Z(\mathbf{z})$, we differentiate both sides with respect to $\mathbf{z}$:
+To obtain the density $f_Z(z)$, we differentiate both sides with respect to $z$:
 \begin{equation*}
-f_Z(\mathbf{z}) = \frac{\partial^n}{\partial z_1 \dots \partial z_n} \int_{\mathbb{R}^n} F_X(\mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
+f_Z(z) = \frac{\partial^n}{\partial z_1 \dots \partial z_n} \int_{\mathbb{R}^n} F_X(z - y) f_Y(y) \, dy.
 \end{equation*}
 Since $\frac{\partial^n}{\partial z_1 \dots \partial z_n} F_X \equiv f_X$ exists, applying Leibniz's rule (differentiation under the integral sign), we get:
 \begin{equation*}
-f_Z(\mathbf{z}) = \int_{\mathbb{R}^n} \frac{\partial^n}{\partial z_1 \dots \partial z_n} F_X(\mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
+f_Z(z) = \int_{\mathbb{R}^n} \frac{\partial^n}{\partial z_1 \dots \partial z_n} F_X(z - y) f_Y(y) \, dy.
 \end{equation*}
 The derivative of the cumulative distribution function $F_X$ is the density $f_X$, so:
 \begin{equation*}
-f_X(\mathbf{z} - \mathbf{y}) = \frac{\partial^n}{\partial z_1 \dots \partial z_n} F_X(\mathbf{z} - \mathbf{y}).
+f_X(z - y) = \frac{\partial^n}{\partial z_1 \dots \partial z_n} F_X(z - y).
 \end{equation*}
 Thus, we obtain:
 \begin{equation*}
-f_Z(\mathbf{z}) = \int_{\mathbb{R}^n} f_X(\mathbf{z} - \mathbf{y}) f_Y(\mathbf{y}) \, d\mathbf{y}.
+f_Z(z) = \int_{\mathbb{R}^n} f_X(z - y) f_Y(y) \, dy.
 \end{equation*}
 \end{proof}
 
@@ -2105,7 +2124,6 @@ In summary, we have
 % \]
 % \end{proof}
 
-
-\bibliographystyle{plain}
-\bibliography{../codes/bibliography} 
+\newpage
+\bibliography{references}% \printbibliography
 \end{document}
